@@ -1,0 +1,5 @@
+export {default as service} from './service'
+export {default as portfolio} from './portfolio'
+export {default as caseStudy} from './caseStudy'
+export {default as testimonial} from './testimonial'
+export {default as blogPost} from './blogPost'
