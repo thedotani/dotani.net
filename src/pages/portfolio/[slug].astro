@@ -1,0 +1,142 @@
+---
+import { getPortfolioItemBySlug, getAllPortfolioItems } from '../../lib/sanity'
+
+export async function getStaticPaths() {
+  const portfolioItems = await getAllPortfolioItems()
+  return portfolioItems?.map((item: any) => ({
+    params: { slug: item.slug?.current },
+    props: { item },
+  })) || []
+}
+
+const { slug } = Astro.params
+const item = Astro.props.item || await getPortfolioItemBySlug(slug as string)
+
+if (!item) {
+  return Astro.redirect('/404')
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{item.title} - Portfolio</title>
+    {item.shortResult && <meta name="description" content={item.shortResult} />}
+  </head>
+
+  <body class="bg-bg text-text min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <a href="/portfolio" class="text-sm text-primary mb-6 inline-block">&larr; Back to Portfolio</a>
+
+      <article>
+        <div class="flex items-center gap-4 mb-6">
+          {item.category && (
+            <span class="text-xs font-semibold text-primary uppercase tracking-wider px-3 py-1 bg-primary/10 rounded-full">
+              {item.category}
+            </span>
+          )}
+          {item.year && (
+            <span class="text-sm text-muted">{item.year}</span>
+          )}
+        </div>
+
+        <h1 class="text-4xl font-bold text-heading mb-4">{item.title}</h1>
+
+        {item.client && (
+          <p class="text-lg text-accent mb-4">Client: {item.client}</p>
+        )}
+
+        {item.role && (
+          <p class="text-muted mb-6">Role: {item.role}</p>
+        )}
+
+        {item.shortResult && (
+          <p class="text-xl text-muted mb-8 font-medium">{item.shortResult}</p>
+        )}
+
+        {item.description && (
+          <div class="prose prose-lg max-w-none mb-8">
+            {item.description.map((block: any) => block.children?.map((c: any) => c.text).join(' ')).join(' ')}
+          </div>
+        )}
+
+        {item.projectSummary && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Project Summary</h2>
+            <div class="prose">
+              {item.projectSummary.map((block: any) => block.children?.map((c: any) => c.text).join(' ')).join(' ')}
+            </div>
+          </section>
+        )}
+
+        {item.keyPoints && item.keyPoints.length > 0 && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Key Points</h2>
+            <ul class="space-y-2">
+              {item.keyPoints.map((point: string) => (
+                <li class="text-muted flex items-start">
+                  <span class="text-primary mr-2">•</span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {item.metrics && item.metrics.length > 0 && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Results</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {item.metrics.map((metric: any) => (
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-primary">{metric.value}</div>
+                  <div class="text-sm text-muted">{metric.label}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {item.gallery && item.gallery.length > 0 && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Gallery</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {item.gallery.map((image: any) => (
+                <img
+                  src={image?.asset?.url || '/placeholder.png'}
+                  alt={item.title}
+                  class="w-full h-32 object-cover rounded-lg"
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {item.tags && item.tags.length > 0 && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Tags</h2>
+            <div class="flex flex-wrap gap-2">
+              {item.tags.map((tag: string) => (
+                <span class="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
+    </div>
+  </body>
+</html>
+
+<style>
+  .text-primary { color: var(--primary-color, #3b82f6); }
+  .text-heading { color: var(--heading-color, #1f2937); }
+  .text-muted { color: var(--muted-color, #6b7280); }
+  .text-accent { color: var(--accent-color, #f59e0b); }
+  .bg-bg { background-color: var(--bg-color, #ffffff); }
+  .text-text { color: var(--text-color, #1f2937); }
+</style>

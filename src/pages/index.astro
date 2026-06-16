@@ -1,17 +1,188 @@
 ---
+import HeroSection from '../components/sections/HeroSection.astro'
+import StatsSection from '../components/sections/StatsSection.astro'
+import ServicesSection from '../components/sections/ServicesSection.astro'
+import PortfolioSection from '../components/sections/PortfolioSection.astro'
+import WhyMeSection from '../components/sections/WhyMeSection.astro'
+import TestimonialsSection from '../components/sections/TestimonialsSection.astro'
+import FinalCtaSection from '../components/sections/FinalCtaSection.astro'
+import ContactSection from '../components/sections/ContactSection.astro'
+import BookingSection from '../components/sections/BookingSection.astro'
+import { getHomePage, getSiteSettings, getAllServices, getAllPortfolioItems, getAllTestimonials } from '../lib/sanity'
 
+const page = await getHomePage()
+const siteSettings = await getSiteSettings()
+
+// Fetch content for sections that use auto-fetch mode
+const services = await getAllServices()
+const portfolioItems = await getAllPortfolioItems()
+const testimonials = await getAllTestimonials()
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{page?.seo?.title || page?.title || 'Home'}</title>
+    {page?.seo?.description && <meta name="description" content={page.seo.description} />}
+    {siteSettings?.theme && (
+      <style define:vars={{
+        '--primary-color': siteSettings.theme.primaryColor,
+        '--secondary-color': siteSettings.theme.secondaryColor,
+        '--accent-color': siteSettings.theme.accentColor,
+      }}>
+      </style>
+    )}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  </head>
+
+  <body class="bg-bg text-text min-h-screen">
+    <!-- Header -->
+    {siteSettings?.header && (
+      <header class="border-b border-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center space-x-4">
+              {siteSettings.header.logo?.asset?.url && (
+                <img
+                  src={siteSettings.header.logo.asset.url}
+                  alt={siteSettings.header.logoAlt || 'Logo'}
+                  class="h-8 w-auto"
+                />
+              )}
+              {siteSettings.header.title && (
+                <span class="text-xl font-bold text-heading">{siteSettings.header.title}</span>
+              )}
+            </div>
+            {siteSettings.header.menuItems && siteSettings.header.menuItems.length > 0 && (
+              <nav class="hidden md:flex space-x-6">
+                {siteSettings.header.menuItems.map((item: any) => (
+                  <a href={item.url} class="text-muted hover:text-primary transition-colors">
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            )}
+            {siteSettings.header.headerCta?.label && (
+              <a
+                href={siteSettings.header.headerCta.url}
+                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                {siteSettings.header.headerCta.label}
+              </a>
+            )}
+          </div>
+        </div>
+      </header>
+    )}
+
+    <!-- Page Sections -->
+    <main>
+      {page?.sections?.map((section: any) => {
+        // Skip invisible sections
+        if (section.visible === false) return null
+
+        const Component = (() => {
+          switch (section._type) {
+            case 'heroSection':
+              return HeroSection
+            case 'statsSection':
+              return StatsSection
+            case 'servicesSection':
+              return ServicesSection
+            case 'portfolioSection':
+              return PortfolioSection
+            case 'whyMeSection':
+              return WhyMeSection
+            case 'testimonialsSection':
+              return TestimonialsSection
+            case 'finalCtaSection':
+              return FinalCtaSection
+            case 'contactSection':
+              return ContactSection
+            case 'bookingSection':
+              return BookingSection
+            default:
+              return null
+          }
+        })()
+
+        if (!Component) return null
+
+        // Pass relevant content data to sections
+        const props: any = { section }
+        if (section._type === 'servicesSection') {
+          props.services = section.displayMode === 'auto' ? services : section.manualServices || []
+        }
+        if (section._type === 'portfolioSection') {
+          props.portfolioItems = section.displayMode === 'auto' ? portfolioItems : section.manualItems || []
+        }
+        if (section._type === 'testimonialsSection') {
+          props.testimonials = section.displayMode === 'auto' ? testimonials : []
+        }
+
+        return <Component {...props} />
+      })}
+    </main>
+
+    <!-- Footer -->
+    {siteSettings?.footer && (
+      <footer class="border-t border-border py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {siteSettings.footer.columns && siteSettings.footer.columns.length > 0 && siteSettings.footer.columns.map((column: any) => (
+              <div>
+                {column.heading && (
+                  <h3 class="text-lg font-semibold text-heading mb-4">{column.heading}</h3>
+                )}
+                {column.links && column.links.length > 0 && (
+                  <ul class="space-y-2">
+                    {column.links.map((link: string, i: number) => (
+                      <li><a href={link} class="text-muted hover:text-primary transition-colors">{link}</a></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+          {siteSettings.footer.socialLinks && siteSettings.footer.socialLinks.length > 0 && (
+            <div class="flex justify-center space-x-4 mb-6">
+              {siteSettings.footer.socialLinks.map((social: any) => (
+                <a
+                  href={social.url}
+                  class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+                  aria-label={social.platform}
+                >
+                  {social.platform === 'linkedin' && 'in'}
+                  {social.platform === 'twitter' && 'X'}
+                  {social.platform === 'github' && 'Git'}
+                  {social.platform === 'instagram' && 'IG'}
+                  {social.platform === 'facebook' && 'f'}
+                  {social.platform === 'youtube' && 'YT'}
+                  {social.platform === 'whatsapp' && 'WA'}
+                </a>
+              ))}
+            </div>
+          )}
+          {siteSettings.footer.copyrightText && (
+            <p class="text-center text-sm text-muted">
+              {siteSettings.footer.copyrightText}
+            </p>
+          )}
+        </div>
+      </footer>
+    )}
+  </body>
 </html>
+
+<style>
+  .text-primary { color: var(--primary-color, #3b82f6); }
+  .text-heading { color: var(--heading-color, #1f2937); }
+  .text-muted { color: var(--muted-color, #6b7280); }
+  .bg-bg { background-color: var(--bg-color, #ffffff); }
+  .text-text { color: var(--text-color, #1f2937); }
+  .border-border { border-color: var(--border-color, #e5e7eb); }
+</style>

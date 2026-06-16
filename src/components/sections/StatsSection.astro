@@ -1,0 +1,49 @@
+---
+interface Props {
+  section: any
+}
+
+const {section} = Astro.props
+const {
+  items = [],
+  layout = 'inline',
+  divider = false,
+  paddingTop = 'py-12',
+  paddingBottom = 'py-12',
+  backgroundColor,
+} = section
+---
+
+<section
+  class={`w-full ${paddingTop} ${paddingBottom}`}
+  style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class={layout === 'grid' ? 'grid grid-cols-2 md:grid-cols-5 gap-4' : 'flex flex-wrap justify-between gap-8'}>
+      {items.map((item: any, index: number) => (
+        <>
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-primary mb-2">
+              {item.number}
+            </div>
+            <div class="text-sm text-muted uppercase tracking-wider">
+              {item.label}
+            </div>
+            {item.note && (
+              <div class="text-xs text-muted mt-1">{item.note}</div>
+            )}
+          </div>
+          {divider && index < items.length - 1 && layout === 'inline' && (
+            <div class="hidden md:block w-px bg-border"></div>
+          )}
+        </>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .text-primary { color: var(--primary-color, #3b82f6); }
+  .text-muted { color: var(--muted-color, #6b7280); }
+  .bg-border { background-color: var(--border-color, #e5e7eb); }
+</style>

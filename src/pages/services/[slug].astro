@@ -1,0 +1,105 @@
+---
+import { getServiceBySlug, getAllServices } from '../../lib/sanity'
+
+export async function getStaticPaths() {
+  const services = await getAllServices()
+  return services?.map((service: any) => ({
+    params: { slug: service.slug?.current },
+    props: { service },
+  })) || []
+}
+
+const { slug } = Astro.params
+const service = Astro.props.service || await getServiceBySlug(slug as string)
+
+if (!service) {
+  return Astro.redirect('/404')
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{service.title} - Services</title>
+    {service.shortDescription && <meta name="description" content={service.shortDescription} />}
+  </head>
+
+  <body class="bg-bg text-text min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <a href="/services" class="text-sm text-primary mb-6 inline-block">&larr; Back to Services</a>
+
+      <article>
+        <h1 class="text-4xl font-bold text-heading mb-4">{service.title}</h1>
+
+        {service.icon && (
+          <div class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+            <span class="text-primary text-2xl">{service.icon}</span>
+          </div>
+        )}
+
+        {service.shortDescription && (
+          <p class="text-xl text-muted mb-8">{service.shortDescription}</p>
+        )}
+
+        {service.description && (
+          <div class="prose prose-lg max-w-none mb-8">
+            {service.description[0]?.children?.map((child: any) => child.text).join(' ')}
+          </div>
+        )}
+
+        {service.features && service.features.length > 0 && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Key Features</h2>
+            <ul class="space-y-2">
+              {service.features.map((feature: any) => (
+                <li class="text-muted flex items-start">
+                  <span class="text-primary mr-2">•</span>
+                  {feature.text || feature}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {service.deliverables && service.deliverables.length > 0 && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">What You Get</h2>
+            <ul class="space-y-2">
+              {service.deliverables.map((deliverable: string) => (
+                <li class="text-muted flex items-start">
+                  <span class="text-primary mr-2">✓</span>
+                  {deliverable}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {service.bestFor && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Best For</h2>
+            <p class="text-muted">{service.bestFor}</p>
+          </section>
+        )}
+
+        {service.timeframe && (
+          <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-heading mb-4">Timeframe</h2>
+            <p class="text-muted">{service.timeframe}</p>
+          </section>
+        )}
+      </article>
+    </div>
+  </body>
+</html>
+
+<style>
+  .text-primary { color: var(--primary-color, #3b82f6); }
+  .text-heading { color: var(--heading-color, #1f2937); }
+  .text-muted { color: var(--muted-color, #6b7280); }
+  .bg-bg { background-color: var(--bg-color, #ffffff); }
+  .text-text { color: var(--text-color, #1f2937); }
+</style>

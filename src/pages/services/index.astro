@@ -1,0 +1,73 @@
+---
+import { getAllServices } from '../../lib/sanity'
+
+const services = await getAllServices()
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Services</title>
+    <meta name="description" content="Our services" />
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  </head>
+
+  <body class="bg-bg text-text min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="text-4xl font-bold text-heading mb-12">Our Services</h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {services?.map((service: any) => (
+          <article class="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+            {service.icon && (
+              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                <span class="text-primary text-xl">{service.icon}</span>
+              </div>
+            )}
+            <h2 class="text-xl font-semibold text-heading mb-2">
+              {service.title}
+            </h2>
+            {service.shortDescription && (
+              <p class="text-muted mb-4">
+                {service.shortDescription}
+              </p>
+            )}
+            {service.features && service.features.length > 0 && (
+              <ul class="space-y-2 mb-4">
+                {service.features.slice(0, 3).map((feature: any) => (
+                  <li class="text-sm text-muted flex items-start">
+                    <span class="text-primary mr-2">•</span>
+                    {feature.text || feature}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {service.bestFor && (
+              <p class="text-sm text-accent mb-4">
+                Best for: {service.bestFor}
+              </p>
+            )}
+            <a
+              href={`/services/${service.slug?.current}`}
+              class="mt-2 inline-block text-sm font-medium text-primary hover:underline"
+            >
+              View Service →
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </body>
+</html>
+
+<style>
+  .text-primary { color: var(--primary-color, #3b82f6); }
+  .text-heading { color: var(--heading-color, #1f2937); }
+  .text-muted { color: var(--muted-color, #6b7280); }
+  .text-accent { color: var(--accent-color, #f59e0b); }
+  .bg-card { background-color: var(--card-bg, #ffffff); }
+  .border-border { border-color: var(--border-color, #e5e7eb); }
+</style>

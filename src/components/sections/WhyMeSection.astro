@@ -1,0 +1,75 @@
+---
+interface Props {
+  section: any
+}
+
+const {section} = Astro.props
+const {
+  heading,
+  description,
+  bulletPoints = [],
+  features = [],
+  image,
+  layout = 'contentLeft',
+  paddingTop = 'py-16',
+  paddingBottom = 'py-16',
+  backgroundColor,
+} = section
+---
+
+<section
+  class={`w-full ${paddingTop} ${paddingBottom}`}
+  style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class={`flex flex-col md:flex-row gap-12 items-start ${layout === 'imageLeft' ? 'md:flex-row-reverse' : ''}`}>
+      <div class="flex-1">
+        {heading && (
+          <h2 class="text-3xl md:text-4xl font-bold text-heading mb-6">
+            {heading}
+          </h2>
+        )}
+        {description && (
+          <p class="text-lg text-muted mb-6">
+            {typeof description === 'string' ? description : description[0]?.children?.map((child: any) => child.text).join(' ')}
+          </p>
+        )}
+        {(bulletPoints.length > 0 || features.length > 0) && (
+          <div class="space-y-4">
+            {bulletPoints.map((point: string) => (
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-primary mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-muted">{point}</span>
+              </div>
+            ))}
+            {features.map((feature: any) => (
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-primary mr-3 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-muted">{feature.text || feature}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {image && (
+        <div class="flex-1">
+          <img
+            src={image?.asset?.url || '/placeholder.png'}
+            alt="Raza Dotani"
+            class="w-full rounded-lg shadow-lg"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .text-primary { color: var(--primary-color, #3b82f6); }
+  .text-heading { color: var(--heading-color, #1f2937); }
+  .text-muted { color: var(--muted-color, #6b7280); }
+</style>

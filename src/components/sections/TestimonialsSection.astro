@@ -1,0 +1,107 @@
+---
+interface Props {
+  section: any
+  testimonials?: any[]
+}
+
+const {section, testimonials = []} = Astro.props
+const {
+  sectionTitle,
+  sectionTagline,
+  cardStyle = 'standard',
+  paddingTop = 'py-16',
+  paddingBottom = 'py-16',
+  backgroundColor,
+} = section
+
+const displayItems = testimonials.slice(0, section.limit || 3)
+---
+
+<section
+  class={`w-full ${paddingTop} ${paddingBottom}`}
+  style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      {sectionTitle && (
+        <h2 class="text-3xl md:text-4xl font-bold text-heading mb-4">
+          {sectionTitle}
+        </h2>
+      )}
+      {sectionTagline && (
+        <p class="text-lg text-muted">
+          {sectionTagline}
+        </p>
+      )}
+    </div>
+
+    <div class={cardStyle === 'quote'
+      ? 'max-w-3xl mx-auto'
+      : cardStyle === 'minimal'
+        ? 'grid grid-cols-1 md:grid-cols-2 gap-8'
+        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+    }>
+      {displayItems.map((item: any) => (
+        <div class={`
+          bg-card border border-border rounded-xl p-6
+          ${cardStyle === 'minimal' ? '' : 'hover:shadow-lg transition-shadow'}
+        `}>
+          {cardStyle === 'quote' && (
+            <svg class="w-8 h-8 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.017 21v-7.03a8.007 8.007 0 0 0 5.432-7.432H9.574a4 4 0 0 1 0-8h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H9.574a4 4 0 0 1 0-8z"/>
+            </svg>
+          )}
+          {item.quote && (
+            <p class="text-muted mb-4">
+              "{typeof item.quote === 'string' ? item.quote : item.quote[0]?.children?.map((c: any) => c.text).join(' ')}"
+            </p>
+          )}
+          {item.testimonial && (
+            <p class="text-muted mb-4">
+              "{typeof item.testimonial === 'string' ? item.testimonial : item.testimonial[0]?.children?.map((c: any) => c.text).join(' ')}"
+            </p>
+          )}
+          <div class="flex items-center gap-3">
+            {item.authorAvatar?.asset?.url && (
+              <img
+                src={item.authorAvatar.asset.url}
+                alt={item.authorName || 'Testimonial author'}
+                class="w-10 h-10 rounded-full object-cover"
+              />
+            )}
+            <div>
+              <p class="font-semibold text-heading">
+                {item.authorName || item.name}
+              </p>
+              {item.authorRole && (
+                <p class="text-sm text-muted">{item.authorRole}</p>
+              )}
+              {item.role && (
+                <p class="text-sm text-muted">{item.role}</p>
+              )}
+              {item.company && (
+                <p class="text-xs text-accent">{item.company}</p>
+              )}
+            </div>
+          </div>
+          {item.rating && (
+            <div class="flex mt-3">
+              {Array.from({length: 5}).map((_, i) => (
+                <span class={`text-sm ${i < item.rating ? 'text-primary' : 'text-muted'}`}>★</span>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .text-primary { color: var(--primary-color, #3b82f6); }
+  .text-muted { color: var(--muted-color, #6b7280); }
+  .text-heading { color: var(--heading-color, #1f2937); }
+  .text-accent { color: var(--accent-color, #f59e0b); }
+  .bg-card { background-color: var(--card-bg, #ffffff); }
+  .border-border { border-color: var(--border-color, #e5e7eb); }
+</style>
