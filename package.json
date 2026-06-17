@@ -9,6 +9,9 @@
     "build": "node ./scripts/build.mjs",
     "deploy": "node ./scripts/deploy.mjs",
     "pages:config": "node ./scripts/download-pages-config.mjs",
+    "seed:generate": "node ./scripts/seed-content.mjs > seed.ndjson",
+    "seed:import": "node ./scripts/import-seed.mjs",
+    "seed:import:production": "node ./scripts/import-seed.mjs --confirm-production",
     "studio": "npm run dev --workspace apps/studio"
   },
   "devDependencies": {

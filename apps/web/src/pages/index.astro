@@ -145,7 +145,11 @@ const showFallback = !page || !hasVisibleSections
           props.testimonials = section.displayMode === 'auto' ? testimonials : []
         }
 
-        return <Component {...props} />
+        return (
+          <div id={section.sectionId || undefined}>
+            <Component {...props} />
+          </div>
+        )
       })}
     </main>
 

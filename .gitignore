@@ -26,6 +26,9 @@ pnpm-debug.log*
 
 .wrangler/
 
+# generated seed import
+seed.ndjson
+
 # local tooling artefacts
 mcps/
 terminals/
