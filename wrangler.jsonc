@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "dotani-net",
+  "pages_build_output_dir": "./apps/web/dist",
   "compatibility_date": "2026-04-15",
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [{ "binding": "SESSION" }],
+  "images": { "binding": "IMAGES" }
 }
