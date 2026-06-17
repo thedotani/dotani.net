@@ -12,6 +12,7 @@
     "seed:generate": "node ./scripts/seed-content.mjs > seed.ndjson",
     "seed:import": "node ./scripts/import-seed.mjs",
     "seed:import:production": "node ./scripts/import-seed.mjs --confirm-production",
+    "seed:images": "npm run seed:images --workspace apps/studio",
     "studio": "npm run dev --workspace apps/studio"
   },
   "devDependencies": {

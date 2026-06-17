@@ -10,8 +10,8 @@ const {
   buttons = [],
   layout = 'centered',
   centeredBackground = true,
-  paddingTop = 'py-16',
-  paddingBottom = 'py-16',
+  paddingTop = 'py-20',
+  paddingBottom = 'py-20',
   backgroundColor,
 } = section
 ---
@@ -20,27 +20,56 @@ const {
   class={`w-full ${paddingTop} ${paddingBottom}`}
   style={
     centeredBackground && layout === 'centered' && !backgroundColor
-      ? `background-color: var(--primary-color, #3b82f6)`
+      ? `background-color: var(--color-primary, #3b82f6)`
       : backgroundColor
         ? `background-color: ${backgroundColor}`
         : undefined
   }
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="section-container">
     {layout === 'centered' ? (
-      <div class="text-center">
+      <div class="text-center max-w-3xl mx-auto">
         {headline && (
-          <h2 class={`text-3xl md:text-4xl font-bold mb-4 ${centeredBackground ? 'text-white' : 'text-heading'}`}>
+          <h2 class={`section-heading mb-4 ${centeredBackground ? 'text-white' : ''}`}>
             {headline}
           </h2>
         )}
         {supportingText && (
-          <p class={`text-lg mb-8 ${centeredBackground ? 'text-white/80' : 'text-muted'}`}>
+          <p class={`section-tagline mb-8 ${centeredBackground ? 'text-white/85' : ''}`}>
             {supportingText}
           </p>
         )}
         {buttons && buttons.length > 0 && (
           <div class="flex flex-wrap justify-center gap-4">
+            {buttons.map((button: any) => (
+              <a
+                href={button.url}
+                class={`btn btn-${button.style || 'primary'} ${centeredBackground && button.style !== 'outline' ? 'bg-white text-heading hover:bg-white/90' : ''}`}
+                target={button.openInNewTab ? '_blank' : undefined}
+                rel={button.openInNewTab ? 'noopener noreferrer' : undefined}
+              >
+                {button.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    ) : (
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+        <div class="flex-1 max-w-2xl">
+          {headline && (
+            <h2 class="section-heading mb-4">
+              {headline}
+            </h2>
+          )}
+          {supportingText && (
+            <p class="section-tagline">
+              {supportingText}
+            </p>
+          )}
+        </div>
+        {buttons && buttons.length > 0 && (
+          <div class="flex flex-wrap gap-4 md:justify-end">
             {buttons.map((button: any) => (
               <a
                 href={button.url}
@@ -54,58 +83,6 @@ const {
           </div>
         )}
       </div>
-    ) : (
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-        <div class="flex-1">
-          {headline && (
-            <h2 class="text-3xl md:text-4xl font-bold text-heading mb-4">
-              {headline}
-            </h2>
-          )}
-          {supportingText && (
-            <p class="text-lg text-muted">
-              {supportingText}
-            </p>
-          )}
-        </div>
-        {buttons && buttons.length > 0 && (
-          <div class="flex-1 md:text-right">
-            <div class="flex flex-wrap md:justify-end gap-4">
-              {buttons.map((button: any) => (
-                <a
-                  href={button.url}
-                  class={`btn btn-${button.style || 'primary'}`}
-                  target={button.openInNewTab ? '_blank' : undefined}
-                  rel={button.openInNewTab ? 'noopener noreferrer' : undefined}
-                >
-                  {button.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
     )}
   </div>
 </section>
-
-<style>
-  .text-heading { color: var(--heading-color, #1f2937); }
-  .text-muted { color: var(--muted-color, #6b7280); }
-  .text-primary { color: var(--primary-color, #3b82f6); }
-  .btn {
-    @apply px-6 py-3 rounded-lg font-medium transition-colors;
-  }
-  .btn-primary {
-    @apply bg-primary text-white hover:bg-primary/90;
-  }
-  .btn-secondary {
-    @apply bg-secondary text-white hover:bg-secondary/90;
-  }
-  .btn-ghost {
-    @apply bg-transparent text-primary hover:bg-primary/10;
-  }
-  .btn-outline {
-    @apply border border-primary text-primary hover:bg-primary/10;
-  }
-</style>

@@ -12,40 +12,34 @@ const {
   displayMode = 'auto',
   manualServices = [],
   cardLayout = 'cards-3',
-  paddingTop = 'py-16',
-  paddingBottom = 'py-16',
+  paddingTop = 'py-20',
+  paddingBottom = 'py-20',
   backgroundColor,
 } = section
 
-// Use manual services array or passed services (from auto-fetch)
-const services = displayMode === 'manual'
-  ? manualServices
-  : passedServices
+const services = displayMode === 'manual' ? manualServices : passedServices
 ---
 
 <section
   class={`w-full ${paddingTop} ${paddingBottom}`}
   style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
-      <div>
+  <div class="section-container">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+      <div class="max-w-2xl">
         {sectionTitle && (
-          <h2 class="text-3xl md:text-4xl font-bold text-heading mb-4">
+          <h2 class="section-heading mb-4">
             {sectionTitle}
           </h2>
         )}
         {sectionTagline && (
-          <p class="text-lg text-muted">
+          <p class="section-tagline">
             {sectionTagline}
           </p>
         )}
       </div>
       {headerButton?.label && (
-        <a
-          href={headerButton.url}
-          class="mt-4 md:mt-0 px-6 py-2 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors"
-        >
+        <a href={headerButton.url} class="link-outline shrink-0">
           {headerButton.label}
         </a>
       )}
@@ -54,22 +48,22 @@ const services = displayMode === 'manual'
     {cardLayout === 'list' ? (
       <div class="space-y-4">
         {services.map((service: any) => (
-          <div class="flex items-start gap-4 p-6 bg-card border border-border rounded-xl hover:shadow-lg transition-shadow">
+          <div class="card-surface flex items-start gap-5 p-6 md:p-7">
             {service.icon && (
-              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <span class="text-primary text-xl">{service.icon}</span>
               </div>
             )}
-            <div class="flex-1">
-              <h3 class="text-xl font-semibold text-heading mb-2">{service.title}</h3>
-              {service.oneLinePromise && (
-                <p class="text-muted mb-4">{service.oneLinePromise}</p>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-display text-xl font-semibold text-heading mb-2">{service.title}</h3>
+              {(service.oneLinePromise || service.shortDescription) && (
+                <p class="text-muted mb-4">{service.oneLinePromise || service.shortDescription}</p>
               )}
               {service.features && service.features.length > 0 && (
-                <ul class="space-y-1 mb-4">
+                <ul class="space-y-1.5 mb-4">
                   {service.features.slice(0, 3).map((feature: any) => (
-                    <li class="text-sm text-muted flex items-start">
-                      <span class="text-primary mr-2">•</span>
+                    <li class="text-sm text-muted flex items-start gap-2">
+                      <span class="text-primary mt-0.5">•</span>
                       {feature.text || feature}
                     </li>
                   ))}
@@ -79,58 +73,50 @@ const services = displayMode === 'manual'
                 <p class="text-sm text-accent">Best for: {service.bestFor}</p>
               )}
             </div>
-            {service.url && (
-              <a
-                href={service.url}
-                class="text-sm font-medium text-primary hover:underline flex-shrink-0"
-              >
-                View Service →
-              </a>
-            )}
+            <a
+              href={service.url || `/services/${service.slug?.current}`}
+              class="text-sm font-medium text-primary hover:underline shrink-0"
+            >
+              View Service →
+            </a>
           </div>
         ))}
       </div>
     ) : (
       <div class={cardLayout === 'cards-4' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
         {services.map((service: any) => (
-          <div class="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+          <div class="card-surface p-6 md:p-7 h-full flex flex-col">
             {service.icon && (
-              <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+              <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
                 <span class="text-primary text-xl">{service.icon}</span>
               </div>
             )}
-            <h3 class="text-xl font-semibold text-heading mb-2">{service.title}</h3>
-            {service.oneLinePromise && (
-              <p class="text-muted mb-4">{service.oneLinePromise}</p>
+            <h3 class="font-display text-xl font-semibold text-heading mb-2">{service.title}</h3>
+            {(service.oneLinePromise || service.shortDescription) && (
+              <p class="text-muted mb-4 flex-1">{service.oneLinePromise || service.shortDescription}</p>
             )}
             {service.features && service.features.length > 0 && (
               <ul class="space-y-2 mb-4">
                 {service.features.slice(0, 3).map((feature: any) => (
-                  <li class="text-sm text-muted flex items-start">
-                    <span class="text-primary mr-2">•</span>
+                  <li class="text-sm text-muted flex items-start gap-2">
+                    <span class="text-primary mt-0.5">•</span>
                     {feature.text || feature}
                   </li>
                 ))}
               </ul>
             )}
             {service.bestFor && (
-              <p class="text-sm text-accent">Best for: {service.bestFor}</p>
+              <p class="text-sm text-accent mb-4">Best for: {service.bestFor}</p>
             )}
-            {service.url && (
-              <a href={service.url} class="mt-4 inline-block text-sm font-medium text-primary hover:underline">View Service →</a>
-            )}
+            <a
+              href={service.url || `/services/${service.slug?.current}`}
+              class="mt-auto inline-block text-sm font-medium text-primary hover:underline"
+            >
+              View Service →
+            </a>
           </div>
         ))}
       </div>
     )}
   </div>
 </section>
-
-<style>
-  .text-heading { color: var(--heading-color, #1f2937); }
-  .text-muted { color: var(--muted-color, #6b7280); }
-  .text-primary { color: var(--primary-color, #3b82f6); }
-  .text-accent { color: var(--accent-color, #f59e0b); }
-  .bg-card { background-color: var(--card-bg, #ffffff); }
-  .border-border { border-color: var(--border-color, #e5e7eb); }
-</style>

@@ -11,25 +11,27 @@ const {
   buttonLabel = 'Book a Call',
   layout = 'centered',
   paddingTop = 'py-16',
-  paddingBottom = 'py-16',
+  paddingBottom = 'py-20',
   backgroundColor,
 } = section
+
+const bookingBg = backgroundColor || '#1e293b'
 ---
 
 <section
   class={`w-full ${paddingTop} ${paddingBottom}`}
-  style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}
+  style={`background-color: ${bookingBg}`}
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="section-container">
     {layout === 'centered' ? (
       <div class="text-center max-w-2xl mx-auto">
         {headline && (
-          <h2 class="text-3xl md:text-4xl font-bold text-heading mb-4">
+          <h2 class="section-heading mb-4 text-white">
             {headline}
           </h2>
         )}
         {supportingText && (
-          <p class="text-lg text-muted mb-8">
+          <p class="text-lg text-white/80 mb-8 leading-relaxed">
             {supportingText}
           </p>
         )}
@@ -38,7 +40,7 @@ const {
             href={calLink || `https://cal.com/${import.meta.env.PUBLIC_CALCOM_USERNAME}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-block px-8 py-4 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            class="btn bg-white text-heading hover:bg-white/90"
           >
             {buttonLabel}
           </a>
@@ -48,12 +50,12 @@ const {
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
         <div class="flex-1">
           {headline && (
-            <h2 class="text-3xl md:text-4xl font-bold text-heading mb-4">
+            <h2 class="section-heading mb-4 text-white">
               {headline}
             </h2>
           )}
           {supportingText && (
-            <p class="text-lg text-muted">
+            <p class="text-lg text-white/80 leading-relaxed">
               {supportingText}
             </p>
           )}
@@ -63,7 +65,7 @@ const {
             href={calLink || `https://cal.com/${import.meta.env.PUBLIC_CALCOM_USERNAME}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="px-8 py-4 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            class="btn bg-white text-heading hover:bg-white/90 shrink-0"
           >
             {buttonLabel}
           </a>
@@ -72,8 +74,3 @@ const {
     )}
   </div>
 </section>
-
-<style>
-  .text-heading { color: var(--heading-color, #1f2937); }
-  .text-muted { color: var(--muted-color, #6b7280); }
-</style>

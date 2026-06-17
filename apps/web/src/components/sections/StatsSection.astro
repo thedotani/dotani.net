@@ -15,18 +15,18 @@ const {
 ---
 
 <section
-  class={`w-full ${paddingTop} ${paddingBottom}`}
-  style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}
+  class={`w-full border-y border-border/80 ${paddingTop} ${paddingBottom}`}
+  style={backgroundColor ? `background-color: ${backgroundColor}` : 'background-color: color-mix(in srgb, var(--color-bg) 92%, var(--color-primary) 8%)'}
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class={layout === 'grid' ? 'grid grid-cols-2 md:grid-cols-5 gap-4' : 'flex flex-wrap justify-between gap-8'}>
+  <div class="section-container">
+    <div class={layout === 'grid' ? 'grid grid-cols-2 md:grid-cols-5 gap-6' : 'flex flex-wrap justify-between gap-8 md:gap-12'}>
       {items.map((item: any, index: number) => (
         <>
-          <div class="text-center">
-            <div class="text-3xl md:text-4xl font-bold text-primary mb-2">
+          <div class="text-center min-w-[7rem]">
+            <div class="font-display text-3xl md:text-4xl font-bold text-primary mb-2">
               {item.number}
             </div>
-            <div class="text-sm text-muted uppercase tracking-wider">
+            <div class="text-sm font-medium text-muted uppercase tracking-wider">
               {item.label}
             </div>
             {item.note && (
@@ -34,16 +34,10 @@ const {
             )}
           </div>
           {divider && index < items.length - 1 && layout === 'inline' && (
-            <div class="hidden md:block w-px bg-border"></div>
+            <div class="hidden md:block w-px self-stretch bg-border"></div>
           )}
         </>
       ))}
     </div>
   </div>
 </section>
-
-<style>
-  .text-primary { color: var(--primary-color, #3b82f6); }
-  .text-muted { color: var(--muted-color, #6b7280); }
-  .bg-border { background-color: var(--border-color, #e5e7eb); }
-</style>

@@ -9,8 +9,8 @@ const {
   sectionTitle,
   sectionTagline,
   cardStyle = 'standard',
-  paddingTop = 'py-16',
-  paddingBottom = 'py-16',
+  paddingTop = 'py-20',
+  paddingBottom = 'py-20',
   backgroundColor,
 } = section
 
@@ -21,15 +21,15 @@ const displayItems = testimonials.slice(0, section.limit || 3)
   class={`w-full ${paddingTop} ${paddingBottom}`}
   style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-12">
+  <div class="section-container">
+    <div class="text-center max-w-2xl mx-auto mb-12">
       {sectionTitle && (
-        <h2 class="text-3xl md:text-4xl font-bold text-heading mb-4">
+        <h2 class="section-heading mb-4">
           {sectionTitle}
         </h2>
       )}
       {sectionTagline && (
-        <p class="text-lg text-muted">
+        <p class="section-tagline">
           {sectionTagline}
         </p>
       )}
@@ -38,26 +38,23 @@ const displayItems = testimonials.slice(0, section.limit || 3)
     <div class={cardStyle === 'quote'
       ? 'max-w-3xl mx-auto'
       : cardStyle === 'minimal'
-        ? 'grid grid-cols-1 md:grid-cols-2 gap-8'
-        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+        ? 'grid grid-cols-1 md:grid-cols-2 gap-6'
+        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
     }>
       {displayItems.map((item: any) => (
-        <div class={`
-          bg-card border border-border rounded-xl p-6
-          ${cardStyle === 'minimal' ? '' : 'hover:shadow-lg transition-shadow'}
-        `}>
+        <div class={`card-surface p-6 md:p-7 ${cardStyle === 'minimal' ? 'hover:translate-y-0 hover:shadow-sm' : ''}`}>
           {cardStyle === 'quote' && (
-            <svg class="w-8 h-8 text-primary mb-4" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-8 h-8 text-primary/80 mb-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M14.017 21v-7.03a8.007 8.007 0 0 0 5.432-7.432H9.574a4 4 0 0 1 0-8h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H9.574a4 4 0 0 1 0-8z"/>
             </svg>
           )}
           {item.quote && (
-            <p class="text-muted mb-4">
+            <p class="text-muted leading-relaxed mb-5">
               "{typeof item.quote === 'string' ? item.quote : item.quote[0]?.children?.map((c: any) => c.text).join(' ')}"
             </p>
           )}
           {item.testimonial && (
-            <p class="text-muted mb-4">
+            <p class="text-muted leading-relaxed mb-5">
               "{typeof item.testimonial === 'string' ? item.testimonial : item.testimonial[0]?.children?.map((c: any) => c.text).join(' ')}"
             </p>
           )}
@@ -66,11 +63,11 @@ const displayItems = testimonials.slice(0, section.limit || 3)
               <img
                 src={item.authorAvatar.asset.url}
                 alt={item.authorName || 'Testimonial author'}
-                class="w-10 h-10 rounded-full object-cover"
+                class="w-11 h-11 rounded-full object-cover ring-2 ring-border"
               />
             )}
             <div>
-              <p class="font-semibold text-heading">
+              <p class="font-display font-semibold text-heading">
                 {item.authorName || item.name}
               </p>
               {item.authorRole && (
@@ -80,14 +77,14 @@ const displayItems = testimonials.slice(0, section.limit || 3)
                 <p class="text-sm text-muted">{item.role}</p>
               )}
               {item.company && (
-                <p class="text-xs text-accent">{item.company}</p>
+                <p class="text-xs text-accent mt-0.5">{item.company}</p>
               )}
             </div>
           </div>
           {item.rating && (
-            <div class="flex mt-3">
+            <div class="flex mt-4 gap-0.5">
               {Array.from({length: 5}).map((_, i) => (
-                <span class={`text-sm ${i < item.rating ? 'text-primary' : 'text-muted'}`}>★</span>
+                <span class={`text-sm ${i < item.rating ? 'text-primary' : 'text-muted/40'}`}>★</span>
               ))}
             </div>
           )}
@@ -96,12 +93,3 @@ const displayItems = testimonials.slice(0, section.limit || 3)
     </div>
   </div>
 </section>
-
-<style>
-  .text-primary { color: var(--primary-color, #3b82f6); }
-  .text-muted { color: var(--muted-color, #6b7280); }
-  .text-heading { color: var(--heading-color, #1f2937); }
-  .text-accent { color: var(--accent-color, #f59e0b); }
-  .bg-card { background-color: var(--card-bg, #ffffff); }
-  .border-border { border-color: var(--border-color, #e5e7eb); }
-</style>

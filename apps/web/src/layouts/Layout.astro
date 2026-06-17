@@ -1,0 +1,126 @@
+---
+import '../styles/global.css'
+import { getSiteSettings } from '../lib/sanity'
+import { themeStyle } from '../lib/theme'
+
+interface Props {
+  title: string
+  description?: string
+  includeTurnstile?: boolean
+}
+
+const { title, description, includeTurnstile = false } = Astro.props
+const siteSettings = await getSiteSettings()
+const htmlThemeStyle = themeStyle(siteSettings?.theme)
+---
+
+<!doctype html>
+<html lang="en" style={htmlThemeStyle}>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {includeTurnstile && (
+      <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+    )}
+  </head>
+
+  <body>
+    <header class="sticky top-0 z-50 border-b border-border bg-bg/95 backdrop-blur supports-[backdrop-filter]:bg-bg/80">
+      <div class="section-container">
+        <div class="flex items-center justify-between h-16 md:h-[4.5rem]">
+          <a href="/" class="flex items-center space-x-4">
+            {siteSettings?.header?.logo?.asset?.url && (
+              <img
+                src={siteSettings.header.logo.asset.url}
+                alt={siteSettings.header.logoAlt || 'Logo'}
+                class="h-8 w-auto"
+              />
+            )}
+            <span class="font-display text-xl font-semibold text-heading tracking-tight">
+              {siteSettings?.header?.title || 'dotani.net'}
+            </span>
+          </a>
+          {siteSettings?.header?.menuItems && siteSettings.header.menuItems.length > 0 && (
+            <nav class="hidden md:flex space-x-6">
+              {siteSettings.header.menuItems.map((item: any) => (
+                <a href={item.url} class="text-muted hover:text-primary transition-colors">
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          )}
+          {siteSettings?.header?.headerCta?.label && (
+            <a
+              href={siteSettings.header.headerCta.url}
+              class="btn btn-primary px-4 py-2 text-sm"
+            >
+              {siteSettings.header.headerCta.label}
+            </a>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="border-t border-border py-16 mt-8 bg-bg">
+      <div class="section-container">
+        {siteSettings?.footer?.columns && siteSettings.footer.columns.length > 0 && (
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {siteSettings.footer.columns.map((column: any) => (
+              <div>
+                {column.heading && (
+                  <h3 class="text-lg font-semibold text-heading mb-4">{column.heading}</h3>
+                )}
+                {column.links && column.links.length > 0 && (
+                  <ul class="space-y-2">
+                    {column.links.map((link: string) => (
+                      <li>
+                        <a href={link} class="text-muted hover:text-primary transition-colors">
+                          {link}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        {siteSettings?.footer?.socialLinks && siteSettings.footer.socialLinks.length > 0 && (
+          <div class="flex justify-center space-x-4 mb-6">
+            {siteSettings.footer.socialLinks.map((social: any) => (
+              <a
+                href={social.url}
+                class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+                aria-label={social.platform}
+              >
+                {social.platform === 'linkedin' && 'in'}
+                {social.platform === 'twitter' && 'X'}
+                {social.platform === 'github' && 'Git'}
+                {social.platform === 'instagram' && 'IG'}
+                {social.platform === 'facebook' && 'f'}
+                {social.platform === 'youtube' && 'YT'}
+                {social.platform === 'whatsapp' && 'WA'}
+              </a>
+            ))}
+          </div>
+        )}
+        <p class="text-center text-sm text-muted">
+          {siteSettings?.footer?.copyrightText || `© ${new Date().getFullYear()} dotani.net`}
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

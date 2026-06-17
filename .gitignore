@@ -28,6 +28,7 @@ pnpm-debug.log*
 
 # generated seed import
 seed.ndjson
+scripts/seed-assets/
 
 # local tooling artefacts
 mcps/
