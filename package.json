@@ -6,7 +6,11 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace apps/web",
-    "build": "npm run build --workspace apps/web",
+    "build": "node ./scripts/build.mjs",
+    "deploy": "node ./scripts/deploy.mjs",
     "studio": "npm run dev --workspace apps/studio"
+  },
+  "devDependencies": {
+    "wrangler": "^4.101.0"
   }
 }

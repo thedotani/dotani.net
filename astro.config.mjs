@@ -8,5 +8,7 @@ export default defineConfig({
   publicDir: './apps/web/public',
   outDir: './apps/web/dist',
   output: 'server',
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    configPath: './wrangler.jsonc',
+  }),
 });
