@@ -8,6 +8,7 @@
     "dev": "npm run dev --workspace apps/web",
     "build": "node ./scripts/build.mjs",
     "deploy": "node ./scripts/deploy.mjs",
+    "pages:config": "node ./scripts/download-pages-config.mjs",
     "studio": "npm run dev --workspace apps/studio"
   },
   "devDependencies": {
