@@ -6,7 +6,7 @@ import cloudflare from '@astrojs/cloudflare';
 export default defineConfig({
   srcDir: './apps/web/src',
   publicDir: './apps/web/public',
-  outDir: './dist',
+  outDir: './apps/web/dist',
   output: 'server',
   adapter: cloudflare(),
 });
