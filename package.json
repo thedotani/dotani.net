@@ -1,5 +1,5 @@
 {
-  "name": "dotani-monorepo",
+  "name": "dotani",
   "private": true,
   "workspaces": [
     "apps/*"

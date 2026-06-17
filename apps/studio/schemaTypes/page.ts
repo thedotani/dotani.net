@@ -42,6 +42,8 @@ export default defineType({
         {type: 'whyMeSection'},
         {type: 'testimonialsSection'},
         {type: 'finalCtaSection'},
+        {type: 'contactSection'},
+        {type: 'bookingSection'},
       ],
     }),
     defineField({

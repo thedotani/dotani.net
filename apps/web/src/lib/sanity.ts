@@ -1,19 +1,52 @@
 import {createClient} from '@sanity/client'
 import type {SanityDocument} from '@sanity/client'
 
+const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'tmw5kvr6'
+const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production'
+
 export const client = createClient({
-  projectId: 'tmw5kvr6',
-  dataset: 'production',
+  projectId,
+  dataset,
   useCdn: true,
   apiVersion: '2024-01-01',
 })
 
+async function safeFetch<T>(query: string, params: Record<string, unknown> = {}, fallback: T): Promise<T> {
+  try {
+    return await client.fetch<T>(query, params)
+  } catch (error) {
+    console.error('Sanity fetch failed:', error)
+    return fallback
+  }
+}
+
+const sectionProjection = `sections[]{
+  ...,
+  heroImage {
+    asset->{url}
+  },
+  backgroundImage {
+    asset->{url}
+  }
+}`
+
+const imageFields = `
+  thumbnail {
+    asset->{url}
+  },
+  gallery[] {
+    asset->{url}
+  }
+`
+
 export async function getSiteSettings() {
-  return client.fetch<SanityDocument | null>(`
+  return safeFetch<SanityDocument | null>(`
     *[_type == "siteSettings"][0] {
       _id,
       header {
-        logo,
+        logo {
+          asset->{url}
+        },
         logoAlt,
         title,
         menuItems,
@@ -32,32 +65,32 @@ export async function getSiteSettings() {
         darkModeDefault
       }
     }
-  `)
+  `, {}, null)
 }
 
 export async function getPageBySlug(slug: string) {
-  return client.fetch<SanityDocument | null>(`
+  return safeFetch<SanityDocument | null>(`
     *[_type == "page" && slug.current == $slug][0] {
       _id,
       title,
       slug,
       excerpt,
-      sections,
+      ${sectionProjection},
       seo,
       customColors,
       customColorScheme
     }
-  `, {slug})
+  `, {slug}, null)
 }
 
 export async function getAllPages() {
-  return client.fetch<SanityDocument[]>(`
+  return safeFetch<SanityDocument[]>(`
     *[_type == "page"] {
       _id,
       title,
       slug
     }
-  `)
+  `, {}, [])
 }
 
 export async function getHomePage() {
@@ -65,7 +98,7 @@ export async function getHomePage() {
 }
 
 export async function getAllServices() {
-  return client.fetch<any[]>(`
+  return safeFetch<any[]>(`
     *[_type == "service"] | order(order asc) {
       _id,
       title,
@@ -80,11 +113,11 @@ export async function getAllServices() {
       relatedPortfolio,
       order
     }
-  `)
+  `, {}, [])
 }
 
 export async function getServiceBySlug(slug: string) {
-  return client.fetch<any | null>(`
+  return safeFetch<any | null>(`
     *[_type == "service" && slug.current == $slug][0] {
       _id,
       title,
@@ -99,16 +132,16 @@ export async function getServiceBySlug(slug: string) {
       relatedPortfolio,
       order
     }
-  `, {slug})
+  `, {slug}, null)
 }
 
 export async function getAllPortfolioItems() {
-  return client.fetch<any[]>(`
+  return safeFetch<any[]>(`
     *[_type == "portfolio"] | order(order asc) {
       _id,
       title,
       slug,
-      thumbnail,
+      ${imageFields},
       category,
       shortResult,
       role,
@@ -118,21 +151,20 @@ export async function getAllPortfolioItems() {
       industry,
       description,
       projectSummary,
-      gallery,
       metrics,
       relatedServices,
       order
     }
-  `)
+  `, {}, [])
 }
 
 export async function getPortfolioItemBySlug(slug: string) {
-  return client.fetch<any | null>(`
+  return safeFetch<any | null>(`
     *[_type == "portfolio" && slug.current == $slug][0] {
       _id,
       title,
       slug,
-      thumbnail,
+      ${imageFields},
       category,
       shortResult,
       role,
@@ -142,26 +174,27 @@ export async function getPortfolioItemBySlug(slug: string) {
       industry,
       description,
       projectSummary,
-      gallery,
       metrics,
       relatedServices,
       order
     }
-  `, {slug})
+  `, {slug}, null)
 }
 
 export async function getAllTestimonials() {
-  return client.fetch<any[]>(`
-    *[_type == "testimonial"] {
+  return safeFetch<any[]>(`
+    *[_type == "testimonial"] | order(order asc) {
       _id,
       quote,
       authorName,
       authorRole,
-      authorAvatar,
+      authorAvatar {
+        asset->{url}
+      },
       relatedService,
       relatedPortfolio,
       rating,
       order
     }
-  `)
+  `, {}, [])
 }
