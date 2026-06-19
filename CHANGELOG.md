@@ -11,12 +11,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Manual milestone:** `npm run changelog:checkpoint -- "Your milestone title"`
 - **Roll back:** `npm run changelog:revert -- <checkpoint-id>` then follow the instructions
 - **Force any commit into the log:** add `[changelog]` to the commit message
-- **Share checkpoints:** `npm run changelog:push-tags` (after `git push`)
-- **One-time setup:** `npm run changelog:install-hooks`
 
 ## [Unreleased]
 
 _Work in progress since the last checkpoint._
+
+## [2026-06-19-feat-add-automated-changelog-with-git-checkpoint] — 2026-06-19
+
+> **Checkpoint:** `checkpoint/2026-06-19-feat-add-automated-changelog-with-git-checkpoint` · **Commit:** `85607de` · **Restore:** `git checkout checkpoint/2026-06-19-feat-add-automated-changelog-with-git-checkpoint`
+
+### Added
+
+- add automated changelog with git checkpoint rollback [changelog]
+  - _feat: add automated changelog with git checkpoint rollback [changelog]_
+  - 6 files, 861 lines changed
 
 ## [2026-06-17-fix-monorepo-workspace-configuration] — 2026-06-17
 
