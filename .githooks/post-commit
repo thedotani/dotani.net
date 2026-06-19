@@ -1,0 +1,3 @@
+#!/bin/sh
+# Auto-sync changelog for significant commits (installed by scripts/changelog.mjs)
+node scripts/changelog.mjs sync --quiet

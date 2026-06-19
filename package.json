@@ -12,8 +12,16 @@
     "seed:generate": "node ./scripts/seed-content.mjs > seed.ndjson",
     "seed:import": "node ./scripts/import-seed.mjs",
     "seed:import:production": "node ./scripts/import-seed.mjs --confirm-production",
+    "seed:verify": "node ./scripts/verify-seed.mjs",
     "seed:images": "npm run seed:images --workspace apps/studio",
-    "studio": "npm run dev --workspace apps/studio"
+    "studio": "npm run dev --workspace apps/studio",
+    "changelog:sync": "node ./scripts/changelog.mjs sync",
+    "changelog:checkpoint": "node ./scripts/changelog.mjs checkpoint",
+    "changelog:revert": "node ./scripts/changelog.mjs revert",
+    "changelog:list": "node ./scripts/changelog.mjs list",
+    "changelog:seed": "node ./scripts/changelog.mjs seed",
+    "changelog:install-hooks": "node ./scripts/changelog.mjs install-hooks",
+    "changelog:push-tags": "node ./scripts/changelog.mjs push-tags"
   },
   "devDependencies": {
     "wrangler": "^4.101.0"

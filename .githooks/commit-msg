@@ -1,0 +1,14 @@
+#!/bin/sh
+# Remind about changelog markers for significant work (installed by scripts/changelog.mjs)
+COMMIT_MSG_FILE="$1"
+MSG=$(head -n1 "$COMMIT_MSG_FILE")
+
+case "$MSG" in
+  feat:*|refactor:*|breaking:*|perf:*|docs:*|*"[changelog]"*|*"[checkpoint]"*)
+    exit 0
+    ;;
+  fix:*|chore:*|style:*|test:*)
+    # Minor commits are fine — they won't auto-enter the changelog
+    exit 0
+    ;;
+esac
