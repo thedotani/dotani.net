@@ -1,0 +1,28 @@
+---
+import PortableText from '../PortableText.astro'
+import { sectionContainerClass } from '../../lib/sections'
+import { blockSurfaceClass, blockInlineStyle } from '../../lib/blockStyle'
+
+interface Props {
+  section: any
+}
+
+const { section } = Astro.props
+const { body, sectionWidth } = section
+const surfaceClass = blockSurfaceClass(section)
+const inlineStyle = blockInlineStyle(section)
+---
+
+<section
+  class:list={['w-full block-section', surfaceClass]}
+  style={inlineStyle}
+  data-block-gap={section.spacingMode === 'custom' ? 'custom' : undefined}
+>
+  <div class={sectionContainerClass(sectionWidth)}>
+    {body?.length > 0 && (
+      <div class="rich-text-section max-w-3xl mx-auto" data-motion="rise">
+        <PortableText value={body} class="rich-text-prose" />
+      </div>
+    )}
+  </div>
+</section>

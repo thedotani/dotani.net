@@ -1,0 +1,256 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import PortableText from '../../components/PortableText.astro'
+import { getCaseStudyBySlug, getAllCaseStudies } from '../../lib/sanity'
+
+export async function getStaticPaths() {
+  const caseStudies = await getAllCaseStudies()
+  return (
+    caseStudies?.map((study: any) => ({
+      params: { slug: study.slug?.current },
+      props: { study },
+    })) || []
+  )
+}
+
+const { slug } = Astro.params
+const study = Astro.props.study || (await getCaseStudyBySlug(slug as string))
+
+if (!study) {
+  return Astro.redirect('/404')
+}
+
+const primaryPortfolio = study.relatedPortfolio?.[0]
+const metaItems = [
+  study.client && { label: 'Client', value: study.client },
+  study.industry && { label: 'Industry', value: study.industry },
+  study.year && { label: 'Year', value: String(study.year) },
+  study.role && { label: 'Role', value: study.role },
+  study.scope && { label: 'Scope', value: study.scope },
+  study.duration && { label: 'Duration', value: study.duration },
+].filter(Boolean)
+---
+
+<Layout
+  title={study.seo?.title || `${study.title} — Case Study`}
+  description={study.seo?.description || study.summary?.[0]?.children?.[0]?.text}
+>
+  <!-- Creative Hero with floating elements -->
+  <section class="page-hero relative overflow-hidden">
+    <div class="section-container">
+      <nav class="breadcrumb mb-6" data-motion="fade" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/portfolio">Portfolio</a>
+        {primaryPortfolio && (
+          <>
+            <span aria-hidden="true">/</span>
+            <a href={`/portfolio/${primaryPortfolio.slug?.current}`}>{primaryPortfolio.title}</a>
+          </>
+        )}
+        <span aria-hidden="true">/</span>
+        <span>Case Study</span>
+      </nav>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        <div class="lg:col-span-5 lg:sticky lg:top-28">
+          <div class="detail-hero-row mt-6" data-motion="scale">
+            <div>
+              <p class="section-eyebrow mb-3">Case Study</p>
+              <h1 class="section-heading-hero mb-4 leading-tight">{study.title}</h1>
+              {study.client && <p class="text-lg text-accent font-medium mb-4">{study.client}</p>}
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 space-y-8" data-motion-stagger>
+          {primaryPortfolio?.shortResult && (
+            <p class="section-tagline text-lg leading-relaxed max-w-2xl" data-motion="fade">
+              {primaryPortfolio.shortResult}
+            </p>
+          )}
+
+          {metaItems.length > 0 && (
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" data-motion="rise">
+              {metaItems.map((item: any) => (
+                <div class="card-surface !p-4 text-center">
+                  <p class="text-[0.6rem] font-semibold uppercase tracking-wider text-primary mb-1">{item.label}</p>
+                  <p class="text-sm font-medium text-heading truncate">{item.value}</p>
+                </div>
+              ))}
+              {study.tools && study.tools.length > 0 && (
+                <div class="card-surface !p-4 col-span-2 sm:col-span-3">
+                  <p class="text-[0.6rem] font-semibold uppercase tracking-wider text-accent mb-2">Tools</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    {study.tools.map((tool: string) => (
+                      <span class="tag-pill normal-case tracking-normal text-[0.65rem] px-2 py-0.5">{tool}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div class="hero-actions" data-motion="fade" style="--motion-delay: 100ms">
+            {primaryPortfolio && (
+              <a href={`/portfolio/${primaryPortfolio.slug?.current}`} class="btn btn-outline">
+                View Project
+              </a>
+            )}
+            <a href="/booking" class="btn btn-primary">Book a Call</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story-driven content sections -->
+  <div class="page-shell relative">
+    <!-- Subtle ambient background -->
+    <div class="absolute -top-20 -right-20 w-64 h-64 bg-primary/3 rounded-full blur-3xl -z-10" aria-hidden="true"></div>
+    <div class="absolute -bottom-40 -left-16 w-80 h-80 bg-accent/3 rounded-full blur-3xl -z-10" aria-hidden="true"></div>
+
+    {study.challenge && (
+      <section class="relative" data-motion="rise">
+        <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-2xl -z-10"></div>
+          <h2 class="font-display text-2xl font-bold text-heading mb-6 flex items-center gap-3">
+            <span class="w-1.5 h-6 bg-red-400 rounded-full"></span>
+            The Challenge
+          </h2>
+          <PortableText value={study.challenge} class="text-muted leading-relaxed space-y-5" />
+        </article>
+      </section>
+    )}
+
+    {study.approach && (
+      <section class="relative" data-motion="rise" style="--motion-delay: 120ms">
+        <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl relative overflow-hidden">
+          <div class="absolute bottom-0 left-0 w-28 h-28 bg-primary/5 rounded-full blur-2xl -z-10"></div>
+          <h2 class="font-display text-2xl font-bold text-heading mb-6 flex items-center gap-3">
+            <span class="w-1.5 h-6 bg-primary rounded-full"></span>
+            Strategic Approach
+          </h2>
+          <PortableText value={study.approach} class="text-muted leading-relaxed space-y-5" />
+        </article>
+      </section>
+    )}
+
+    {study.process && study.process.length > 0 && (
+      <section class="relative" data-motion="rise" style="--motion-delay: 200ms">
+        <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl">
+          <h2 class="font-display text-2xl font-bold text-heading mb-6 sm:mb-8 flex items-center gap-3">
+            <span class="w-1.5 h-6 bg-accent rounded-full"></span>
+            Execution Process
+          </h2>
+          <ol class="process-steps">
+            {study.process
+              .slice()
+              .sort((a: any, b: any) => (a.number ?? 0) - (b.number ?? 0))
+              .map((step: any) => (
+                <li class="process-step transform transition-transform duration-300 hover:translate-x-2">
+                  <div class="process-step-number">{step.number}</div>
+                  <div>
+                    <h3 class="process-step-title">{step.title}</h3>
+                    {step.description && <p class="process-step-copy">{step.description}</p>}
+                  </div>
+                </li>
+              ))}
+          </ol>
+        </article>
+      </section>
+    )}
+
+    {study.visuals && study.visuals.length > 0 && (
+      <section class="relative" data-motion="rise" style="--motion-delay: 280ms">
+        <article class="card-surface p-6 sm:p-8 !rounded-3xl">
+          <h2 class="font-display text-2xl font-bold text-heading mb-6">Visual Showcase</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {study.visuals.map((image: any) => (
+              <img
+                src={image?.asset?.url || '/images/placeholder-portfolio.svg'}
+                alt={study.title}
+                class="media-frame aspect-[16/10] rounded-xl transition-transform duration-500 hover:scale-102"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </article>
+      </section>
+    )}
+
+    {study.results && study.results.length > 0 && (
+      <section class="relative" data-motion="rise" style="--motion-delay: 320ms">
+        <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl">
+          <h2 class="font-display text-2xl font-bold text-heading mb-6 sm:mb-8 flex items-center gap-3">
+            <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+            Results & Impact
+          </h2>
+          <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {study.results.map((result: any) => (
+              <div class="metric-card group">
+                <div class="metric-value transition-all duration-300 group-hover:scale-105">{result.value}</div>
+                <div class="metric-label">{result.label}</div>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
+    )}
+
+    {study.outputs && study.outputs.length > 0 && (
+      <section class="relative" data-motion="rise" style="--motion-delay: 380ms">
+        <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl">
+          <h2 class="font-display text-2xl font-bold text-heading mb-6">Key Outputs</h2>
+          <ul class="space-y-4">
+            {study.outputs.map((output: string) => (
+              <li class="flex items-start gap-3 text-muted">
+                <span class="text-primary font-bold mt-1 shrink-0">✓</span>
+                <span class="leading-relaxed">{output}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </section>
+    )}
+
+    {study.impact && (
+      <section class="relative" data-motion="rise" style="--motion-delay: 420ms">
+        <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-40 h-40 bg-primary/3 rounded-full blur-2xl -z-10"></div>
+          <h2 class="font-display text-2xl font-bold text-heading mb-6 flex items-center gap-3">
+            <span class="w-1.5 h-6 bg-primary rounded-full"></span>
+            Impact
+          </h2>
+          <PortableText value={study.impact} class="text-muted leading-relaxed space-y-5" />
+        </article>
+      </section>
+    )}
+
+    {study.lessons && (
+      <section class="relative" data-motion="rise" style="--motion-delay: 480ms">
+        <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl">
+          <h2 class="font-display text-2xl font-bold text-heading mb-6 flex items-center gap-3">
+            <span class="w-1.5 h-6 bg-amber-500 rounded-full"></span>
+            Lessons & Insights
+          </h2>
+          <PortableText value={study.lessons} class="text-muted leading-relaxed space-y-5" />
+        </article>
+      </section>
+    )}
+
+    <!-- Creative CTA section -->
+    <section class="detail-panel case-study-cta !rounded-3xl" data-motion="scale" style="--motion-delay: 500ms">
+      <h2 class="section-heading mb-4">Ready to create something remarkable?</h2>
+      <p class="section-tagline mb-8 max-w-2xl">
+        Transform your vision into measurable results. Let's discuss how strategy meets execution.
+      </p>
+      <div class="hero-actions">
+        <a href="/booking" class="btn btn-primary">
+          Schedule Strategy Call
+        </a>
+        <a href="/contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </section>
+  </div>
+</Layout>

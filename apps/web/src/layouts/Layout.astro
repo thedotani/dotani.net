@@ -1,7 +1,17 @@
 ---
 import '../styles/global.css'
 import { getSiteSettings } from '../lib/sanity'
-import { themeStyle } from '../lib/theme'
+import { themeStyle, THEME_STORAGE_KEY, resolveInitialScheme, mergeInlineStyles } from '../lib/theme'
+import { layoutStyle } from '../lib/layout'
+import MobileNav from '../components/MobileNav.astro'
+import ThemeToggle from '../components/ThemeToggle.astro'
+import SocialLinks from '../components/SocialLinks.astro'
+import Footer from '../components/Footer.astro'
+import BackToTop from '../components/BackToTop.astro'
+import SiteMotion from '../components/SiteMotion.astro'
+import { isNavActive } from '../lib/navigation'
+import { resolveMenuItems } from '../lib/menus'
+import { resolveSocialLinks } from '../lib/socials'
 
 interface Props {
   title: string
@@ -11,11 +21,46 @@ interface Props {
 
 const { title, description, includeTurnstile = false } = Astro.props
 const siteSettings = await getSiteSettings()
-const htmlThemeStyle = themeStyle(siteSettings?.theme)
+const htmlThemeStyle = mergeInlineStyles(
+  themeStyle(siteSettings?.theme),
+  layoutStyle(siteSettings?.layoutSettings, siteSettings?.theme?.containerWidth),
+)
+const pathname = Astro.url.pathname
+const headerLogo =
+  siteSettings?.brand?.logos?.main || siteSettings?.header?.logo
+const hasLogo = Boolean(headerLogo?.asset?.url)
+const siteTitle =
+  siteSettings?.brand?.siteTitle || siteSettings?.header?.title || 'dotani.net'
+const logoAlt =
+  siteSettings?.brand?.logoAlt || siteSettings?.header?.logoAlt || siteTitle
+const initialScheme = resolveInitialScheme(siteSettings?.theme?.darkModeDefault)
+const universalMenus = siteSettings?.menus?.items
+const menuItems = resolveMenuItems(universalMenus, siteSettings?.header?.menuItems, 'header')
+const mobileMenuItems = resolveMenuItems(
+  universalMenus,
+  siteSettings?.mobileMenu?.menuItems?.length
+    ? siteSettings.mobileMenu.menuItems
+    : siteSettings?.header?.menuItems,
+  'mobileMenu',
+)
+const mobileMenuFooterItems = resolveMenuItems(universalMenus, undefined, 'mobileMenuFooter')
+const headerCta = siteSettings?.header?.headerCta
+const allSocialLinks =
+  siteSettings?.socials?.links || siteSettings?.footer?.socialLinks || []
+const headerSocialLinks = resolveSocialLinks(
+  allSocialLinks,
+  'header',
+  siteSettings?.header?.showSocials !== 'hide',
+)
+const mobileSocialLinks = resolveSocialLinks(
+  allSocialLinks,
+  'mobileMenu',
+  siteSettings?.mobileMenu?.showSocials !== 'hide',
+)
 ---
 
 <!doctype html>
-<html lang="en" style={htmlThemeStyle}>
+<html lang="en" data-theme={initialScheme} style={htmlThemeStyle}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -28,99 +73,125 @@ const htmlThemeStyle = themeStyle(siteSettings?.theme)
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script is:inline define:vars={{ THEME_STORAGE_KEY, initialScheme }}>
+      (function () {
+        try {
+          const stored = localStorage.getItem(THEME_STORAGE_KEY)
+          const scheme = stored === 'dark' || stored === 'light' ? stored : initialScheme
+          document.documentElement.setAttribute('data-theme', scheme)
+        } catch (_) {
+          document.documentElement.setAttribute('data-theme', initialScheme)
+        }
+      })()
+    </script>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+
+    {/* Open Graph / social sharing meta tags */}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:image" content={`${Astro.url.origin}/og-image.jpg`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content={siteTitle} />
+
+    {/* Twitter Card */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    <meta name="twitter:image" content={`${Astro.url.origin}/og-image.jpg`} />
+
+    {/* Canonical URL */}
+    <link rel="canonical" href={Astro.url.href} />
+
     {includeTurnstile && (
       <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
     )}
   </head>
 
   <body>
-    <header class="sticky top-0 z-50 border-b border-border bg-bg/95 backdrop-blur supports-[backdrop-filter]:bg-bg/80">
+    <header class="site-header">
       <div class="section-container">
-        <div class="flex items-center justify-between h-16 md:h-[4.5rem]">
-          <a href="/" class="flex items-center space-x-4">
-            {siteSettings?.header?.logo?.asset?.url && (
-              <img
-                src={siteSettings.header.logo.asset.url}
-                alt={siteSettings.header.logoAlt || 'Logo'}
-                class="h-8 w-auto"
-              />
+        <div class="site-header-bar">
+          <div class="site-header-brand">
+            {mobileMenuItems.length > 0 && (
+              <MobileNav menuItems={mobileMenuItems} pathname={pathname} variant="toggle" />
             )}
-            <span class="font-display text-xl font-semibold text-heading tracking-tight">
-              {siteSettings?.header?.title || 'dotani.net'}
-            </span>
-          </a>
-          {siteSettings?.header?.menuItems && siteSettings.header.menuItems.length > 0 && (
-            <nav class="hidden md:flex space-x-6">
-              {siteSettings.header.menuItems.map((item: any) => (
-                <a href={item.url} class="text-muted hover:text-primary transition-colors">
+
+            <a href="/" class="site-logo">
+              {hasLogo && (
+                <img
+                  src={headerLogo.asset.url}
+                  alt={logoAlt}
+                  class="site-logo-image"
+                />
+              )}
+              {!hasLogo && (
+                <span class="site-logo-text">
+                  {siteTitle}
+                </span>
+              )}
+            </a>
+          </div>
+
+          {menuItems.length > 0 && (
+            <nav class="site-nav-desktop" aria-label="Main navigation">
+              {menuItems.map((item: any) => (
+                <a
+                  href={item.url}
+                  class:list={[
+                    'nav-link',
+                    { 'nav-link-active': isNavActive(pathname, item.url) },
+                  ]}
+                >
                   {item.label}
                 </a>
               ))}
             </nav>
           )}
-          {siteSettings?.header?.headerCta?.label && (
-            <a
-              href={siteSettings.header.headerCta.url}
-              class="btn btn-primary px-4 py-2 text-sm"
-            >
-              {siteSettings.header.headerCta.label}
-            </a>
-          )}
+
+          <div class="site-header-utilities">
+            {headerSocialLinks.length > 0 && (
+              <SocialLinks links={headerSocialLinks} variant="header" />
+            )}
+            {headerCta?.label && (
+              <a href={headerCta.url} class="btn btn-primary btn-header-cta">
+                {headerCta.label}
+              </a>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>
 
+    {mobileMenuItems.length > 0 && (
+      <MobileNav
+        menuItems={mobileMenuItems}
+        pathname={pathname}
+        socialLinks={mobileSocialLinks}
+        menuFooterItems={mobileMenuFooterItems}
+        menuFooterText={
+          mobileMenuFooterItems.length === 0
+            ? siteSettings?.mobileMenu?.footerText
+            : undefined
+        }
+        variant="overlay"
+      />
+    )}
+
     <slot />
 
-    <footer class="border-t border-border py-16 mt-8 bg-bg">
-      <div class="section-container">
-        {siteSettings?.footer?.columns && siteSettings.footer.columns.length > 0 && (
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {siteSettings.footer.columns.map((column: any) => (
-              <div>
-                {column.heading && (
-                  <h3 class="text-lg font-semibold text-heading mb-4">{column.heading}</h3>
-                )}
-                {column.links && column.links.length > 0 && (
-                  <ul class="space-y-2">
-                    {column.links.map((link: string) => (
-                      <li>
-                        <a href={link} class="text-muted hover:text-primary transition-colors">
-                          {link}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-        {siteSettings?.footer?.socialLinks && siteSettings.footer.socialLinks.length > 0 && (
-          <div class="flex justify-center space-x-4 mb-6">
-            {siteSettings.footer.socialLinks.map((social: any) => (
-              <a
-                href={social.url}
-                class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
-                aria-label={social.platform}
-              >
-                {social.platform === 'linkedin' && 'in'}
-                {social.platform === 'twitter' && 'X'}
-                {social.platform === 'github' && 'Git'}
-                {social.platform === 'instagram' && 'IG'}
-                {social.platform === 'facebook' && 'f'}
-                {social.platform === 'youtube' && 'YT'}
-                {social.platform === 'whatsapp' && 'WA'}
-              </a>
-            ))}
-          </div>
-        )}
-        <p class="text-center text-sm text-muted">
-          {siteSettings?.footer?.copyrightText || `© ${new Date().getFullYear()} dotani.net`}
-        </p>
-      </div>
-    </footer>
+    <Footer
+      footer={siteSettings?.footer}
+      brand={siteSettings?.brand}
+      header={siteSettings?.header}
+      menus={siteSettings?.menus}
+      socialLinks={resolveSocialLinks(allSocialLinks, 'footer', true)}
+    />
+    <BackToTop />
+    <SiteMotion />
   </body>
 </html>

@@ -1,0 +1,131 @@
+---
+import SocialLinks from './SocialLinks.astro'
+import { resolveMenuItems, type MenuPlacement } from '../lib/menus'
+
+interface Props {
+  footer?: {
+    description?: string
+    col2Heading?: string
+    col3Heading?: string
+    col4Heading?: string
+    copyrightText?: string
+  }
+  brand?: {
+    logos?: {
+      footer?: { asset?: { url?: string } }
+      main?: { asset?: { url?: string } }
+    }
+    logoAlt?: string
+    siteTitle?: string
+  }
+  header?: {
+    logo?: { asset?: { url?: string } }
+    logoAlt?: string
+    title?: string
+  }
+  menus?: {
+    items?: Array<{
+      label: string
+      url: string
+      showIn?: Partial<Record<MenuPlacement, boolean>>
+    }>
+  }
+  socialLinks?: Array<{ platform: string; url: string }>
+}
+
+const FOOTER_COLUMN_PLACEMENTS: Array<{ placement: MenuPlacement; heading?: string }> = [
+  { placement: 'footerCol2' },
+  { placement: 'footerCol3' },
+  { placement: 'footerCol4' },
+]
+
+const { footer, brand, header, menus, socialLinks = [] } = Astro.props
+const footerLogo = brand?.logos?.footer || brand?.logos?.main || header?.logo
+const hasLogo = Boolean(footerLogo?.asset?.url)
+const siteTitle = brand?.siteTitle || header?.title || 'dotani.net'
+const logoAlt = brand?.logoAlt || header?.logoAlt || siteTitle
+const copyrightMenuItems = resolveMenuItems(menus?.items, undefined, 'footerCopyright')
+
+const columnHeadings = [
+  footer?.col2Heading,
+  footer?.col3Heading,
+  footer?.col4Heading,
+]
+
+const menuColumns = FOOTER_COLUMN_PLACEMENTS.map((column, index) => {
+  const linkItems = resolveMenuItems(menus?.items, undefined, column.placement)
+  const heading = columnHeadings[index]
+
+  return {
+    colNumber: index + 2,
+    heading,
+    linkItems,
+  }
+}).filter((column) => column.linkItems.length > 0)
+---
+
+<footer class="site-footer">
+  <div class="section-container footer-inner">
+    <div class="footer-main">
+      <div class="footer-brand-section">
+        <a href="/" class="footer-brand-mark">
+          {hasLogo ? (
+            <img
+              src={footerLogo!.asset!.url}
+              alt={logoAlt}
+              class="footer-brand-logo-image"
+            />
+          ) : (
+            <span class="footer-brand-title">{siteTitle}</span>
+          )}
+        </a>
+        {footer?.description && (
+          <p class="footer-brand-description">{footer.description}</p>
+        )}
+        {socialLinks.length > 0 && (
+          <div class="footer-social-inline">
+            <SocialLinks links={socialLinks} variant="footer" />
+          </div>
+        )}
+      </div>
+
+      {menuColumns.length > 0 && (
+        <div class="footer-columns">
+          {menuColumns.map((column) => (
+            <div class={`footer-column footer-column--${column.colNumber}`}>
+              {column.heading && (
+                <h3 class="footer-heading">
+                  <span class="footer-heading-mark" aria-hidden="true" />
+                  {column.heading}
+                </h3>
+              )}
+              <ul class="footer-links">
+                {column.linkItems.map((link) => (
+                  <li>
+                    <a href={link.url} class="footer-link">
+                      <span class="footer-link-arrow" aria-hidden="true">→</span>
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="footer-copyright-row">
+      <p class="footer-copyright">
+        {footer?.copyrightText || `© ${new Date().getFullYear()} dotani.net`}
+      </p>
+      {copyrightMenuItems.length > 0 && (
+        <nav class="footer-copyright-nav" aria-label="Footer links">
+          {copyrightMenuItems.map((item) => (
+            <a href={item.url} class="footer-copyright-link">{item.label}</a>
+          ))}
+        </nav>
+      )}
+    </div>
+  </div>
+</footer>

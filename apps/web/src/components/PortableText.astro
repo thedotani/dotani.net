@@ -1,0 +1,61 @@
+---
+interface Props {
+  value?: any[]
+  class?: string
+}
+
+const { value = [], class: className } = Astro.props
+
+function renderMarks(text: string, marks: string[] = [], markDefs: any[] = []) {
+  let result = text
+  for (const mark of marks) {
+    if (mark === 'strong') {
+      result = `<strong>${result}</strong>`
+      continue
+    }
+    if (mark === 'em') {
+      result = `<em>${result}</em>`
+      continue
+    }
+    const def = markDefs.find((entry: any) => entry._key === mark)
+    if (def?._type === 'link' && def.href) {
+      const newTab = def.openInNewTab ?? def.blank
+      const rel = newTab ? 'noopener noreferrer' : undefined
+      const target = newTab ? '_blank' : undefined
+      result = `<a href="${def.href}"${target ? ` target="${target}"` : ''}${rel ? ` rel="${rel}"` : ''}>${result}</a>`
+    }
+  }
+  return result
+}
+
+function renderBlock(block: any) {
+  const markDefs = block.markDefs ?? []
+  const children = (block.children ?? [])
+    .map((child: any) => renderMarks(child.text ?? '', child.marks ?? [], markDefs))
+    .join('')
+
+  switch (block.style) {
+    case 'h2':
+      return `<h2>${children}</h2>`
+    case 'h3':
+      return `<h3>${children}</h3>`
+    case 'h4':
+      return `<h4>${children}</h4>`
+    case 'blockquote':
+      return `<blockquote>${children}</blockquote>`
+    default:
+      return `<p>${children}</p>`
+  }
+}
+
+function renderBlocks(blocks: any[]) {
+  return blocks
+    .filter((block) => block._type === 'block')
+    .map((block) => renderBlock(block))
+    .join('')
+}
+---
+
+{value.length > 0 && (
+  <div class:list={['portable-text', className]} set:html={renderBlocks(value)} />
+)}

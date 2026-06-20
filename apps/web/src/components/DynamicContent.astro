@@ -1,0 +1,188 @@
+---
+import ServiceBadge from './ServiceBadge.astro'
+import { portfolioAccent } from '../lib/sectionStyle'
+
+interface Props {
+  type?: string
+  services?: any[]
+  portfolioItems?: any[]
+  testimonials?: any[]
+  caseStudies?: any[]
+  blogPosts?: any[]
+  limit?: number
+  centered?: boolean
+}
+
+const {
+  type,
+  services = [],
+  portfolioItems = [],
+  testimonials = [],
+  caseStudies = [],
+  blogPosts = [],
+  limit = 3,
+  centered = false,
+} = Astro.props
+
+function sliceItems<T>(items: T[]) {
+  return limit > 0 ? items.slice(0, limit) : items
+}
+---
+
+{type === 'service' && (
+  <div data-motion-stagger class="listing-grid">
+    {sliceItems(services).map((service: any) => (
+      <div class="listing-card">
+        <ServiceBadge icon={service.icon} />
+        <h3 class="font-display text-xl font-semibold text-heading">{service.title}</h3>
+        {service.shortDescription && (
+          <p class="text-muted flex-1 leading-relaxed">{service.shortDescription}</p>
+        )}
+        {service.features && service.features.length > 0 && (
+          <ul class="space-y-2">
+            {service.features.slice(0, 3).map((feature: any) => (
+              <li class="text-sm text-muted flex items-start gap-2">
+                <span class="text-primary mt-0.5">•</span>
+                {feature.text || feature}
+              </li>
+            ))}
+          </ul>
+        )}
+        {service.bestFor && <p class="text-sm text-accent">Best for: {service.bestFor}</p>}
+        <a href={`/services/${service.slug?.current}`} class="link-chip mt-auto">
+          View Service
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    ))}
+  </div>
+)}
+
+{type === 'portfolio' && (
+  <div data-motion-stagger class="listing-grid">
+    {sliceItems(portfolioItems).map((item: any, index: number) => {
+      const href = `/portfolio/${item.slug?.current}`
+      const thumbnailUrl = item.thumbnail?.asset?.url
+      const [from, to] = portfolioAccent(item.title, index)
+      return (
+        <article class="group card-surface overflow-hidden p-0">
+          <a
+            href={href}
+            class="relative block aspect-[5/3] sm:aspect-video overflow-hidden portfolio-img-link"
+            aria-label={`View project: ${item.title}`}
+          >
+            {thumbnailUrl ? (
+              <img
+                src={thumbnailUrl}
+                alt={item.title}
+                class="portfolio-card-image w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div
+                class="portfolio-placeholder w-full h-full"
+                style={`--placeholder-from: ${from}; --placeholder-to: ${to}`}
+              >
+                <span class="portfolio-placeholder__label">{item.category || 'Project'}</span>
+                <strong class="portfolio-placeholder__title">{item.title}</strong>
+              </div>
+            )}
+            <div class="portfolio-card-overlay" aria-hidden="true">
+              <div class="portfolio-card-overlay-label">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                View Project
+              </div>
+            </div>
+          </a>
+          <div class="portfolio-card-body flex flex-col gap-3">
+            {item.category && <span class="tag-pill">{item.category}</span>}
+            <h3 class="font-display text-lg sm:text-xl font-semibold text-heading">
+              <a href={href} class="hover:text-primary transition-colors">{item.title}</a>
+            </h3>
+            {item.shortResult && (
+              <p class="text-sm text-muted leading-relaxed">{item.shortResult}</p>
+            )}
+            <a href={href} class="link-chip">
+              View Project
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </article>
+      )
+    })}
+  </div>
+)}
+
+{type === 'testimonial' && (
+  <div
+    data-motion-stagger
+    class:list={[
+      'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6',
+      centered && 'max-w-6xl mx-auto',
+    ]}
+  >
+    {sliceItems(testimonials).map((item: any) => (
+      <div class="card-surface testimonial-card flex flex-col gap-4 p-5 sm:p-6 md:p-7">
+        {item.quote && <p class="text-muted leading-relaxed">&ldquo;{item.quote}&rdquo;</p>}
+        <div class="flex items-center gap-3">
+          {item.authorAvatar?.asset?.url && (
+            <img
+              src={item.authorAvatar.asset.url}
+              alt={item.authorName}
+              class="w-11 h-11 rounded-full object-cover ring-2 ring-border shrink-0"
+            />
+          )}
+          <div class="min-w-0">
+            <p class="font-display font-semibold text-heading truncate">{item.authorName}</p>
+            {item.authorRole && <p class="text-sm text-muted">{item.authorRole}</p>}
+          </div>
+        </div>
+        {item.rating && (
+          <div class="flex gap-0.5" aria-label={`${item.rating} out of 5 stars`}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span class:list={['text-base', i < item.rating ? 'star-filled' : 'star-empty']} aria-hidden="true">★</span>
+            ))}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+)}
+
+{type === 'caseStudy' && (
+  <div data-motion-stagger class="listing-grid">
+    {sliceItems(caseStudies).map((item: any) => {
+      const href = `/case-studies/${item.slug?.current}`
+      return (
+        <article class="listing-card">
+          {item.heroImage?.asset?.url && (
+            <img src={item.heroImage.asset.url} alt={item.title} class="media-frame aspect-video mb-4" loading="lazy" />
+          )}
+          <h3 class="font-display text-xl font-semibold text-heading">{item.title}</h3>
+          {(item.summary || item.client) && (
+            <p class="text-muted flex-1">{item.summary || `${item.client}${item.industry ? ` · ${item.industry}` : ''}`}</p>
+          )}
+          <a href={href} class="link-chip mt-auto">Read Case Study <span aria-hidden="true">→</span></a>
+        </article>
+      )
+    })}
+  </div>
+)}
+
+{type === 'blogPost' && (
+  <div data-motion-stagger class="listing-grid md:grid-cols-2">
+    {sliceItems(blogPosts).map((item: any) => (
+      <article class="listing-card">
+        <h3 class="font-display text-xl font-semibold text-heading">{item.title}</h3>
+        {item.excerpt && <p class="text-muted flex-1">{item.excerpt}</p>}
+        {item.publishedAt && (
+          <p class="text-xs text-muted uppercase tracking-wider">
+            {new Date(item.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </p>
+        )}
+      </article>
+    ))}
+  </div>
+)}

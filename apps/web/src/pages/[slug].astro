@@ -1,0 +1,12 @@
+---
+import CmsPage from '../components/CmsPage.astro'
+import { SLUG_REDIRECTS } from '../lib/pages'
+
+const slug = Astro.params.slug as string
+
+if (SLUG_REDIRECTS[slug]) {
+  return Astro.redirect(SLUG_REDIRECTS[slug])
+}
+---
+
+<CmsPage slug={slug} />

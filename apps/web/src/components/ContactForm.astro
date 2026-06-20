@@ -1,0 +1,120 @@
+---
+interface Props {
+  headline?: string
+  supportingText?: string
+  submitButtonText?: string
+}
+
+const {
+  headline = 'Send a message',
+  supportingText = "Tell me about the project, the problem, or the idea. I'll get back to you within 48 hours.",
+  submitButtonText = 'Send Message',
+} = Astro.props
+---
+
+<div class="max-w-2xl mx-auto">
+  {headline && (
+    <h2 class="section-heading-hero mb-4 text-center" data-motion="rise">
+      {headline}
+    </h2>
+  )}
+  {supportingText && (
+    <p class="section-tagline mb-8 sm:mb-10 text-center max-w-xl mx-auto" data-motion="fade" style="--motion-delay: 120ms">
+      {supportingText}
+    </p>
+  )}
+
+  <div
+    id="contact-status"
+    class="hidden mb-5"
+    role="alert"
+    aria-live="polite"
+  ></div>
+
+  <form
+    class="card-surface !rounded-3xl p-6 sm:p-8 md:p-10 space-y-5"
+    data-motion="scale"
+    style="--motion-delay: 200ms"
+    id="contact-form"
+    action="/api/contact"
+    method="POST"
+    novalidate
+  >
+    <div class="cf-turnstile" data-sitekey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}></div>
+
+    <div>
+      <label for="name" class="block text-sm font-medium text-heading mb-2">Name</label>
+      <input type="text" id="name" name="name" required autocomplete="name" class="form-input" placeholder="Your name" />
+    </div>
+
+    <div>
+      <label for="email" class="block text-sm font-medium text-heading mb-2">Email</label>
+      <input type="email" id="email" name="email" required autocomplete="email" class="form-input" placeholder="your@email.com" />
+    </div>
+
+    <div>
+      <label for="message" class="block text-sm font-medium text-heading mb-2">Message</label>
+      <textarea id="message" name="message" rows={5} required class="form-input resize-none" placeholder="How can I help you?"></textarea>
+    </div>
+
+    <button type="submit" id="contact-submit" class="btn btn-primary w-full">
+      {submitButtonText}
+    </button>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null
+  const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement | null
+  const statusEl = document.getElementById('contact-status') as HTMLDivElement | null
+
+  if (form && submitBtn && statusEl) {
+    const showStatus = (type: 'success' | 'error', message: string) => {
+      statusEl.className = type === 'success' ? 'form-state-success' : 'form-state-error'
+      statusEl.textContent = message
+      statusEl.classList.remove('hidden')
+      statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+
+    const setLoading = (loading: boolean) => {
+      if (loading) {
+        submitBtn.classList.add('btn-loading')
+        submitBtn.textContent = 'Sending'
+        submitBtn.disabled = true
+      } else {
+        submitBtn.classList.remove('btn-loading')
+        submitBtn.textContent = submitBtn.dataset.originalText || 'Send Message'
+        submitBtn.disabled = false
+      }
+    }
+
+    submitBtn.dataset.originalText = submitBtn.textContent || 'Send Message'
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      statusEl.classList.add('hidden')
+      setLoading(true)
+
+      try {
+        const data = new FormData(form)
+        const response = await fetch(form.action, { method: 'POST', body: data })
+
+        if (response.ok) {
+          showStatus('success', "✓ Message sent! I'll get back to you within 24 hours.")
+          form.reset()
+        } else {
+          let errMsg = 'Something went wrong. Please try again or email me directly.'
+          try {
+            const json = await response.json()
+            if (json?.message) errMsg = json.message
+          } catch (_) {}
+          showStatus('error', errMsg)
+        }
+      } catch (_) {
+        showStatus('error', 'Network error. Please check your connection and try again.')
+      } finally {
+        setLoading(false)
+      }
+    })
+  }
+</script>

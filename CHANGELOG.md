@@ -14,7 +14,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-_Work in progress since the last checkpoint._
+### Changed
+- Stats section: metrics now auto-width with min-width 7rem, max-width 30rem, and universal gap for consistent row layout
+- Section header: improved spacing with gap-x-6 between title, tagline, and action elements
+- Section width schema: changed from 'inherit, small, medium, large, full' to 'container (default), full (100vw), half (50%)'
+- Footer layout: moved socials into branding section; responsive layout for mobile/tablet/desktop breakpoints
+- Created MasterCard component for unified card system (image+content, tag-pill overlay, badge+title inline)
+
+### Added
+- MasterCard.astro component with flexible layout options for image, icon, and tag-pill positioning
 
 ## [2026-06-19-feat-add-automated-changelog-with-git-checkpoint] — 2026-06-19
 

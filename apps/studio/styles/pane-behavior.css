@@ -1,0 +1,51 @@
+/**
+ * Pane layout behavior — icon rail + compact collapsed list panes.
+ */
+
+[data-dotani-mode='icon-rail'] [data-ui='PaneHeader'] [data-ui='Text']:not([data-ui='Label']) {
+  display: none;
+}
+
+[data-dotani-mode='icon-rail'] [data-testid^='pane-item-'] [data-ui='Text'] {
+  display: none;
+}
+
+[data-dotani-mode='icon-rail'] [data-testid^='pane-item-'] [data-ui='Box']:empty {
+  display: none;
+}
+
+[data-dotani-mode='icon-rail'] [data-testid^='pane-item-'] {
+  justify-content: center;
+  padding-inline: 0.35rem;
+}
+
+[data-dotani-mode='icon-rail'] [data-ui='PreviewCard'] {
+  padding: 0.4rem;
+}
+
+[data-dotani-mode='icon-rail'] [data-ui='PaneContent'] {
+  padding-inline: 0.25rem;
+}
+
+[data-dotani-mode='collapsed-list'] {
+  min-width: 180px !important;
+}
+
+[data-dotani-mode='collapsed-list'][data-pane-collapsed='true'] {
+  min-width: 0 !important;
+  max-width: 0 !important;
+  width: 0 !important;
+  flex: 0 0 0 !important;
+  overflow: hidden !important;
+  border: none !important;
+}
+
+[data-dotani-mode='collapsed-list'] [data-ui='PaneContent'] {
+  padding-inline: 0.5rem;
+}
+
+/* Default list pane min width when no document is open */
+[data-ui='PaneLayout']:not(:has([data-testid='document-pane'])) [data-ui='ListPane'],
+[data-ui='PaneLayout']:not(:has([data-testid='document-pane'])) [data-ui='DocumentListPane'] {
+  min-width: 180px;
+}

@@ -1,99 +1,146 @@
 import {defineType, defineField} from 'sanity'
-import {DocumentIcon} from '@sanity/icons'
+import {CaseIcon} from '@sanity/icons'
+import {iconPickerField, SERVICE_ICON_OPTIONS} from '../../lib/fields/iconPicker'
+import {seoAeoField} from '../../lib/fields/seoAeo'
+import {arrayDialogOptions} from '../../lib/fields/arrayDialogOptions'
+import {ServiceIconBadge} from '../../lib/components/ServiceIconBadge'
+import {slugOrderIconFieldset} from '../../lib/fields/fieldLayout'
 
 export default defineType({
   name: 'service',
   title: 'Service',
   type: 'document',
-  icon: DocumentIcon,
+  icon: CaseIcon,
+  groups: [
+    {name: 'overview', title: 'Overview', default: true},
+    {name: 'content', title: 'Content'},
+    {name: 'details', title: 'Details'},
+    {name: 'relations', title: 'Links'},
+    {name: 'seo', title: 'SEO'},
+  ],
+  fieldsets: [
+    slugOrderIconFieldset,
+    {name: 'relatedItems', title: ' ', options: {columns: 2}},
+  ],
   fields: [
     defineField({
       name: 'title',
-      title: 'Service Title',
+      title: 'Title',
       type: 'string',
+      group: 'overview',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      group: 'overview',
+      fieldset: 'overviewMeta',
+      options: {source: 'title', maxLength: 96},
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'icon',
+      name: 'order',
+      title: 'Order',
+      type: 'number',
+      group: 'overview',
+      fieldset: 'overviewMeta',
+      initialValue: 0,
+    }),
+    iconPickerField({
       title: 'Icon',
-      type: 'string',
-      description: 'Icon name or identifier',
+      list: SERVICE_ICON_OPTIONS,
+      group: 'overview',
+      fieldset: 'overviewMeta',
     }),
     defineField({
       name: 'shortDescription',
-      title: 'Short Description',
-      type: 'string',
-      description: 'One-line description for cards',
+      title: 'Excerpt',
+      type: 'text',
+      group: 'overview',
+      rows: 3,
     }),
     defineField({
       name: 'description',
-      title: 'Full Description',
+      title: 'Description',
       type: 'array',
+      group: 'content',
       of: [{type: 'block'}],
     }),
     defineField({
       name: 'features',
       title: 'Features',
       type: 'array',
+      group: 'content',
       of: [
         {
           type: 'object',
-          fields: [
-            defineField({
-              name: 'text',
-              title: 'Feature Text',
-              type: 'string',
-            }),
-          ],
+          fields: [defineField({name: 'text', title: 'Feature', type: 'string'})],
+          preview: {
+            select: {title: 'text'},
+            prepare({title}) {
+              return {title: title || 'Feature'}
+            },
+          },
         },
       ],
-    }),
-    defineField({
-      name: 'bestFor',
-      title: 'Best For',
-      type: 'string',
-      description: 'Who this service is ideal for',
+      options: arrayDialogOptions,
     }),
     defineField({
       name: 'deliverables',
       title: 'Deliverables',
       type: 'array',
+      group: 'details',
       of: [{type: 'string'}],
-      description: 'What clients get from this service',
+      options: arrayDialogOptions,
+    }),
+    defineField({
+      name: 'bestFor',
+      title: 'Best For',
+      type: 'string',
+      group: 'details',
     }),
     defineField({
       name: 'timeframe',
       title: 'Timeframe',
       type: 'string',
-      description: 'Typical delivery timeframe',
+      group: 'details',
     }),
     defineField({
       name: 'relatedPortfolio',
-      title: 'Related Portfolio Items',
+      title: 'Portfolio',
       type: 'array',
+      group: 'relations',
+      fieldset: 'relatedItems',
       of: [{type: 'reference', to: [{type: 'portfolio'}]}],
     }),
     defineField({
-      name: 'order',
-      title: 'Display Order',
-      type: 'number',
-      initialValue: 0,
+      name: 'relatedTestimonials',
+      title: 'Testimonials',
+      type: 'array',
+      group: 'relations',
+      fieldset: 'relatedItems',
+      of: [{type: 'reference', to: [{type: 'testimonial'}]}],
     }),
+    seoAeoField(),
+  ],
+  orderings: [
+    {title: 'Order', name: 'orderAsc', by: [{field: 'order', direction: 'asc'}]},
+    {title: 'Title', name: 'titleAsc', by: [{field: 'title', direction: 'asc'}]},
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'shortDescription',
+      icon: 'icon',
+      order: 'order',
+    },
+    prepare({title, subtitle, icon, order}) {
+      return {
+        title: title || 'Untitled',
+        subtitle: [subtitle, order != null ? `#${order}` : null].filter(Boolean).join(' · '),
+        media: icon ? () => ServiceIconBadge({icon}) : CaseIcon,
+      }
     },
   },
 })

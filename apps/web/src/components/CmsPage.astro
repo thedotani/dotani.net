@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro'
+import PageSections from './PageSections.astro'
+import {
+  getPageBySlug,
+  getAllServices,
+  getAllPortfolioItems,
+  getAllTestimonials,
+  getAllCaseStudies,
+  getAllBlogPosts,
+} from '../lib/sanity'
+import { pageIncludesContactSection } from '../lib/pages'
+
+interface Props {
+  slug: string
+  notFoundRedirect?: string
+}
+
+const { slug, notFoundRedirect = '/404' } = Astro.props
+
+const [page, services, portfolioItems, testimonials, caseStudies, blogPosts] = await Promise.all([
+  getPageBySlug(slug),
+  getAllServices(),
+  getAllPortfolioItems(),
+  getAllTestimonials(),
+  getAllCaseStudies(),
+  getAllBlogPosts(),
+])
+
+if (!page) {
+  return Astro.redirect(notFoundRedirect)
+}
+---
+
+<Layout
+  title={page.seo?.title || page.title || 'Page'}
+  description={page.seo?.description || page.excerpt}
+  includeTurnstile={pageIncludesContactSection(page)}
+>
+  <PageSections
+    page={page}
+    services={services}
+    portfolioItems={portfolioItems}
+    testimonials={testimonials}
+    caseStudies={caseStudies}
+    blogPosts={blogPosts}
+  />
+</Layout>

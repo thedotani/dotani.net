@@ -14,7 +14,7 @@
 Build this website cleanly, modularly, and CMS-first. The project must be fully driven by Sanity where content belongs in CMS, and Astro should only render that content.
 
 ## Working method:
-1. Read the 3 project documents once at the start.
+1. Read the core project documents once at the start.
 2. Build a short internal working summary from them.
 3. Use that summary as the source of truth.
 4. Do not keep re-reading all 3 docs every time.
@@ -24,8 +24,12 @@ Build this website cleanly, modularly, and CMS-first. The project must be fully 
 
 ## Document usage (All documents are in **"D:\Labs\dotani\Prompts"**):
 - `01-Website_Master_Wireframe.md` = layout, page structure, section inventory, design intent
-- `02-CMS_Architecture_and_Build.md` = CMS strategy, schema structure, dynamic section model
-- `03-PowerShell_Setup_Astro_Sanity_Cloudflare.md` = existing setup, current project state, commands already completed
+- `02-CMS_Architecture_and_AI_Build_Prompt.md` = CMS strategy, schema structure, dynamic section model
+- `03-PowerShell_Setup_Astro_Sanity_Cloudflare.md` = project setup, monorepo layout, commands
+- `04-ARCHITECT_FEEDBACK.md` = audit, gaps, confirmed client decisions
+- `05-COMPLETION_PLAN.md` = phased build plan (source of truth for priorities)
+- `06-LAUNCH_CHECKLIST.md` = per-page done criteria
+- `07-CONTENT_OPERATIONS_GUIDE.md` = content rules, CMS workflow, Notion-ready ops notes
 
 ## Core principles:
 - Do not hardcode content that should live in Sanity.

@@ -1,192 +1,295 @@
 import {defineType, defineField} from 'sanity'
 import {CogIcon} from '@sanity/icons'
+import {dimensionField} from '../lib/fields/dimensionFields'
+import {colorField} from '../lib/fields/colorField'
+import {socialLinksArrayField} from '../lib/fields/socialLink'
+import {universalMenuArrayField} from '../lib/fields/universalMenu'
+import {logoRowFieldset} from '../lib/fields/fieldLayout'
+import {seoAeoField} from '../lib/fields/seoAeo'
+
+const widthModeOptions = {
+  list: [
+    {title: 'Full', value: 'full'},
+    {title: 'Container', value: 'container'},
+  ],
+  layout: 'radio' as const,
+  direction: 'horizontal' as const,
+}
+
+const ctaStyleOptions = {
+  list: [
+    {title: 'Default', value: 'default'},
+    {title: 'Outline', value: 'outline'},
+    {title: 'Ghost', value: 'ghost'},
+  ],
+  layout: 'radio' as const,
+  direction: 'horizontal' as const,
+}
+
+const showHideOptions = {
+  list: [
+    {title: 'Show', value: 'show'},
+    {title: 'Hide', value: 'hide'},
+  ],
+  layout: 'radio' as const,
+  direction: 'horizontal' as const,
+}
 
 export default defineType({
   name: 'siteSettings',
   title: 'Site Settings',
   type: 'document',
   icon: CogIcon,
+  groups: [
+    {name: 'brand', title: 'Brand', default: true},
+    {name: 'menus', title: 'Menus'},
+    {name: 'header', title: 'Header'},
+    {name: 'mobileMenu', title: 'Mobile'},
+    {name: 'footer', title: 'Footer'},
+    {name: 'socials', title: 'Socials'},
+    {name: 'layout', title: 'Layout'},
+    {name: 'theme', title: 'Theme'},
+    {name: 'seo', title: 'SEO'},
+  ],
   fields: [
-    // Header Configuration
     defineField({
-      name: 'header',
-      title: 'Header',
+      name: 'brand',
+      title: ' ',
       type: 'object',
+      group: 'brand',
+      options: {collapsible: false},
+      fieldsets: [
+        logoRowFieldset,
+        {name: 'identityRow', title: ' ', options: {columns: 3}},
+      ],
       fields: [
         defineField({
-          name: 'logo',
-          title: 'Logo',
+          name: 'logoMain',
+          title: 'Main Logo',
           type: 'image',
+          fieldset: 'logoRow',
         }),
         defineField({
-          name: 'logoAlt',
-          title: 'Logo Alt Text',
+          name: 'logoMobile',
+          title: 'Mobile Logo',
+          type: 'image',
+          fieldset: 'logoRow',
+        }),
+        defineField({
+          name: 'logoFooter',
+          title: 'Footer Logo',
+          type: 'image',
+          fieldset: 'logoRow',
+        }),
+        defineField({
+          name: 'logoFavicon',
+          title: 'Favicon',
+          type: 'image',
+          fieldset: 'logoRow',
+        }),
+        defineField({name: 'logoAlt', title: 'Alt Text', type: 'string', fieldset: 'identityRow'}),
+        defineField({
+          name: 'siteTitle',
+          title: 'Title',
           type: 'string',
+          fieldset: 'identityRow',
+          initialValue: 'Dotani',
         }),
+        defineField({name: 'tagline', title: 'Tagline', type: 'string', fieldset: 'identityRow'}),
+      ],
+    }),
+
+    defineField({
+      name: 'menus',
+      title: ' ',
+      type: 'object',
+      group: 'menus',
+      options: {collapsible: false},
+      fields: [universalMenuArrayField],
+    }),
+
+    defineField({
+      name: 'header',
+      title: ' ',
+      type: 'object',
+      group: 'header',
+      options: {collapsible: false},
+      fieldsets: [{name: 'headerTop', title: ' ', options: {columns: 2}}],
+      fields: [
         defineField({
-          name: 'title',
-          title: 'Site Title',
+          name: 'widthMode',
+          title: 'Width',
           type: 'string',
+          fieldset: 'headerTop',
+          options: widthModeOptions,
+          initialValue: 'container',
         }),
         defineField({
-          name: 'menuItems',
-          title: 'Menu Items',
-          type: 'array',
-          of: [
-            {
-              type: 'object',
-              fields: [
-                defineField({
-                  name: 'label',
-                  title: 'Label',
-                  type: 'string',
-                  validation: (rule) => rule.required(),
-                }),
-                defineField({
-                  name: 'url',
-                  title: 'URL',
-                  type: 'string',
-                  validation: (rule) => rule.required(),
-                }),
-              ],
-              preview: {
-                select: {title: 'label', subtitle: 'url'},
-              },
-            },
-          ],
+          name: 'showSocials',
+          title: 'Socials',
+          type: 'string',
+          fieldset: 'headerTop',
+          options: showHideOptions,
+          initialValue: 'show',
         }),
         defineField({
           name: 'headerCta',
-          title: 'Header CTA Button',
+          title: 'CTA',
           type: 'object',
+          fieldsets: [
+            {name: 'ctaRow', title: ' ', options: {columns: 2}},
+            {name: 'ctaOptions', title: ' ', options: {columns: 2}},
+          ],
           fields: [
+            defineField({name: 'label', title: 'Label', type: 'string', fieldset: 'ctaRow'}),
+            defineField({name: 'url', title: 'URL', type: 'string', fieldset: 'ctaRow'}),
             defineField({
-              name: 'label',
-              title: 'Label',
+              name: 'style',
+              title: 'Style',
               type: 'string',
+              fieldset: 'ctaOptions',
+              options: ctaStyleOptions,
+              initialValue: 'default',
             }),
             defineField({
-              name: 'url',
-              title: 'URL',
-              type: 'string',
+              name: 'openInNewTab',
+              title: 'New Tab',
+              type: 'boolean',
+              fieldset: 'ctaOptions',
+              initialValue: false,
             }),
           ],
         }),
       ],
     }),
 
-    // Footer Configuration
     defineField({
-      name: 'footer',
-      title: 'Footer',
+      name: 'mobileMenu',
+      title: ' ',
       type: 'object',
+      group: 'mobileMenu',
+      options: {collapsible: false},
       fields: [
         defineField({
-          name: 'columns',
-          title: 'Footer Columns',
-          type: 'array',
-          of: [
-            {
-              type: 'object',
-              fields: [
-                defineField({
-                  name: 'width',
-                  title: 'Column Width',
-                  type: 'string',
-                  options: {
-                    list: [
-                      {title: '20%', value: '20%'},
-                      {title: '40%', value: '40%'},
-                      {title: '33%', value: '33%'},
-                    ],
-                    layout: 'radio',
-                  },
-                }),
-                defineField({
-                  name: 'heading',
-                  title: 'Heading',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'links',
-                  title: 'Links',
-                  type: 'array',
-                  of: [{type: 'string'}],
-                }),
-              ],
-            },
-          ],
+          name: 'showSocials',
+          title: 'Socials',
+          type: 'string',
+          options: showHideOptions,
+          initialValue: 'show',
+        }),
+      ],
+    }),
+
+    defineField({
+      name: 'footer',
+      title: ' ',
+      type: 'object',
+      group: 'footer',
+      options: {collapsible: false},
+      fieldsets: [{name: 'footerColHeadings', title: ' ', options: {columns: 3}}],
+      fields: [
+        defineField({
+          name: 'description',
+          title: 'Branding description',
+          type: 'text',
+          rows: 3,
         }),
         defineField({
-          name: 'socialLinks',
-          title: 'Social Links',
-          type: 'array',
-          of: [
-            {
-              type: 'object',
-              fields: [
-                defineField({
-                  name: 'platform',
-                  title: 'Platform',
-                  type: 'string',
-                  options: {
-                    list: [
-                      {title: 'LinkedIn', value: 'linkedin'},
-                      {title: 'Facebook', value: 'facebook'},
-                      {title: 'Instagram', value: 'instagram'},
-                      {title: 'YouTube', value: 'youtube'},
-                      {title: 'WhatsApp', value: 'whatsapp'},
-                      {title: 'Twitter/X', value: 'twitter'},
-                      {title: 'GitHub', value: 'github'},
-                    ],
-                    layout: 'dropdown',
-                  },
-                }),
-                defineField({
-                  name: 'url',
-                  title: 'URL',
-                  type: 'url',
-                }),
-              ],
-            },
-          ],
+          name: 'col2Heading',
+          title: 'Col 2',
+          type: 'string',
+          fieldset: 'footerColHeadings',
+        }),
+        defineField({
+          name: 'col3Heading',
+          title: 'Col 3',
+          type: 'string',
+          fieldset: 'footerColHeadings',
+        }),
+        defineField({
+          name: 'col4Heading',
+          title: 'Col 4',
+          type: 'string',
+          fieldset: 'footerColHeadings',
         }),
         defineField({
           name: 'copyrightText',
-          title: 'Copyright Text',
+          title: 'Copyright',
           type: 'string',
         }),
       ],
     }),
 
-    // Theme Configuration
+    defineField({
+      name: 'socials',
+      title: ' ',
+      type: 'object',
+      group: 'socials',
+      options: {collapsible: false},
+      fields: [socialLinksArrayField],
+    }),
+
+    seoAeoField('seo', 'SEO & Discoverability', 'seo'),
+
+    defineField({
+      name: 'layoutSettings',
+      title: ' ',
+      type: 'object',
+      group: 'layout',
+      options: {collapsible: false, columns: 2},
+      fields: [
+        dimensionField('Max Width', 'containerMaxWidth', 80),
+        dimensionField('Padding', 'containerPaddingInline', 1),
+      ],
+    }),
+
     defineField({
       name: 'theme',
-      title: 'Theme',
+      title: ' ',
       type: 'object',
+      group: 'theme',
+      options: {collapsible: false, columns: 2},
       fields: [
-        defineField({
+        colorField({
           name: 'primaryColor',
-          title: 'Primary Color',
-          type: 'string',
+          title: 'Primary',
           initialValue: '#3b82f6',
         }),
-        defineField({
+        colorField({
           name: 'secondaryColor',
-          title: 'Secondary Color',
-          type: 'string',
+          title: 'Secondary',
           initialValue: '#64748b',
         }),
-        defineField({
+        colorField({
           name: 'accentColor',
-          title: 'Accent Color',
-          type: 'string',
+          title: 'Accent',
           initialValue: '#f59e0b',
+        }),
+        colorField({
+          name: 'themeColor',
+          title: 'Theme',
+          initialValue: '#0f172a',
+        }),
+        defineField({
+          name: 'darkModeDefault',
+          title: 'Default Mode',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'System', value: 'system'},
+              {title: 'Light', value: 'light'},
+              {title: 'Dark', value: 'dark'},
+            ],
+            layout: 'radio',
+            direction: 'horizontal',
+          },
+          initialValue: 'system',
         }),
         defineField({
           name: 'containerWidth',
-          title: 'Container Width',
+          title: 'Container (Legacy)',
           type: 'string',
+          hidden: true,
           options: {
             list: [
               {title: 'Small', value: 'max-w-4xl'},
@@ -198,20 +301,12 @@ export default defineType({
           },
           initialValue: 'max-w-7xl',
         }),
-        defineField({
-          name: 'darkModeDefault',
-          title: 'Dark Mode Default',
-          type: 'boolean',
-          initialValue: false,
-        }),
       ],
     }),
   ],
   preview: {
     prepare() {
-      return {
-        title: 'Site Settings',
-      }
+      return {title: 'Site Settings'}
     },
   },
 })

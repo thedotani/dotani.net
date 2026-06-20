@@ -1,0 +1,80 @@
+---
+import { THEME_STORAGE_KEY } from '../lib/theme'
+---
+
+<button
+  type="button"
+  class="theme-toggle"
+  data-theme-toggle
+  aria-label="Toggle color theme"
+>
+  <svg class="theme-icon theme-icon-moon" data-theme-icon="dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+  </svg>
+  <svg class="theme-icon theme-icon-sun hidden" data-theme-icon="light" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <circle cx="12" cy="12" r="4" stroke-width="1.75" />
+    <path stroke-linecap="round" stroke-width="1.75" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+  </svg>
+</button>
+
+<script define:vars={{ THEME_STORAGE_KEY }}>
+  const root = document.documentElement
+  const toggle = document.querySelector('[data-theme-toggle]')
+  const moonIcon = toggle?.querySelector('[data-theme-icon="dark"]')
+  const sunIcon = toggle?.querySelector('[data-theme-icon="light"]')
+
+  // Initialize theme without flash - apply before any rendering
+  const initTheme = () => {
+    try {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY)
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const scheme = stored === 'dark' || stored === 'light' ? stored : (systemPrefersDark ? 'dark' : 'light')
+      root.setAttribute('data-theme', scheme)
+      root.style.transition = 'none'
+      syncIcons(scheme)
+
+      // Force repaint, then enable transitions
+      void root.offsetHeight
+      root.style.transition = ''
+    } catch (_) {
+      root.setAttribute('data-theme', 'light')
+      syncIcons('light')
+    }
+  }
+
+  const syncIcons = (scheme) => {
+    const isDark = scheme === 'dark'
+    moonIcon?.classList.toggle('hidden', !isDark)
+    sunIcon?.classList.toggle('hidden', isDark)
+    toggle?.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode')
+    // Smooth icon transition
+    toggle?.querySelectorAll('[data-theme-icon]').forEach(icon => {
+      icon.classList.add('transition-transform', 'duration-300')
+    })
+  }
+
+  const applyScheme = (scheme, persist = true) => {
+    // Add transition class for smooth change
+    root.classList.add('theme-transitioning')
+    root.setAttribute('data-theme', scheme)
+    syncIcons(scheme)
+    if (persist) {
+      localStorage.setItem(THEME_STORAGE_KEY, scheme)
+    }
+  }
+
+  // Initialize immediately to prevent FOUC
+  initTheme()
+
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem(THEME_STORAGE_KEY)) {
+      applyScheme(e.matches ? 'dark' : 'light', false)
+    }
+  })
+
+  toggle?.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+    applyScheme(current === 'dark' ? 'light' : 'dark')
+  })
+</script>

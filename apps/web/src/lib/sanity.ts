@@ -2,7 +2,8 @@ import {createClient} from '@sanity/client'
 import type {SanityDocument} from '@sanity/client'
 
 const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'tmw5kvr6'
-const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production'
+const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'staging'
+const SITE_SETTINGS_DOCUMENT_ID = 'site-settings-main'
 
 export const client = createClient({
   projectId,
@@ -22,11 +23,40 @@ async function safeFetch<T>(query: string, params: Record<string, unknown> = {},
 
 const sectionProjection = `sections[]{
   ...,
-  heroImage {
+  image {
     asset->{url}
   },
   backgroundImage {
     asset->{url}
+  },
+  "backgroundColor": coalesce(backgroundColor.hex, backgroundColor),
+  "textColor": coalesce(textColor.hex, textColor),
+  backgroundGradient {
+    "from": coalesce(from.hex, from),
+    "to": coalesce(to.hex, to),
+    direction
+  },
+  statsSet->{
+    _id,
+    title,
+    setType,
+    metrics[]{
+      _key,
+      name,
+      value,
+      description,
+      note
+    }
+  },
+  marqueeSet->{
+    _id,
+    title,
+    setType,
+    marqueeItems[]{
+      _key,
+      name,
+      note
+    }
   }
 }`
 
@@ -41,31 +71,73 @@ const imageFields = `
 
 export async function getSiteSettings() {
   return safeFetch<SanityDocument | null>(`
-    *[_type == "siteSettings"][0] {
+    *[_type == "siteSettings" && _id == $siteSettingsId][0] {
       _id,
-      header {
-        logo {
-          asset->{url}
+      brand {
+        "logos": {
+          "main": coalesce(logoMain, logos.main) { asset->{url} },
+          "mobile": coalesce(logoMobile, logos.mobile) { asset->{url} },
+          "footer": coalesce(logoFooter, logos.footer) { asset->{url} },
+          "favicon": coalesce(logoFavicon, logos.favicon) { asset->{url} }
         },
+        logoAlt,
+        siteTitle,
+        tagline
+      },
+      menus {
+        items[] {
+          label,
+          url,
+          showIn {
+            header,
+            mobileMenu,
+            mobileMenuFooter,
+            footerCol2,
+            footerCol3,
+            footerCol4,
+            footerCopyright
+          }
+        }
+      },
+      header {
+        logo { asset->{url} },
         logoAlt,
         title,
         menuItems,
-        headerCta
+        headerCta,
+        showSocials,
+        widthMode
+      },
+      mobileMenu {
+        menuItems,
+        showSocials,
+        footerText
       },
       footer {
-        columns,
-        socialLinks,
+        description,
+        col2Heading,
+        col3Heading,
+        col4Heading,
         copyrightText
       },
+      socials {
+        links
+      },
+      layoutSettings {
+        containerMaxWidth,
+        containerPaddingInline
+      },
       theme {
-        primaryColor,
-        secondaryColor,
-        accentColor,
+        "primaryColor": coalesce(primaryColor.hex, primaryColor),
+        "secondaryColor": coalesce(secondaryColor.hex, secondaryColor),
+        "accentColor": coalesce(accentColor.hex, accentColor),
+        "themeColor": coalesce(themeColor.hex, themeColor),
         containerWidth,
         darkModeDefault
-      }
+      },
+      seo
     }
-  `, {}, null)
+  `, {siteSettingsId: SITE_SETTINGS_DOCUMENT_ID}, null)
 }
 
 export async function getPageBySlug(slug: string) {
@@ -76,21 +148,27 @@ export async function getPageBySlug(slug: string) {
       slug,
       excerpt,
       ${sectionProjection},
-      seo,
       customColors,
-      customColorScheme
+      colorMode,
+      customColorScheme {
+        "bodyText": coalesce(bodyText.hex, bodyText),
+        "headings": coalesce(headings.hex, headings),
+        "buttons": coalesce(buttons.hex, buttons),
+        "accent": coalesce(accent.hex, accent),
+        "background": coalesce(background.hex, background)
+      },
+      customGradient {
+        "from": coalesce(from.hex, from),
+        "to": coalesce(to.hex, to),
+        direction,
+        angle
+      },
+      customBackgroundImage {
+        asset->{url}
+      },
+      seo
     }
   `, {slug}, null)
-}
-
-export async function getAllPages() {
-  return safeFetch<SanityDocument[]>(`
-    *[_type == "page"] {
-      _id,
-      title,
-      slug
-    }
-  `, {}, [])
 }
 
 export async function getHomePage() {
@@ -98,26 +176,22 @@ export async function getHomePage() {
 }
 
 export async function getAllServices() {
-  return safeFetch<any[]>(`
-    *[_type == "service"] | order(order asc) {
+  return safeFetch<SanityDocument[]>(`
+    *[_type == "service"] | order(order asc, title asc) {
       _id,
       title,
       slug,
       icon,
       shortDescription,
-      description,
       features,
       bestFor,
-      deliverables,
-      timeframe,
-      relatedPortfolio,
       order
     }
   `, {}, [])
 }
 
 export async function getServiceBySlug(slug: string) {
-  return safeFetch<any | null>(`
+  return safeFetch<SanityDocument | null>(`
     *[_type == "service" && slug.current == $slug][0] {
       _id,
       title,
@@ -126,75 +200,156 @@ export async function getServiceBySlug(slug: string) {
       shortDescription,
       description,
       features,
-      bestFor,
       deliverables,
+      bestFor,
       timeframe,
-      relatedPortfolio,
-      order
+      order,
+      "relatedPortfolio": relatedPortfolio[]->{ _id, title, slug, shortResult, thumbnail { asset->{url} } },
+      "relatedTestimonials": relatedTestimonials[]->{ _id, authorName, authorRole, quote, authorAvatar { asset->{url} } },
+      seo
     }
   `, {slug}, null)
 }
 
 export async function getAllPortfolioItems() {
-  return safeFetch<any[]>(`
-    *[_type == "portfolio"] | order(order asc) {
+  return safeFetch<SanityDocument[]>(`
+    *[_type == "portfolio"] | order(order asc, year desc) {
       _id,
       title,
       slug,
-      ${imageFields},
       category,
       shortResult,
-      role,
-      tags,
-      client,
       year,
-      industry,
-      description,
-      projectSummary,
-      metrics,
-      relatedServices,
-      order
+      order,
+      ${imageFields}
     }
   `, {}, [])
 }
 
 export async function getPortfolioItemBySlug(slug: string) {
-  return safeFetch<any | null>(`
+  return safeFetch<SanityDocument | null>(`
     *[_type == "portfolio" && slug.current == $slug][0] {
       _id,
       title,
       slug,
-      ${imageFields},
       category,
       shortResult,
-      role,
-      tags,
-      client,
       year,
+      client,
+      role,
       industry,
-      description,
+      tags,
+      order,
       projectSummary,
+      description,
+      keyPoints,
       metrics,
-      relatedServices,
-      order
+      ${imageFields},
+      "relatedServices": relatedServices[]->{ _id, title, slug, icon },
+      "caseStudy": *[_type == "caseStudy" && references(^._id)][0]{
+        _id,
+        title,
+        slug,
+        summary
+      },
+      seo
+    }
+  `, {slug}, null)
+}
+
+const caseStudyImageFields = `
+  heroImage {
+    asset->{url}
+  },
+  visuals[] {
+    asset->{url}
+  }
+`
+
+export async function getAllCaseStudies() {
+  return safeFetch<SanityDocument[]>(`
+    *[_type == "caseStudy"] | order(order asc, year desc) {
+      _id,
+      title,
+      slug,
+      client,
+      industry,
+      year,
+      role,
+      order,
+      heroImage {
+        asset->{url}
+      },
+      "relatedPortfolio": relatedPortfolio[]->{
+        _id,
+        title,
+        slug,
+        shortResult,
+        thumbnail { asset->{url} }
+      }
+    }
+  `, {}, [])
+}
+
+export async function getCaseStudyBySlug(slug: string) {
+  return safeFetch<SanityDocument | null>(`
+    *[_type == "caseStudy" && slug.current == $slug][0] {
+      _id,
+      title,
+      slug,
+      client,
+      industry,
+      year,
+      role,
+      scope,
+      duration,
+      tools,
+      summary,
+      challenge,
+      approach,
+      process,
+      outputs,
+      results,
+      impact,
+      lessons,
+      ${caseStudyImageFields},
+      "relatedPortfolio": relatedPortfolio[]->{
+        _id,
+        title,
+        slug,
+        shortResult,
+        category,
+        year,
+        thumbnail { asset->{url} }
+      },
+      seo
     }
   `, {slug}, null)
 }
 
 export async function getAllTestimonials() {
-  return safeFetch<any[]>(`
-    *[_type == "testimonial"] | order(order asc) {
+  return safeFetch<SanityDocument[]>(`
+    *[_type == "testimonial"] | order(featured desc, order asc) {
       _id,
-      quote,
       authorName,
       authorRole,
-      authorAvatar {
-        asset->{url}
-      },
-      relatedService,
-      relatedPortfolio,
+      quote,
       rating,
-      order
+      featured,
+      order,
+      authorAvatar { asset->{url} }
+    }
+  `, {}, [])
+}
+
+export async function getAllBlogPosts() {
+  return safeFetch<SanityDocument[]>(`
+    *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {
+      _id,
+      title,
+      slug,
+      excerpt,
+      publishedAt
     }
   `, {}, [])
 }

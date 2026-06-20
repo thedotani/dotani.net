@@ -1,0 +1,546 @@
+/**
+ * Dotani Studio — document pane polish
+ */
+
+:root {
+  --dotani-accent: #3b82f6;
+  --dotani-accent-soft: #22d3ee;
+  --dotani-radius-sm: 6px;
+  --dotani-radius-md: 10px;
+  --dotani-radius-pill: 999px;
+  --dotani-surface: color-mix(in srgb, var(--card-fg-color) 4%, var(--card-bg-color));
+  --dotani-surface-raised: color-mix(in srgb, var(--card-fg-color) 7%, var(--card-bg-color));
+  --dotani-input-bg: color-mix(in srgb, var(--card-fg-color) 6%, var(--card-bg-color));
+  --dotani-border: color-mix(in srgb, var(--card-border-color) 88%, transparent);
+  --dotani-group-width: 9.5rem;
+  --dotani-form-content-max: 800px;
+  /* Universal field column widths — used by fieldset grid templates below */
+  --dotani-width-compact: 5.5rem;
+  --dotani-width-slug: minmax(0, 2.5fr);
+  --dotani-width-text: minmax(0, 1fr);
+  --dotani-width-icon: minmax(0, 1fr);
+  --dotani-width-accent: minmax(9rem, 1fr);
+}
+
+[data-scheme='dark'] input:not([type='checkbox']):not([type='radio']):not([type='hidden']),
+[data-scheme='dark'] textarea,
+[data-scheme='dark'] select,
+[data-scheme='dark'] [data-ui='TextInput'] [data-ui='Card'],
+[data-scheme='dark'] [data-ui='TextArea'] [data-ui='Card'],
+[data-scheme='dark'] [data-ui='Select'] [data-ui='Card'] {
+  --card-bg-color: var(--dotani-input-bg);
+  --card-fg-color: #e2e8f0;
+  --card-border-color: var(--dotani-border);
+  --card-muted-fg-color: #94a3b8;
+  --input-fg-color: #e2e8f0;
+  --input-placeholder-color: #64748b;
+}
+
+[data-ui='Navbar'] {
+  border-bottom: 1px solid var(--dotani-border);
+}
+
+[data-ui='PaneHeader'] {
+  border-bottom: 1px solid var(--dotani-border);
+}
+
+[data-testid='document-pane'] [data-testid='document-panel-document-title'] {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+[data-testid='document-panel-scroller'] {
+  padding-inline: clamp(1rem, 2vw, 1.75rem);
+  padding-block: 0.75rem 2rem;
+}
+
+/* Document form content width — fallback if theme container is overridden elsewhere */
+[data-testid='document-panel-scroller'] > :first-child,
+[data-testid='document-panel-scroller'] > :has([data-testid='form-view']) {
+  max-width: calc(
+    var(--dotani-form-content-max) + (var(--formGutterSize, 0px) * 2) + (var(--formGutterGap, 0px) * 2)
+  ) !important;
+}
+
+[data-testid='document-panel-scroller'] [data-pt-block] {
+  max-width: var(--dotani-form-content-max) !important;
+}
+
+/* ── Document groups: sticky left sidebar + content column (top-level only) ── */
+[data-testid='document-panel-scroller'] > [data-ui='Stack']:has(> [data-testid='field-groups']) {
+  display: grid !important;
+  grid-template-columns: var(--dotani-group-width) minmax(0, 1fr);
+  column-gap: 1.25rem;
+  row-gap: 0;
+  align-items: start;
+}
+
+/* Sanity Stack `space` adds margins that fight the grid */
+[data-testid='document-panel-scroller'] > [data-ui='Stack']:has(> [data-testid='field-groups']) > * {
+  margin: 0 !important;
+}
+
+[data-testid='document-panel-scroller'] > [data-ui='Stack'] > [data-testid='field-groups'] {
+  grid-column: 1;
+  position: sticky;
+  top: 0.75rem;
+  align-self: start;
+  width: var(--dotani-group-width);
+  padding-block: 0.35rem;
+  padding-right: 0.5rem;
+  background: transparent;
+}
+
+[data-testid='document-panel-scroller'] > [data-ui='Stack']:has(> [data-testid='field-groups']) > *:not([data-testid='field-groups']) {
+  grid-column: 2;
+  min-width: 0;
+}
+
+/*
+ * Sidebar column is narrow — Sanity ElementQuery hides TabList and shows Select.
+ * Force vertical tabs; hide the select fallback.
+ */
+[data-testid='document-panel-scroller'] > [data-ui='Stack'] > [data-testid='field-groups'] [data-testid='field-group-tabs'] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch;
+  gap: 0.15rem;
+}
+
+[data-testid='document-panel-scroller'] > [data-ui='Stack'] > [data-testid='field-groups'] [data-testid='field-group-select'],
+[data-testid='document-panel-scroller'] > [data-ui='Stack'] > [data-testid='field-groups'] [data-ui='Select'] {
+  display: none !important;
+}
+
+[data-testid='document-panel-scroller'] > [data-ui='Stack'] > [data-testid='field-groups'] [data-ui='Tab'] {
+  justify-content: flex-start;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding-block: 0.42rem;
+  border-radius: var(--dotani-radius-sm);
+}
+
+/* SEO sub-tabs: classic horizontal tabs, no sidebar layout */
+[data-testid='field-seo'] [data-testid='field-groups'],
+[data-testid='group-tabpanel-seo'] [data-testid='field-groups'] {
+  position: static;
+  width: auto;
+  border-right: none;
+  padding: 0;
+  background: transparent;
+}
+
+[data-testid='field-seo'] [data-testid='field-group-tabs'],
+[data-testid='group-tabpanel-seo'] [data-testid='field-group-tabs'] {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+[data-testid='field-seo'] [data-ui='Tab'],
+[data-testid='group-tabpanel-seo'] [data-ui='Tab'] {
+  justify-content: center;
+  font-size: inherit;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  padding-block: 0.35rem;
+  padding-inline: 0.65rem;
+}
+
+/* Hide field descriptions except SEO */
+[data-testid='document-panel-scroller'] [data-testid='field-description'] {
+  display: none !important;
+}
+
+[data-testid='group-tabpanel-seo'] [data-testid='field-description'],
+[data-testid='field-seo'] [data-testid='field-description'] {
+  display: block !important;
+}
+
+/* Hide redundant wrapper object headers */
+[data-testid='group-tabpanel-brand'] [data-testid='field-brand'] > [data-ui='FieldHeader'],
+[data-testid='group-tabpanel-menus'] [data-testid='field-menus'] > [data-ui='FieldHeader'],
+[data-testid='group-tabpanel-header'] [data-testid='field-header'] > [data-ui='FieldHeader'],
+[data-testid='group-tabpanel-mobileMenu'] [data-testid='field-mobileMenu'] > [data-ui='FieldHeader'],
+[data-testid='group-tabpanel-footer'] [data-testid='field-footer'] > [data-ui='FieldHeader'],
+[data-testid='group-tabpanel-socials'] [data-testid='field-socials'] > [data-ui='FieldHeader'],
+[data-testid='group-tabpanel-layout'] [data-testid='field-layoutSettings'] > [data-ui='FieldHeader'],
+[data-testid='group-tabpanel-theme'] [data-testid='field-theme'] > [data-ui='FieldHeader'] {
+  display: none !important;
+}
+
+/* Hide empty fieldset legends */
+[data-testid='document-panel-scroller'] fieldset > legend {
+  display: none;
+}
+
+[data-testid='document-panel-scroller'] fieldset[data-ui='Stack'] {
+  border: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+/* Issue 25: remove Sanity nested fieldset left indent borders */
+[data-testid='document-panel-scroller'] fieldset[data-testid^='fieldset-'] > *:nth-child(2) {
+  border-left: none !important;
+  padding-left: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Tighter vertical rhythm between fields and subsections */
+[data-testid='document-panel-scroller'] [data-ui='FormField'] {
+  margin-bottom: 0.4rem;
+}
+
+[data-testid='document-panel-scroller'] [data-ui='Stack'][data-space] > * + * {
+  margin-top: 0.35rem !important;
+}
+
+/* Radio / boolean groups: no boxed left border */
+[data-testid='document-panel-scroller'] [data-ui='Radio'] {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* Issue 26: image/file inputs — hide drag/paste zone, keep Upload + Select only */
+[data-testid='document-panel-scroller'] [data-dotani-upload-only] [data-is-file-target='true'] {
+  min-height: 0 !important;
+}
+
+[data-testid='document-panel-scroller'] [data-dotani-upload-only] [data-is-file-target='true'] > div {
+  padding: 0 !important;
+}
+
+[data-testid='document-panel-scroller'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] {
+  padding: 0.35rem !important;
+}
+
+[data-testid='document-panel-scroller'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] {
+  flex-direction: row !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+[data-testid='document-panel-scroller'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] > [data-ui='Flex']:first-child {
+  display: none !important;
+}
+
+/* ── Fieldset row layouts (target Sanity ColumnarGrid, NOT the fieldset wrapper) ── */
+[data-testid='document-panel-scroller'] fieldset [data-ui='Grid'] {
+  column-gap: 0.75rem !important;
+  row-gap: 0.5rem !important;
+  align-items: end;
+}
+
+/* Universal: slug fields always fill their column */
+[data-testid='field-slug'] {
+  min-width: 0;
+}
+
+[data-testid='field-slug'] [data-ui='Flex'],
+[data-testid='field-slug'] [data-ui='Grid'] {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Compact number inputs — input only, never the field wrapper */
+[data-testid='field-year'] input[type='number'],
+[data-testid='field-order'] input[type='number'],
+[data-testid='field-rating'] input[type='number'] {
+  width: 100%;
+  max-width: var(--dotani-width-compact);
+}
+
+/* Service: slug · order · icon */
+[data-testid='fieldset-overviewMeta']:has([data-testid='field-icon']) [data-ui='Grid'] {
+  grid-template-columns: var(--dotani-width-slug) var(--dotani-width-compact) var(--dotani-width-icon) !important;
+}
+
+/* Portfolio / page: slug · category (or similar pair) */
+[data-testid='fieldset-overviewMeta']:has([data-testid='field-category']) [data-ui='Grid'] {
+  grid-template-columns: var(--dotani-width-slug) var(--dotani-width-text) !important;
+}
+
+/* Portfolio: year · client · role */
+[data-testid='fieldset-clientRow'] [data-ui='Grid'] {
+  grid-template-columns: var(--dotani-width-compact) var(--dotani-width-text) var(--dotani-width-text) !important;
+}
+
+/* Portfolio: industry · order · accent */
+[data-testid='fieldset-tagsRow'] [data-ui='Grid'] {
+  grid-template-columns: var(--dotani-width-text) var(--dotani-width-compact) var(--dotani-width-accent) !important;
+}
+
+/* Site settings brand — four logos in one row */
+[data-testid='fieldset-logoRow'] [data-ui='Grid'] {
+  grid-template-columns: repeat(4, minmax(4.75rem, 1fr)) !important;
+  align-items: start;
+}
+
+[data-testid='fieldset-logoRow'] [data-ui='FormField'] {
+  margin-bottom: 0.35rem;
+  min-width: 0;
+}
+
+[data-testid='fieldset-logoRow'] [data-ui='FormField'] [data-ui='FieldHeader'] {
+  margin-bottom: 0.2rem;
+}
+
+[data-testid='fieldset-logoRow'] [data-ui='FormField'] [data-ui='FieldHeader'] [data-ui='Text'] {
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-testid='fieldset-logoRow'] [data-is-file-target='true'] {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Issue 28: Sanity collapses upload UI below 440px — keep Upload + Select inline in logo row */
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] > div {
+  padding: 0 !important;
+}
+
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] {
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 0.25rem !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] > [data-ui='Flex']:last-child {
+  flex: 0 0 auto !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  gap: 0.35rem !important;
+}
+
+/* Upload = <label>, Select = <button> — style both as matching icon-only controls */
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] [data-ui='Button'] {
+  width: 1.9rem !important;
+  height: 1.9rem !important;
+  min-width: 1.9rem !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  border-radius: var(--dotani-radius-sm) !important;
+}
+
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] [data-ui='Button'] > span:first-child {
+  padding: 0 !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] [data-ui='Button'] [data-ui='Flex'] {
+  justify-content: center !important;
+  gap: 0 !important;
+}
+
+[data-testid='fieldset-logoRow'] [data-dotani-upload-only] [data-is-file-target='true'] [data-ui='Card'] > [data-ui='Flex'] [data-ui='Button'] [data-ui='Flex'] > [data-ui='Box'] {
+  display: none !important;
+}
+
+[data-testid='fieldset-identityRow'] [data-ui='Grid'] {
+  grid-template-columns: 3fr 4fr 3fr !important;
+}
+
+/* Site settings header */
+[data-testid='fieldset-headerTop'] [data-ui='Grid'] {
+  grid-template-columns: 1fr 1fr !important;
+}
+
+[data-testid='field-headerCta'] {
+  margin-top: 0.25rem;
+  width: 100%;
+}
+
+[data-testid='fieldset-ctaRow'] [data-ui='Grid'] {
+  grid-template-columns: 1fr 2fr !important;
+}
+
+[data-testid='fieldset-ctaOptions'] [data-ui='Grid'] {
+  grid-template-columns: 1fr auto !important;
+  align-items: center;
+}
+
+[data-testid='field-headerCta'] [data-testid='field-style'] [data-ui='Radio'] {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Testimonial status row */
+[data-testid='fieldset-ratingFeatured'] [data-ui='Grid'] {
+  grid-template-columns: var(--dotani-width-compact) var(--dotani-width-compact) minmax(0, 1fr) !important;
+  align-items: center;
+}
+
+/* Dimension value + unit inline */
+[data-dotani-dimension-input] {
+  display: grid !important;
+  grid-template-columns: minmax(3.5rem, 1fr) 4.25rem;
+  gap: 0.35rem;
+  align-items: center;
+  width: 100%;
+}
+
+[data-dotani-dimension-input] > * {
+  min-width: 0;
+}
+
+[data-testid='field-containerMaxWidth'] input,
+[data-testid='field-containerPaddingInline'] input {
+  max-width: none !important;
+  width: 100%;
+}
+
+[data-testid='field-containerMaxWidth'] [data-ui='FieldHeader'],
+[data-testid='field-containerPaddingInline'] [data-ui='FieldHeader'] {
+  margin-bottom: 0.25rem;
+}
+
+[data-testid='field-featured'] [data-ui='Switch'] {
+  margin-top: 0.15rem;
+}
+
+/* Inputs */
+[data-testid='document-panel-scroller'] [data-ui='TextInput'] [data-ui='Card'],
+[data-testid='document-panel-scroller'] [data-ui='TextArea'] [data-ui='Card'],
+[data-testid='document-panel-scroller'] [data-ui='Select'] [data-ui='Card'] {
+  border-radius: var(--dotani-radius-sm);
+  background: var(--dotani-input-bg);
+  border-color: var(--dotani-border);
+}
+
+[data-testid='document-panel-scroller'] [data-testid='pt-editor'],
+[data-testid='document-panel-scroller'] [data-slate-editor='true'] {
+  border-radius: var(--dotani-radius-md);
+  border: 1px solid var(--dotani-border);
+  background: var(--dotani-input-bg);
+}
+
+[data-testid='document-pane'] [data-ui='Button']:not([data-mode='bleed']) {
+  border-radius: var(--dotani-radius-sm);
+}
+
+[data-testid='document-panel-scroller'] [data-ui='FormField'] [data-ui='FieldHeader'] {
+  margin-bottom: 0.25rem;
+}
+
+[data-testid='document-panel-scroller'] [data-ui='FormField'] [data-ui='FieldHeader'] [data-ui='Text'] {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+[data-testid='document-panel-scroller'] [data-ui='Radio'] {
+  gap: 0.35rem;
+}
+
+[data-testid='document-panel-scroller'] [data-ui='Card'][data-tone='critical'] {
+  font-size: 0.8rem;
+  padding: 0.65rem 0.85rem;
+}
+
+/* ── Section header: badge + eyebrow row, link row ── */
+[data-testid='fieldset-header'] > *:nth-child(2) > [data-ui='Stack'] {
+  display: grid !important;
+  grid-template-columns: 1fr 2fr;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+[data-testid='fieldset-header'] [data-testid='field-title'],
+[data-testid='fieldset-header'] [data-testid='field-tagline'],
+[data-testid='fieldset-header'] [data-testid='field-headerLink'] {
+  grid-column: 1 / -1;
+}
+
+[data-testid='field-headerLink'] [data-testid='fieldset-headerLinkRow'] [data-ui='Grid'] {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto !important;
+  align-items: center;
+}
+
+[data-testid='field-headerLink'] [data-testid='field-openInNewTab'] [data-ui='Switch'] {
+  margin-top: 0;
+}
+
+/* ── Section form row: Image / Spacing / Section width / Colours ── */
+[data-testid='document-panel-scroller']
+  [data-ui='Stack']:has(> [data-testid='field-spacingMode']):has(> [data-testid='field-sectionWidth']):has(
+    > [data-testid='field-customColors']
+  ) {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
+  gap: 0.75rem 1rem;
+  align-items: start;
+}
+
+[data-testid='document-panel-scroller']
+  [data-ui='Stack']:has(> [data-testid='field-spacingMode']):has(> [data-testid='field-sectionWidth']):has(
+    > [data-testid='field-customColors']
+  )
+  > :not([data-testid='field-image']):not([data-testid='field-spacingMode']):not(
+    [data-testid='field-sectionWidth']
+  ):not([data-testid='field-customColors']) {
+  grid-column: 1 / -1;
+}
+
+[data-testid='document-panel-scroller']
+  [data-ui='Stack']:has(> [data-testid='field-spacingMode']):has(> [data-testid='field-sectionWidth']):has(
+    > [data-testid='field-customColors']
+  )
+  > [data-testid='field-image'],
+[data-testid='document-panel-scroller']
+  [data-ui='Stack']:has(> [data-testid='field-spacingMode']):has(> [data-testid='field-sectionWidth']):has(
+    > [data-testid='field-customColors']
+  )
+  > [data-testid='field-spacingMode'],
+[data-testid='document-panel-scroller']
+  [data-ui='Stack']:has(> [data-testid='field-spacingMode']):has(> [data-testid='field-sectionWidth']):has(
+    > [data-testid='field-customColors']
+  )
+  > [data-testid='field-sectionWidth'],
+[data-testid='document-panel-scroller']
+  [data-ui='Stack']:has(> [data-testid='field-spacingMode']):has(> [data-testid='field-sectionWidth']):has(
+    > [data-testid='field-customColors']
+  )
+  > [data-testid='field-customColors'] {
+  min-width: 0;
+}
+
+/* Site settings footer: col 2–4 headings in one row */
+[data-testid='fieldset-footerColHeadings'] [data-ui='Grid'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}

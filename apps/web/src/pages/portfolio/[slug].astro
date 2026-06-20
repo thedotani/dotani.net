@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import PortableText from '../../components/PortableText.astro'
 import { getPortfolioItemBySlug, getAllPortfolioItems } from '../../lib/sanity'
 
 export async function getStaticPaths() {
@@ -22,105 +23,135 @@ if (!item) {
   title={`${item.title} - Portfolio`}
   description={item.shortResult}
 >
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <a href="/portfolio" class="text-sm text-primary mb-6 inline-block">&larr; Back to Portfolio</a>
-
-    <article>
-      <div class="flex items-center gap-4 mb-6">
-        {item.category && (
-          <span class="text-xs font-semibold text-primary uppercase tracking-wider px-3 py-1 bg-primary/10 rounded-full">
-            {item.category}
-          </span>
-        )}
-        {item.year && (
-          <span class="text-sm text-muted">{item.year}</span>
-        )}
-      </div>
-
-      <h1 class="text-4xl font-bold text-heading mb-4">{item.title}</h1>
-
-      {item.client && (
-        <p class="text-lg text-accent mb-4">Client: {item.client}</p>
-      )}
-
-      {item.role && (
-        <p class="text-muted mb-6">Role: {item.role}</p>
-      )}
-
-      {item.shortResult && (
-        <p class="text-xl text-muted mb-8 font-medium">{item.shortResult}</p>
-      )}
-
-      {item.description && (
-        <div class="prose prose-lg max-w-none mb-8">
-          {item.description.map((block: any) => block.children?.map((c: any) => c.text).join(' ')).join(' ')}
-        </div>
-      )}
-
-      {item.projectSummary && (
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-heading mb-4">Project Summary</h2>
-          <div class="prose">
-            {item.projectSummary.map((block: any) => block.children?.map((c: any) => c.text).join(' ')).join(' ')}
+  <main>
+    <!-- Hero with full-width image potential -->
+    <section class="page-hero relative overflow-hidden">
+      <div class="section-container">
+        <a href="/portfolio" class="breadcrumb mb-8 inline-block" data-motion="fade">← Back to Portfolio</a>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div data-motion="rise">
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+              {item.category && <span class="tag-pill">{item.category}</span>}
+              {item.year && <span class="text-sm text-muted font-medium">{item.year}</span>}
+            </div>
+            <h1 class="section-heading-hero mb-4">{item.title}</h1>
+            {item.shortResult && (
+              <p class="section-tagline max-w-2xl">{item.shortResult}</p>
+            )}
           </div>
-        </section>
-      )}
 
-      {item.keyPoints && item.keyPoints.length > 0 && (
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-heading mb-4">Key Points</h2>
-          <ul class="space-y-2">
-            {item.keyPoints.map((point: string) => (
-              <li class="text-muted flex items-start">
-                <span class="text-primary mr-2">•</span>
-                {point}
-              </li>
-            ))}
-          </ul>
+          <div class="flex flex-col gap-6 sm:min-w-56" data-motion="scale">
+            <div class="grid grid-cols-2 gap-3">
+              {item.client && (
+                <div class="card-surface !p-4 text-center">
+                  <p class="text-[0.65rem] font-semibold uppercase tracking-wider text-primary mb-1">Client</p>
+                  <p class="text-sm font-medium text-heading">{item.client}</p>
+                </div>
+              )}
+              {item.role && (
+                <div class="card-surface !p-4 text-center">
+                  <p class="text-[0.65rem] font-semibold uppercase tracking-wider text-accent mb-1">Role</p>
+                  <p class="text-sm font-medium text-heading">{item.role}</p>
+                </div>
+              )}
+            </div>
+            {item.caseStudy?.slug?.current && (
+              <a href={`/case-studies/${item.caseStudy.slug.current}`} class="btn btn-primary w-full text-center justify-center">
+                Read Case Study
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-shell">
+      {item.description && (
+        <section class="relative" data-motion="rise">
+          <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl">
+            <h2 class="font-display text-2xl sm:text-3xl font-bold text-heading mb-6">Project Overview</h2>
+            <PortableText
+              value={item.description}
+              class="text-muted leading-relaxed text-base sm:text-lg space-y-5"
+            />
+          </article>
         </section>
       )}
 
       {item.metrics && item.metrics.length > 0 && (
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-heading mb-4">Results</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {item.metrics.map((metric: any) => (
-              <div class="text-center">
-                <div class="text-2xl font-bold text-primary">{metric.value}</div>
-                <div class="text-sm text-muted">{metric.label}</div>
-              </div>
-            ))}
+        <section class="relative" data-motion="rise" style="--motion-delay: 120ms">
+          <div class="card-surface p-6 sm:p-8 !rounded-3xl">
+            <h2 class="font-display text-2xl font-bold text-heading mb-6 sm:mb-8">Impact & Results</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {item.metrics.map((metric: any) => (
+                <div class="metric-card group">
+                  <div class="metric-value transition-all duration-300 group-hover:scale-105">{metric.value}</div>
+                  <div class="metric-label">{metric.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
+      )}
+
+      {item.projectSummary && (
+        <section class="relative" data-motion="rise" style="--motion-delay: 200ms">
+          <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl">
+            <h2 class="font-display text-2xl font-bold text-heading mb-6">Project Summary</h2>
+            <PortableText value={item.projectSummary} class="text-muted leading-relaxed space-y-5" />
+          </article>
+        </section>
+      )}
+
+      {item.keyPoints && item.keyPoints.length > 0 && (
+        <section class="relative" data-motion="rise" style="--motion-delay: 280ms">
+          <article class="card-surface p-6 sm:p-8 md:p-10 !rounded-3xl">
+            <h2 class="font-display text-2xl font-bold text-heading mb-6">Key Points</h2>
+            <ul class="space-y-4">
+              {item.keyPoints.map((point: string) => (
+                <li class="flex items-start gap-3 text-muted">
+                  <span class="text-primary font-bold mt-1 shrink-0">▸</span>
+                  <span class="leading-relaxed">{point}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
         </section>
       )}
 
       {item.gallery && item.gallery.length > 0 && (
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-heading mb-4">Gallery</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {item.gallery.map((image: any) => (
-              <img
-                src={image?.asset?.url || '/placeholder.png'}
-                alt={item.title}
-                class="w-full h-32 object-cover rounded-lg"
-              />
-            ))}
-          </div>
+        <section class="relative" data-motion="rise" style="--motion-delay: 320ms">
+          <article class="card-surface p-6 sm:p-8 !rounded-3xl">
+            <h2 class="font-display text-2xl font-bold text-heading mb-6">Gallery</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {item.gallery.map((image: any) => (
+                <img
+                  src={image?.asset?.url || '/images/placeholder-portfolio.svg'}
+                  alt={item.title}
+                  class="media-frame aspect-square rounded-xl transition-transform duration-500 hover:scale-105"
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          </article>
         </section>
       )}
 
       {item.tags && item.tags.length > 0 && (
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-heading mb-4">Tags</h2>
-          <div class="flex flex-wrap gap-2">
-            {item.tags.map((tag: string) => (
-              <span class="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
-                {tag}
-              </span>
-            ))}
-          </div>
+        <section class="relative" data-motion="rise" style="--motion-delay: 400ms">
+          <article class="card-surface p-6 sm:p-8 !rounded-3xl">
+            <h2 class="font-display text-2xl font-bold text-heading mb-6">Technologies</h2>
+            <div class="flex flex-wrap gap-2">
+              {item.tags.map((tag: string) => (
+                <span class="tag-pill normal-case tracking-normal hover:scale-105 transition-transform">{tag}</span>
+              ))}
+            </div>
+          </article>
         </section>
       )}
-    </article>
+    </div>
   </main>
 </Layout>

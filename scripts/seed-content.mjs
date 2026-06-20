@@ -1,19 +1,47 @@
 import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CONTENT_SETS, PAGE_SECTIONS } from './seed-pages.mjs';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const sourceSeed = resolve(repoRoot, 'Prompts', 'seed_new.js');
+const sourceSeed = resolve(repoRoot, 'scripts', 'seed-source.js');
+const seedNdjson = resolve(repoRoot, 'seed.ndjson');
 
-const PAGE_HOME_ID = 'page-home';
+const PAGE_IDS = new Set([
+  'page-home',
+  'page-services',
+  'page-work',
+  'page-about',
+  'page-contact',
+  'page-booking',
+]);
 
-const KEEP_TYPES = new Set(['siteSettings', 'service', 'portfolio', 'testimonial', 'page']);
+const KEEP_TYPES = new Set([
+  'siteSettings',
+  'service',
+  'portfolio',
+  'testimonial',
+  'caseStudy',
+  'page',
+  'contentSet',
+]);
 
-const raw = execFileSync(process.execPath, [sourceSeed], {
-  cwd: repoRoot,
-  encoding: 'utf8',
-  stdio: ['ignore', 'pipe', 'ignore'],
-});
+let raw;
+
+if (existsSync(sourceSeed)) {
+  raw = execFileSync(process.execPath, [sourceSeed], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+} else if (existsSync(seedNdjson)) {
+  raw = readFileSync(seedNdjson, 'utf8');
+} else {
+  throw new Error(
+    'No seed source found. Add scripts/seed-source.js or commit seed.ndjson to the repo.',
+  );
+}
 
 const docs = raw
   .trim()
@@ -22,7 +50,7 @@ const docs = raw
   .map((line) => JSON.parse(line))
   .filter((doc) => {
     if (!KEEP_TYPES.has(doc._type)) return false;
-    if (doc._type === 'page' && doc._id !== PAGE_HOME_ID) return false;
+    if (doc._type === 'page' && !PAGE_IDS.has(doc._id)) return false;
     return true;
   });
 
@@ -30,8 +58,7 @@ function replaceUrls(value) {
   if (typeof value === 'string') {
     return value
       .replaceAll('/work', '/portfolio')
-      .replaceAll('/contact', '#contact')
-      .replaceAll('/about', '/')
+      .replaceAll('/about', '/profile')
       .replaceAll('/blog', '/');
   }
 
@@ -48,81 +75,67 @@ function replaceUrls(value) {
   return value;
 }
 
-function contactSections() {
-  return [
-    {
-      _type: 'contactSection',
-      _key: 'seed-contact',
-      sectionId: 'contact',
-      visible: true,
-      paddingTop: 'py-24',
-      paddingBottom: 'py-24',
-      backgroundType: 'solid',
-      backgroundColor: '',
-      backgroundImageOpacity: 100,
-      alignment: 'text-left items-start',
-      containerWidthOverride: '',
-      headline: 'Send a message',
-      supportingText:
-        "Tell me about the project, the problem, or the idea. I'll get back to you within 48 hours.",
-      submitButtonText: 'Send Message',
-      successMessage: "Got it. I'll be in touch within 48 hours.",
+function bookingPage() {
+  return {
+    _id: 'page-booking',
+    _type: 'page',
+    title: 'Booking',
+    slug: { _type: 'slug', current: 'booking' },
+    excerpt: 'Book a focused intro call to talk through your project, idea, or challenge.',
+    customColors: false,
+    sections: PAGE_SECTIONS['page-booking'],
+    seo: {
+      title: 'Book a Call — Dotani',
+      description:
+        'Schedule a 30-minute intro call with Raza Dotani to discuss strategy, content, or digital presence.',
     },
-    {
-      _type: 'bookingSection',
-      _key: 'seed-booking',
-      sectionId: 'booking',
-      visible: true,
-      paddingTop: 'py-16',
-      paddingBottom: 'py-24',
-      backgroundType: 'solid',
-      backgroundColor: '#1e293b',
-      backgroundImageOpacity: 100,
-      alignment: 'text-center items-center',
-      containerWidthOverride: '',
-      headline: 'Prefer a call?',
-      supportingText:
-        'Book a 30-minute intro call directly in my calendar. No agenda required.',
-      calLink: '',
-      buttonLabel: 'Book a Call',
-      layout: 'centered',
-    },
-  ];
+  };
 }
+
+const navItems = [
+  { _key: 'nav-home', label: 'Home', url: '/' },
+  { _key: 'nav-services', label: 'Services', url: '/services' },
+  { _key: 'nav-portfolio', label: 'Portfolio', url: '/portfolio' },
+  { _key: 'nav-profile', label: 'Profile', url: '/profile' },
+  { _key: 'nav-contact', label: 'Contact', url: '/contact' },
+  { _key: 'nav-booking', label: 'Booking', url: '/booking' },
+];
 
 for (const doc of docs) {
   if (doc._type === 'siteSettings') {
     doc.header ??= {};
-    doc.header.menuItems = [
-      { _key: 'nav-home', label: 'Home', url: '/' },
-      { _key: 'nav-services', label: 'Services', url: '/services' },
-      { _key: 'nav-portfolio', label: 'Portfolio', url: '/portfolio' },
-    ];
-    doc.header.headerCta = { label: "Let's Talk", url: '#contact' };
+    doc.header.menuItems = navItems;
+    doc.header.headerCta = { label: 'Book a Call', url: '/booking' };
 
-    if (doc.footer?.columns) {
-      const quickLinks = doc.footer.columns.find((column) => column.heading === 'Quick Links');
-      if (quickLinks) {
-        quickLinks.links = ['Home', 'Services', 'Portfolio'];
-      }
-    }
+    doc.footer ??= {};
+    doc.footer.col3Heading ??= 'Quick Links';
   }
 
-  if (doc._type === 'page' && doc._id === PAGE_HOME_ID) {
-    doc.sections = replaceUrls(doc.sections ?? []);
+  if (doc._type === 'page') {
+    doc.sections = replaceUrls(PAGE_SECTIONS[doc._id] ?? []);
 
-    const portfolioSection = doc.sections.find((section) => section._type === 'portfolioSection');
-    if (portfolioSection) {
-      portfolioSection.ctaButton = {
-        label: 'See All Work',
-        url: '/portfolio',
-      };
+    if (doc._id === 'page-about') {
+      doc.title = 'Profile';
+      doc.slug = { _type: 'slug', current: 'profile' };
     }
 
-    const hasContact = doc.sections.some((section) => section._type === 'contactSection');
-    if (!hasContact) {
-      doc.sections.push(...contactSections());
+    if (doc._id === 'page-work') {
+      doc.title = 'Portfolio';
+      doc.slug = { _type: 'slug', current: 'portfolio' };
     }
+  }
+}
+
+if (!docs.some((doc) => doc._id === 'page-booking')) {
+  docs.push(bookingPage());
+}
+
+for (const contentSet of CONTENT_SETS) {
+  const index = docs.findIndex((doc) => doc._id === contentSet._id);
+  if (index >= 0) {
+    docs[index] = contentSet;
+  } else {
+    docs.push(contentSet);
   }
 }
 
@@ -141,8 +154,10 @@ process.stderr.write(
     `Prepared ${docs.length} documents for import:`,
     ...Object.entries(counts).map(([type, count]) => `  ${type}: ${count}`),
     '',
-    'Excluded: blogPost, caseStudy, and CMS pages without Astro routes.',
-    'Adjusted links: /portfolio, /services, #contact.',
+    'Source: scripts/seed-source.js + scripts/seed-pages.mjs',
+    'Pages: home, services, portfolio, profile, contact, booking.',
+    'Page builder: contentBoxSection, contentSetSection, richTextSection.',
+    'Excluded: blogPost and sections demo.',
     '',
   ].join('\n'),
 );

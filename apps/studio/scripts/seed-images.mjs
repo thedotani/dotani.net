@@ -47,6 +47,7 @@ const portfolioTargets = [
   {id: 'portfolio-am', label: 'Aurat March', from: '#db2777', to: '#9d174d'},
   {id: 'portfolio-ks', label: 'Khaas Stories', from: '#059669', to: '#065f46'},
   {id: 'portfolio-tt', label: 'Tariq Travels', from: '#0284c7', to: '#075985'},
+  {id: 'portfolio-wp-security', label: 'WP Security Recovery', from: '#dc2626', to: '#7f1d1d'},
 ]
 
 async function main() {
@@ -79,11 +80,15 @@ async function main() {
 
   const homePage = await client.fetch(`*[_id == "page-home"][0]{sections[]{_key, _type}}`)
   const heroKey =
-    homePage?.sections?.find((section) => section._type === 'heroSection')?._key || 'ky4'
+    homePage?.sections?.find(
+      (section) => section._type === 'contentBoxSection' && section.sectionId === 'hero',
+    )?._key ||
+    homePage?.sections?.find((section) => section._type === 'contentBoxSection')?._key ||
+    'home-hero'
 
   await client
     .patch('page-home')
-    .set({[`sections[_key=="${heroKey}"].heroImage`]: imageRef(heroAsset)})
+    .set({[`sections[_key=="${heroKey}"].image`]: imageRef(heroAsset)})
     .commit()
   console.log(`Updated home hero image (section key: ${heroKey}).`)
 

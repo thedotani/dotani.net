@@ -1,0 +1,140 @@
+---
+import ContentBoxSection from './sections/ContentBoxSection.astro'
+import ContentSetSection from './sections/ContentSetSection.astro'
+import RichTextSection from './sections/RichTextSection.astro'
+
+interface Props {
+  page?: any
+  sections?: any[]
+  services?: any[]
+  portfolioItems?: any[]
+  testimonials?: any[]
+  caseStudies?: any[]
+  blogPosts?: any[]
+  showFallback?: boolean
+}
+
+const {
+  page,
+  sections = page?.sections ?? [],
+  services = [],
+  portfolioItems = [],
+  testimonials = [],
+  caseStudies = [],
+  blogPosts = [],
+  showFallback = true,
+} = Astro.props
+
+const visibleSections = sections.filter((section) => section?.visible !== false)
+const hasVisibleSections = visibleSections.length > 0
+const shouldShowFallback = showFallback && (!page || !hasVisibleSections)
+
+function resolveComponent(type: string) {
+  switch (type) {
+    case 'contentBoxSection':
+      return ContentBoxSection
+    case 'contentSetSection':
+      return ContentSetSection
+    case 'richTextSection':
+      return RichTextSection
+    default:
+      return null
+  }
+}
+
+function sectionProps(section: any) {
+  if (section._type === 'contentBoxSection') {
+    return {
+      section,
+      services,
+      portfolioItems,
+      testimonials,
+      caseStudies,
+      blogPosts,
+    }
+  }
+  return { section }
+}
+
+function groupHalfSections(sections: any[]): Array<{ section: any } | 'half-row' | 'half-row-end'> {
+  const groups: Array<{ section: any } | 'half-row' | 'half-row-end'> = []
+  let i = 0
+  while (i < sections.length) {
+    const section = sections[i]
+    if (section?.sectionWidth === 'half') {
+      const nextSection = sections[i + 1]
+      if (nextSection?.sectionWidth === 'half') {
+        groups.push({ section })
+        groups.push('half-row')
+        groups.push({ section: nextSection })
+        groups.push('half-row-end')
+        i += 2
+        continue
+      }
+    }
+    groups.push({ section })
+    i += 1
+  }
+  return groups
+}
+---
+
+<main class="overflow-x-hidden">
+  {shouldShowFallback && (
+    <section class="section-container py-24 text-center">
+      <p class="text-sm font-medium text-primary uppercase tracking-wider mb-4">dotani.net</p>
+      <h1 class="text-4xl md:text-5xl font-bold text-heading mb-6">
+        {page?.title || 'Welcome'}
+      </h1>
+      <p class="text-xl text-muted max-w-2xl mx-auto mb-8">
+        {page?.excerpt ||
+          'Content is being prepared. Add a page and site settings in Sanity Studio to populate this site.'}
+      </p>
+      {import.meta.env.DEV && (
+        <a
+          href="http://localhost:3333"
+          class="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          Open Sanity Studio
+        </a>
+      )}
+    </section>
+  )}
+
+  {visibleSections.map((section, index) => {
+    const isHalfStart = section?.sectionWidth === 'half' && visibleSections[index + 1]?.sectionWidth === 'half'
+    const isHalfEnd = visibleSections[index - 1]?.sectionWidth === 'half' && section?.sectionWidth === 'half'
+
+    if (isHalfStart) {
+      const nextSection = visibleSections[index + 1]
+      const Component = resolveComponent(section._type)
+      const NextComponent = resolveComponent(nextSection._type)
+      if (!Component || !NextComponent) return null
+
+      return (
+        <div class="flex flex-col md:flex-row gap-6 sm:gap-8" id={section.sectionId || undefined}>
+          <div class="flex-1 min-w-0 md:w-1/2">
+            <Component {...sectionProps(section)} />
+          </div>
+          <div class="flex-1 min-w-0 md:w-1/2" id={nextSection.sectionId || undefined}>
+            <NextComponent {...sectionProps(nextSection)} />
+          </div>
+        </div>
+      )
+    }
+
+    if (isHalfEnd) return null
+
+    const Component = resolveComponent(section._type)
+    if (!Component) return null
+
+    return (
+      <div
+        id={section.sectionId || undefined}
+        class={section.sectionWidth === 'full' ? 'w-screen relative left-1/2 -translate-x-1/2' : ''}
+      >
+        <Component {...sectionProps(section)} />
+      </div>
+    )
+  })}
+</main>

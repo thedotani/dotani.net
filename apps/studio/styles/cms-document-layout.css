@@ -1,0 +1,7 @@
+/**
+ * Document sidebar layout — DISABLED until re-enabled via sanity.config.ts import.
+ * Previous grid/display overrides broke Sanity scroll, clicks, and field layout.
+ *
+ * To try again: import this file in sanity.config.ts and register DocumentLayoutMarker
+ * in studioUxPlugin.tsx.
+ */

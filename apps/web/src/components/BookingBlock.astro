@@ -1,0 +1,45 @@
+---
+interface Props {
+  headline?: string
+  supportingText?: string
+  calLink?: string
+  buttonLabel?: string
+  centered?: boolean
+}
+
+const {
+  headline = 'Prefer a call?',
+  supportingText = 'Book a 30-minute intro call directly in my calendar. No agenda required.',
+  calLink,
+  buttonLabel = 'Book a Call',
+  centered = true,
+} = Astro.props
+
+const href = calLink || (import.meta.env.PUBLIC_CALCOM_USERNAME
+  ? `https://cal.com/${import.meta.env.PUBLIC_CALCOM_USERNAME}`
+  : '')
+---
+
+{centered ? (
+  <div class="text-center max-w-2xl mx-auto" data-motion="scale">
+    {headline && <h2 class="section-heading mb-4">{headline}</h2>}
+    {supportingText && <p class="section-tagline mb-8">{supportingText}</p>}
+    {href && (
+      <a href={href} target="_blank" rel="noopener noreferrer" class="btn btn-contrast">
+        {buttonLabel}
+      </a>
+    )}
+  </div>
+) : (
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8" data-motion="rise">
+    <div class="flex-1">
+      {headline && <h2 class="section-heading mb-4">{headline}</h2>}
+      {supportingText && <p class="section-tagline">{supportingText}</p>}
+    </div>
+    {href && (
+      <a href={href} target="_blank" rel="noopener noreferrer" class="btn btn-contrast shrink-0">
+        {buttonLabel}
+      </a>
+    )}
+  </div>
+)}

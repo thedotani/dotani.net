@@ -1,187 +1,112 @@
-# 03: PowerShell Setup Prompt for Astro + Sanity + Cloudflare
+# 03: Project Setup & Current State
 
-You are a coding agent helping me set up a modern website stack from scratch using PowerShell on Windows.
-
-## Goal
-Set up:
-- an Astro website
-- Git/GitHub version control
-- Sanity Studio for CMS
-- Cloudflare Pages deployment later
-- a clean local development workflow
-
-Do not overcomplicate the setup. Keep it clean, stable, and production-minded.
+Monorepo: Astro frontend + Sanity Studio + Cloudflare Pages. Windows/PowerShell workflow.
 
 ---
 
-## What has already been done
+## Repository layout
 
-### 1: Astro project created
-I started in:
+```
+D:\Labs\dotani\
+├── apps/
+│   ├── web/          # Astro 6 site (Cloudflare adapter)
+│   └── studio/       # Sanity Studio 6
+├── scripts/          # build, deploy, seed
+├── assets/           # final brand images (upload to Sanity from here)
+├── Prompts/          # specs, plans, checklists
+├── package.json      # npm workspaces root
+└── wrangler.jsonc    # Cloudflare Pages config
+```
+
+**GitHub:** `https://github.com/thedotani/dotani.net.git`
+
+**Sanity project:** `tmw5kvr6` · org `Dotani`
+
+---
+
+## Datasets
+
+| Environment | Dataset | When |
+|-------------|---------|------|
+| Local dev | `staging` | Always during build |
+| Preview (`next.dotani.net`) | `staging` | Until content approved |
+| Live (`dotani.net`) | `production` | Launch cutover |
+
+Studio (`apps/studio/sanity.config.ts`) uses `staging`.
+Web reads `PUBLIC_SANITY_DATASET` from `apps/web/.env`.
+
+---
+
+## Commands (run from repo root)
 
 ```powershell
 cd D:\Labs\dotani
-npm create astro@latest
-````
 
-Astro was created with:
+# Dev servers
+npm run dev          # Astro → http://localhost:4321
+npm run studio       # Sanity → http://localhost:3333
 
-* minimal empty template
-* dependencies installed
-* git initialised
+# Seed staging content
+npm run seed:generate
+npm run seed:import
 
-Then I ran:
+# Production seed (explicit confirmation required)
+npm run seed:import:production
 
-```powershell
-npm run dev
-```
-
-Astro started successfully at:
-
-```text
-http://localhost:4321/
+# Build & deploy
+npm run build
+npm run deploy
 ```
 
 ---
 
-### 2: Git repository connected
+## Environment variables (`apps/web/.env`)
 
-I checked git status:
+```env
+PUBLIC_SANITY_PROJECT_ID=tmw5kvr6
+PUBLIC_SANITY_DATASET=staging
 
-```powershell
-git status
+PUBLIC_TURNSTILE_SITE_KEY=...
+TURNSTILE_SECRET_KEY=...
+
+RESEND_API_KEY=...
+CONTACT_TO_EMAIL=online@dotani.net
+
+PUBLIC_CALCOM_USERNAME=dotani
 ```
 
-Then I added the GitHub remote:
-
-```powershell
-git remote add origin https://github.com/thedotani/dotani.net.git
-```
-
-I renamed the branch:
-
-```powershell
-git branch -M main
-```
-
-I pushed to GitHub:
-
-```powershell
-git push -u origin main
-```
-
-The repository is now on GitHub and tracking `origin/main`.
-
-Remote confirmed with:
-
-```powershell
-git remote -v
-```
+Cloudflare Pages: set the same vars per environment (`staging` for `next.dotani.net`, `production` for `dotani.net`).
 
 ---
 
-### 3: Sanity Studio created
+## What's built
 
-Then I created Sanity Studio:
+- CMS schemas: `siteSettings`, `page`, 9 section types, 5 content types
+- Homepage: CMS section-driven
+- Routes: `/`, `/services`, `/services/[slug]`, `/portfolio`, `/portfolio/[slug]`
+- Contact API: Turnstile + Resend
+- Global shell: header, footer, mobile nav, theme toggle
 
-```powershell
-npm create sanity@latest
-```
+## What's in progress
 
-Setup choices made:
-
-* logged in with GitHub account
-* selected existing org: `Dotani [oAecbEcXf]`
-* used default dataset configuration
-* dataset created successfully
-* project name: `dotani.net`
-* output path: `D:\Labs\dotani\dotaninet`
-* template: `Clean project with no predefined schema types`
-* TypeScript: Yes
-* package manager: npm
-
-Sanity Studio was successfully created.
+See `05-COMPLETION_PLAN.md` — full 9-page wireframe, case studies, unified page architecture.
 
 ---
 
-### 4: Sanity Studio started
+## Deploy targets
 
-I moved into the Studio folder:
+| URL | Purpose |
+|-----|---------|
+| `next.dotani.net` | Staging preview (Cloudflare Pages) |
+| `dotani.net` | Production launch |
 
-```powershell
-cd dotaninet
-```
-
-Then ran:
-
-```powershell
-npm run dev
-```
-
-Sanity Studio started successfully at:
-
-```text
-http://localhost:3333/
-```
+Studio: `npm run deploy --workspace apps/studio`
 
 ---
 
-## Current state
+## Rules
 
-At this point:
-
-* Astro is running locally
-* GitHub repo is connected
-* Sanity Studio exists and runs locally
-* the project is ready for CMS structuring
-* Cloudflare Pages deployment will come after the structure is ready
-
----
-
-## What I want next
-
-Take this setup and continue professionally with:
-
-1. clean project structure
-2. Astro ↔ Sanity integration
-3. CMS schemas for:
-
-   * site settings
-   * header
-   * footer
-   * pages
-   * sections/blocks
-   * services
-   * portfolio
-   * testimonials
-   * CTA sections
-4. later Cloudflare Pages deployment
-5. keep everything modular and maintainable
-
----
-
-## Important rules
-
-* Do not hardcode content that should live in Sanity
-* Do not create messy page files with random static sections
-* Do not build a monolithic homepage
-* Use reusable section blocks
-* Use CMS-driven architecture
-* Keep the setup simple, scalable, and editable
-
----
-
-## Working directories
-
-* Astro project root: `D:\Labs\dotani`
-* Sanity Studio project: `D:\Labs\dotani\dotaninet`
-
----
-
-## Runtime ports
-
-* Astro: `http://localhost:4321/`
-* Sanity Studio: `http://localhost:3333/`
-
-```
-```
+- Do not hardcode content that belongs in Sanity
+- Use reusable section blocks, not bespoke page layouts
+- `staging` for dev; never edit production casually
+- Final images go in `/assets` → upload to Sanity Media Library
