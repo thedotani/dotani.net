@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastProcessedCommit": "85607dea6e40904fc87e6f7d06e30b983318fed8",
+  "lastProcessedCommit": "b03e54d63410a7b1a3d1f54f245d328fda82a4e6",
   "entries": [
     {
       "id": "2026-06-15-initial-commit-from-astro",
@@ -170,6 +170,19 @@
       "filesChanged": 6,
       "linesChanged": 861,
       "reason": "explicit marker"
+    },
+    {
+      "id": "2026-06-20-feat-unified-cms-sections-studio-ux-and-frontend",
+      "date": "2026-06-20",
+      "commit": "b03e54d63410a7b1a3d1f54f245d328fda82a4e6",
+      "shortCommit": "b03e54d",
+      "tag": "checkpoint/2026-06-20-feat-unified-cms-sections-studio-ux-and-frontend",
+      "title": "unified CMS sections, studio UX, and frontend polish",
+      "category": "Added",
+      "summary": "feat: unified CMS sections, studio UX, and frontend polish",
+      "filesChanged": 132,
+      "linesChanged": 21473,
+      "reason": "feat"
     }
   ]
 }
