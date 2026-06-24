@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastProcessedCommit": "86ace21bc8e524587f401d1c5b8e96f82eeb43a5",
+  "lastProcessedCommit": "dda2b58ab930c1ae2ec7a2879afc51a4a37cd680",
   "entries": [
     {
       "id": "2026-06-15-initial-commit-from-astro",
@@ -208,6 +208,19 @@
       "summary": "Website v1 is ready",
       "filesChanged": 48,
       "linesChanged": 7210,
+      "reason": "large diff"
+    },
+    {
+      "id": "2026-06-24-fix-imagewidth-default-to-33-css-variable-handli",
+      "date": "2026-06-24",
+      "commit": "dda2b58ab930c1ae2ec7a2879afc51a4a37cd680",
+      "shortCommit": "dda2b58",
+      "tag": "checkpoint/2026-06-24-fix-imagewidth-default-to-33-css-variable-handli",
+      "title": "imageWidth default to 33%, CSS variable handling, build fixes",
+      "category": "Fixed",
+      "summary": "Fix: imageWidth default to 33%, CSS variable handling, build fixes",
+      "filesChanged": 7,
+      "linesChanged": 76,
       "reason": "large diff"
     }
   ]

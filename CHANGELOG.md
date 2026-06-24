@@ -16,6 +16,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 _Work in progress since the last checkpoint._
 
+## [2026-06-24-fix-imagewidth-default-to-33-css-variable-handli] — 2026-06-24
+
+> **Checkpoint:** `checkpoint/2026-06-24-fix-imagewidth-default-to-33-css-variable-handli` · **Commit:** `dda2b58` · **Restore:** `git checkout checkpoint/2026-06-24-fix-imagewidth-default-to-33-css-variable-handli`
+
+### Fixed
+
+- imageWidth default to 33%, CSS variable handling, build fixes
+  - _Fix: imageWidth default to 33%, CSS variable handling, build fixes_
+  - 7 files, 76 lines changed
+
 ## [2026-06-24-website-v1-is-ready] — 2026-06-24
 
 > **Checkpoint:** `checkpoint/2026-06-24-website-v1-is-ready` · **Commit:** `86ace21` · **Restore:** `git checkout checkpoint/2026-06-24-website-v1-is-ready`
