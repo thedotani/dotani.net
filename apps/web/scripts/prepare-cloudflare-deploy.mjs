@@ -19,12 +19,18 @@ writeFileSync(
   "export { default } from './server/entry.mjs';\n",
 );
 
+// Copy _headers to root if it exists in client (needed for Cloudflare Pages)
+try {
+  const clientHeaders = readFileSync(resolve(distDir, 'client', '_headers'), 'utf8')
+  writeFileSync(resolve(distDir, '_headers'), clientHeaders)
+} catch {}
+
 const wrangler = JSON.parse(readFileSync(wranglerPath, 'utf8'));
 delete wrangler.pages_build_output_dir;
 delete wrangler.configPath;
 delete wrangler.userConfigPath;
 wrangler.assets = {
   ...wrangler.assets,
-  run_worker_first: false,
+  run_worker_first: true,
 };
 writeFileSync(wranglerPath, JSON.stringify(wrangler));
