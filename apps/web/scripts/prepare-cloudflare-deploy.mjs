@@ -25,6 +25,6 @@ delete wrangler.configPath;
 delete wrangler.userConfigPath;
 wrangler.assets = {
   ...wrangler.assets,
-  run_worker_first: true,
+  run_worker_first: false,
 };
 writeFileSync(wranglerPath, JSON.stringify(wrangler));
