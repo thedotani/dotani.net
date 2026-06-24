@@ -22,7 +22,7 @@ const HeadingTag = headingTag
 
 {(title || tagline || action?.label) && (
   <div class:list={['section-header-bar', { 'section-header-bar-centered': centered }]}>
-    <div class="section-header-main">
+    <div class="sec-title">
       {title && <HeadingTag class={headingClass}>{title}</HeadingTag>}
       {tagline && <p class="section-tagline section-tagline-inline">{tagline}</p>}
     </div>

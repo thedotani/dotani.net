@@ -1,5 +1,5 @@
 ---
-import { sectionContainerClass } from '../../lib/sections'
+import { sectionContainerClass, sectionPaddingClasses } from '../../lib/sections'
 import { blockSurfaceClass, blockInlineStyle } from '../../lib/blockStyle'
 import { resolveSectionMeta, sectionShellClasses } from '../../lib/sectionStyle'
 
@@ -23,6 +23,7 @@ const meta = resolveSectionMeta(section)
 const surfaceClass = blockSurfaceClass(section)
 const inlineStyle = blockInlineStyle(section)
 const shellClasses = sectionShellClasses(section, surfaceClass)
+const paddingClasses = sectionPaddingClasses(section.paddingTop, section.paddingBottom)
 const metrics = statsSet?.metrics ?? []
 const marqueeItems = marqueeSet?.marqueeItems ?? []
 const marqueeHeight = height?.value != null ? `${height.value}${height.unit || 'rem'}` : '4rem'
@@ -30,18 +31,15 @@ const marqueeDuration = `${Math.max(8, 120 - speed)}s`
 ---
 
 <section
-  class:list={shellClasses}
+  class:list={[shellClasses, paddingClasses]}
   style={inlineStyle}
   data-block-gap={section.spacingMode === 'custom' ? 'custom' : undefined}
 >
   <div class={sectionContainerClass(sectionWidth)}>
     {displayType === 'stats' && metrics.length > 0 && (
-      <div
-        data-motion-stagger
-        class="stats-row flex flex-wrap items-stretch justify-between gap-4 sm:gap-5"
-      >
+      <div data-motion-stagger class="stats-row">
         {metrics.map((item: any) => (
-          <div class="flex-1 text-center min-w-[7rem] max-w-[30rem]">
+          <div class="text-center min-w-0">
             <div
               class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1.5 sm:mb-2 countup-number"
               data-target={item.value}

@@ -56,30 +56,15 @@ function sectionProps(section: any) {
   return { section }
 }
 
-function groupHalfSections(sections: any[]): Array<{ section: any } | 'half-row' | 'half-row-end'> {
-  const groups: Array<{ section: any } | 'half-row' | 'half-row-end'> = []
-  let i = 0
-  while (i < sections.length) {
-    const section = sections[i]
-    if (section?.sectionWidth === 'half') {
-      const nextSection = sections[i + 1]
-      if (nextSection?.sectionWidth === 'half') {
-        groups.push({ section })
-        groups.push('half-row')
-        groups.push({ section: nextSection })
-        groups.push('half-row-end')
-        i += 2
-        continue
-      }
-    }
-    groups.push({ section })
-    i += 1
+function effectiveSectionWidth(section: any, prev: any, next: any): string | undefined {
+  if (section?.sectionWidth === 'half' && prev?.sectionWidth !== 'half' && next?.sectionWidth !== 'half') {
+    return undefined
   }
-  return groups
+  return section?.sectionWidth
 }
 ---
 
-<main class="overflow-x-hidden">
+<main class="overflow-x-hidden block-sections-stack">
   {shouldShowFallback && (
     <section class="section-container py-24 text-center">
       <p class="text-sm font-medium text-primary uppercase tracking-wider mb-4">dotani.net</p>
@@ -102,22 +87,24 @@ function groupHalfSections(sections: any[]): Array<{ section: any } | 'half-row'
   )}
 
   {visibleSections.map((section, index) => {
-    const isHalfStart = section?.sectionWidth === 'half' && visibleSections[index + 1]?.sectionWidth === 'half'
-    const isHalfEnd = visibleSections[index - 1]?.sectionWidth === 'half' && section?.sectionWidth === 'half'
+    const prev = visibleSections[index - 1]
+    const next = visibleSections[index + 1]
+    const isHalfStart = section?.sectionWidth === 'half' && next?.sectionWidth === 'half'
+    const isHalfEnd = prev?.sectionWidth === 'half' && section?.sectionWidth === 'half'
 
     if (isHalfStart) {
-      const nextSection = visibleSections[index + 1]
+      const nextSection = next
       const Component = resolveComponent(section._type)
       const NextComponent = resolveComponent(nextSection._type)
       if (!Component || !NextComponent) return null
 
       return (
-        <div class="flex flex-col md:flex-row gap-6 sm:gap-8" id={section.sectionId || undefined}>
+        <div class="flex flex-col md:flex-row gap-[var(--space-card-gap)]" id={section.sectionId || undefined}>
           <div class="flex-1 min-w-0 md:w-1/2">
-            <Component {...sectionProps(section)} />
+            <Component {...sectionProps({ ...section, sectionWidth: undefined })} />
           </div>
           <div class="flex-1 min-w-0 md:w-1/2" id={nextSection.sectionId || undefined}>
-            <NextComponent {...sectionProps(nextSection)} />
+            <NextComponent {...sectionProps({ ...nextSection, sectionWidth: undefined })} />
           </div>
         </div>
       )
@@ -128,12 +115,14 @@ function groupHalfSections(sections: any[]): Array<{ section: any } | 'half-row'
     const Component = resolveComponent(section._type)
     if (!Component) return null
 
+    const overrideWidth = effectiveSectionWidth(section, prev, next)
+
     return (
       <div
         id={section.sectionId || undefined}
         class={section.sectionWidth === 'full' ? 'w-screen relative left-1/2 -translate-x-1/2' : ''}
       >
-        <Component {...sectionProps(section)} />
+        <Component {...sectionProps(overrideWidth !== section.sectionWidth ? { ...section, sectionWidth: overrideWidth } : section)} />
       </div>
     )
   })}

@@ -32,12 +32,12 @@ const hasIcon = Boolean(item.icon) && showIcon
 const hasCategory = Boolean(item.category) && showTagPill
 ---
 
-<article class={`master-card ${additionalClass}`}>
+<article class={`master-card ${additionalClass}`} data-card-spotlight>
   {hasImage ? (
     <>
       <a
         href={href}
-        class="relative block aspect-[5/3] sm:aspect-video overflow-hidden master-card-image-link"
+        class="relative block aspect-[5/3] sm:aspect-video overflow-hidden master-card-image-link group"
         aria-label={`View: ${item.title}`}
         tabindex="0"
       >
@@ -47,11 +47,6 @@ const hasCategory = Boolean(item.category) && showTagPill
           class="master-card-image w-full h-full object-cover"
           loading="lazy"
         />
-        {hasCategory && (
-          <div class="master-card-tag-pill-overlay" aria-hidden="true">
-            <span class="tag-pill master-card-tag-pill">{item.category}</span>
-          </div>
-        )}
         <div class="master-card-overlay" aria-hidden="true">
           <div class="master-card-overlay-label">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -60,6 +55,11 @@ const hasCategory = Boolean(item.category) && showTagPill
             View Project
           </div>
         </div>
+        {hasCategory && (
+          <div class="master-card-tag-pill-overlay" aria-hidden="true">
+            <span class="tag-pill master-card-tag-pill">{item.category}</span>
+          </div>
+        )}
       </a>
 
       <div class="master-card-body flex flex-col gap-3">
@@ -67,14 +67,14 @@ const hasCategory = Boolean(item.category) && showTagPill
           <div class="master-card-header-with-badge">
             <ServiceBadge icon={item.icon} />
             <h3 class="master-card-title">
-              <a href={href} class="hover:text-primary transition-colors">
+              <a href={href}>
                 {item.title}
               </a>
             </h3>
           </div>
         ) : (
           <h3 class="master-card-title">
-            <a href={href} class="hover:text-primary transition-colors">
+            <a href={href}>
               {item.title}
             </a>
           </h3>
@@ -85,7 +85,7 @@ const hasCategory = Boolean(item.category) && showTagPill
         {item.role && (
           <p class="master-card-meta">Role: {item.role}</p>
         )}
-        <a href={href} class="link-chip self-start">
+        <a href={href} class="link-chip self-start mt-auto">
           View Project
           <span aria-hidden="true">→</span>
         </a>
@@ -98,15 +98,15 @@ const hasCategory = Boolean(item.category) && showTagPill
       {hasIcon ? (
         <div class="master-card-header-with-badge">
           <ServiceBadge icon={item.icon} />
-          <h3 class="master-card-title flex-1">
-            <a href={href} class="hover:text-primary transition-colors">
+          <h3 class="master-card-title">
+            <a href={href}>
               {item.title}
             </a>
           </h3>
         </div>
       ) : (
         <h3 class="master-card-title-full">
-          <a href={href} class="hover:text-primary transition-colors">
+          <a href={href}>
             {item.title}
           </a>
         </h3>
@@ -120,7 +120,7 @@ const hasCategory = Boolean(item.category) && showTagPill
         <p class="master-card-meta">Role: {item.role}</p>
       )}
 
-      <a href={href} class="link-chip self-start">
+      <a href={href} class="link-chip self-start mt-auto">
         View Project
         <span aria-hidden="true">→</span>
       </a>

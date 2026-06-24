@@ -3,13 +3,11 @@ import '../styles/global.css'
 import { getSiteSettings } from '../lib/sanity'
 import { themeStyle, THEME_STORAGE_KEY, resolveInitialScheme, mergeInlineStyles } from '../lib/theme'
 import { layoutStyle } from '../lib/layout'
-import MobileNav from '../components/MobileNav.astro'
-import ThemeToggle from '../components/ThemeToggle.astro'
-import SocialLinks from '../components/SocialLinks.astro'
-import Footer from '../components/Footer.astro'
+import Header from '../components/layout/Header.astro'
+import MobileNav from '../components/layout/MobileNav.astro'
+import Footer from '../components/layout/Footer.astro'
 import BackToTop from '../components/BackToTop.astro'
 import SiteMotion from '../components/SiteMotion.astro'
-import { isNavActive } from '../lib/navigation'
 import { resolveMenuItems } from '../lib/menus'
 import { resolveSocialLinks } from '../lib/socials'
 
@@ -28,7 +26,6 @@ const htmlThemeStyle = mergeInlineStyles(
 const pathname = Astro.url.pathname
 const headerLogo =
   siteSettings?.brand?.logos?.main || siteSettings?.header?.logo
-const hasLogo = Boolean(headerLogo?.asset?.url)
 const siteTitle =
   siteSettings?.brand?.siteTitle || siteSettings?.header?.title || 'dotani.net'
 const logoAlt =
@@ -67,12 +64,6 @@ const mobileSocialLinks = resolveSocialLinks(
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <script is:inline define:vars={{ THEME_STORAGE_KEY, initialScheme }}>
       (function () {
         try {
@@ -87,7 +78,6 @@ const mobileSocialLinks = resolveSocialLinks(
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
 
-    {/* Open Graph / social sharing meta tags */}
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={title} />
@@ -97,13 +87,11 @@ const mobileSocialLinks = resolveSocialLinks(
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content={siteTitle} />
 
-    {/* Twitter Card */}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     {description && <meta name="twitter:description" content={description} />}
     <meta name="twitter:image" content={`${Astro.url.origin}/og-image.jpg`} />
 
-    {/* Canonical URL */}
     <link rel="canonical" href={Astro.url.href} />
 
     {includeTurnstile && (
@@ -112,60 +100,20 @@ const mobileSocialLinks = resolveSocialLinks(
   </head>
 
   <body>
-    <header class="site-header">
-      <div class="section-container">
-        <div class="site-header-bar">
-          <div class="site-header-brand">
-            {mobileMenuItems.length > 0 && (
-              <MobileNav menuItems={mobileMenuItems} pathname={pathname} variant="toggle" />
-            )}
-
-            <a href="/" class="site-logo">
-              {hasLogo && (
-                <img
-                  src={headerLogo.asset.url}
-                  alt={logoAlt}
-                  class="site-logo-image"
-                />
-              )}
-              {!hasLogo && (
-                <span class="site-logo-text">
-                  {siteTitle}
-                </span>
-              )}
-            </a>
-          </div>
-
-          {menuItems.length > 0 && (
-            <nav class="site-nav-desktop" aria-label="Main navigation">
-              {menuItems.map((item: any) => (
-                <a
-                  href={item.url}
-                  class:list={[
-                    'nav-link',
-                    { 'nav-link-active': isNavActive(pathname, item.url) },
-                  ]}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-          )}
-
-          <div class="site-header-utilities">
-            {headerSocialLinks.length > 0 && (
-              <SocialLinks links={headerSocialLinks} variant="header" />
-            )}
-            {headerCta?.label && (
-              <a href={headerCta.url} class="btn btn-primary btn-header-cta">
-                {headerCta.label}
-              </a>
-            )}
-            <ThemeToggle />
-          </div>
-        </div>
-      </div>
-    </header>
+    <div class="site-ambient" aria-hidden="true">
+      <span class="site-ambient__orb site-ambient__orb--1"></span>
+      <span class="site-ambient__orb site-ambient__orb--2"></span>
+      <span class="site-ambient__orb site-ambient__orb--3"></span>
+    </div>
+    <Header
+      menuItems={menuItems}
+      pathname={pathname}
+      socialLinks={headerSocialLinks}
+      cta={headerCta?.label ? headerCta : undefined}
+      logo={headerLogo}
+      logoAlt={logoAlt}
+      siteTitle={siteTitle}
+    />
 
     {mobileMenuItems.length > 0 && (
       <MobileNav

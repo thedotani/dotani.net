@@ -1,0 +1,25 @@
+---
+interface Props {
+  variant?: 'elevated' | 'interactive' | 'flat'
+  class?: string
+  padding?: 'none' | 'sm' | 'md' | 'lg'
+}
+
+const {
+  variant = 'elevated',
+  class: className = '',
+  padding = 'md',
+  ...rest
+} = Astro.props
+
+const classes = [
+  'card',
+  variant !== 'elevated' && `card--${variant}`,
+  padding !== 'md' && `card--pad-${padding}`,
+  className,
+].filter(Boolean).join(' ')
+---
+
+<div class={classes} {...rest}>
+  <slot />
+</div>

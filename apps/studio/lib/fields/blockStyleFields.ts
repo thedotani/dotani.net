@@ -70,14 +70,36 @@ export const blockStyleFields = [
     type: 'string',
     options: {
       list: [
-        {title: 'Container (default)', value: 'container'},
         {title: 'Full (100vw)', value: 'full'},
         {title: 'Half (50%)', value: 'half'},
       ],
       layout: 'radio',
       direction: 'horizontal',
     },
-    initialValue: 'container',
+  }),
+  defineField({
+    name: 'imageSide',
+    title: 'Image side',
+    type: 'string',
+    description: 'Position of section image when content is in custom mode.',
+    options: {
+      list: [
+        {title: 'Right', value: 'right'},
+        {title: 'Left', value: 'left'},
+      ],
+      layout: 'radio',
+      direction: 'horizontal',
+    },
+    initialValue: 'right',
+    hidden: ({parent}) => parent?.contentMode !== 'custom',
+  }),
+  defineField({
+    name: 'imageWidth',
+    title: 'Image width',
+    type: 'number',
+    description: 'Width percentage of section image when present (e.g., 40 for 40%).',
+    validation: (rule) => rule.min(10).max(90),
+    initialValue: 40,
   }),
   defineField({
     name: 'customColors',

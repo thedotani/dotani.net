@@ -1,12 +1,12 @@
 /** Maps Sanity section padding values to independent top/bottom Tailwind classes. */
 const PADDING_MAP: Record<string, { pt: string; pb: string }> = {
   'section-pad': {
-    pt: 'pt-14 sm:pt-16 md:pt-24',
-    pb: 'pb-14 sm:pb-16 md:pb-24',
-  },
-  'section-pad-sm': {
     pt: 'pt-10 sm:pt-12 md:pt-16',
     pb: 'pb-10 sm:pb-12 md:pb-16',
+  },
+  'section-pad-sm': {
+    pt: 'pt-8 sm:pt-10 md:pt-12',
+    pb: 'pb-8 sm:pb-10 md:pb-12',
   },
   'py-8': { pt: 'pt-8', pb: 'pb-8' },
   'py-12': { pt: 'pt-12', pb: 'pb-12' },

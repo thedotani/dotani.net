@@ -1,0 +1,45 @@
+{
+  "session": "dark-minimal-redesign-2026-06-23",
+  "lastCompleted": "phase-8-polish",
+  "phases": {
+    "phase-1": "Self-host fonts (Inter+Fraunces woff2), create tokens.css, base.css, layout.css, components.css, rewrite global.css as import chain",
+    "phase-2": "Build 8 UI primitives: Button, Card, Badge, Input, Tag, LinkChip, SectionHeader, Divider in components/ui/",
+    "phase-3": "Refactor Layout, Header, Footer, MobileNav, ThemeToggle to components/layout/, fix class naming, extract Header component with mobile menu JS",
+    "phase-4": "Add section styles (hero, block-layout, media-frame, rich-text-prose, stats-row) to pages.css for existing CMS sections",
+    "phase-5": "Add card styles (card-surface, listing-card, master-card, tag-pill, portfolio-card, testimonial-card, service-badge) to pages.css",
+    "phase-6": "Add detail page styles (detail-hero, detail-orb, detail-section, detail-timeline, detail-gallery, detail-metric, detail-cta, detail-tags) to pages.css",
+    "phase-7": "Simplify motion: removed Lenis, parallax, scroll progress, header visibility; kept scroll-reveal (fadeUp), card spotlight, back-to-top; removed lenis dependency",
+    "phase-8": "Final build verification, CHANGELOG update"
+  },
+  "cssArchitecture": {
+    "tokens.css": "CSS custom properties: colors, glass, accents, typography, spacing, shadows, motion",
+    "base.css": "@font-face declarations, CSS reset, typography, dark theme overrides",
+    "layout.css": "Container, grid, section, flex/text utilities, responsive display, scroll-reveal keyframe",
+    "components.css": "8 UI primitives: Button, Card, Badge, Input, Tag, LinkChip, SectionHeader, Divider",
+    "pages.css": "Header, footer, hero, block-layout, cards, detail pages, stats, forms",
+    "global.css": "Thin import chain: tailwindcss + tokens + base + layout + components + pages"
+  },
+  "designSystem": {
+    "aesthetic": "Dark minimal (Linear/Vercel/Raycast style)",
+    "themes": "Light + dark, user-switchable via data-theme attribute",
+    "fonts": "Inter (body) + Fraunces (display), self-hosted woff2",
+    "motion": "Minimal: fadeUp scroll-reveal, cursor card spotlight, back-to-top",
+    "components": "8 primitives with variant/size props, composable"
+  },
+  "fileStructure": {
+    "styles/": "tokens.css, base.css, layout.css, components.css, pages.css, global.css",
+    "components/ui/": "Button.astro, Card.astro, Badge.astro, Input.astro, Tag.astro, LinkChip.astro, SectionHeader.astro, Divider.astro",
+    "components/layout/": "Header.astro, Footer.astro, MobileNav.astro, ThemeToggle.astro, SocialLinks.astro",
+    "components/sections/": "ContentBoxSection.astro, ContentSetSection.astro, RichTextSection.astro (existing, CSS-compatible)",
+    "assets/fonts/": "inter-latin.woff2, fraunces-600-latin.woff2, fraunces-700-latin.woff2"
+  },
+  "stats": {
+    "cssLinesBefore": 2719,
+    "cssLinesAfter": 2121,
+    "reduction": "22%",
+    "cssFiles": 6,
+    "uiPrimitives": 8,
+    "animations": 2,
+    "dependenciesRemoved": ["lenis"]
+  }
+}

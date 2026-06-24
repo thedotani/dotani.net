@@ -14,7 +14,59 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-_Work in progress since the last checkpoint._
+### Changed
+
+- **Complete CSS architecture rewrite** — Replaced 2,719-line monolithic `global.css` with 6 focused files: `tokens.css`, `base.css`, `layout.css`, `components.css`, `pages.css`, and thin `global.css` import chain
+- **Self-hosted fonts** — Inter + Fraunces downloaded as woff2, eliminating Google Fonts requests and FOIT flicker
+- **Dark minimal design system** — Linear/Vercel-inspired aesthetic with CSS custom property tokens for light/dark themes, minimal color accents, clean typography
+- **8 UI primitives** — Button, Card, Badge, Input, Tag, LinkChip, SectionHeader, Divider in `components/ui/`
+- **Layout component refactor** — Header, Footer, MobileNav, ThemeToggle, SocialLinks extracted to `components/layout/`, Header component created with hamburger toggle + scroll JS
+- **Motion system simplified** — Removed Lenis smooth scroll, parallax, scroll progress; kept scroll-reveal (fadeUp), card spotlight, and back-to-top
+- **Removed `lenis` dependency** — No longer needed after motion simplification
+
+- Stats section: auto-width metrics with universal `--space-card-gap`, min-width 7rem, no justify-between
+- Section header: restructured to `title+gap+tagline+gap+link` single flex flow using universal gap
+- Master Card: tag-pill moved after overlay in DOM order + z-index so it stays visible on hover
+- CMS section width options: reduced to `Full` and `Half` only; missing/empty defaults to site container width
+- Half-width sections: lone half defaults to container width; paired halves render as flex row with universal gap
+
+### Redesign
+
+- Premium futuristic editorial visual system overhaul
+- Design tokens: deeper dark backgrounds (#080d19), refined card surfaces, layered shadow system with `--shadow-glow`
+- **Card system redesign**: holographic gradient borders, cursor-tracking spotlight, animated accents across all card types
+- MasterCard: holographic border on hover, radial spotlight follows cursor, image zoom+brightness+saturate, gradient overlay, animated tag pill reveal, title color transition
+- Listing cards: holographic shimmer top accent line, cursor spotlight, deeper dark glass with inset highlights, stronger hover lift (translateY -10px)
+- Testimonial cards: floating gradient quote mark with floatQuote animation, holographic top accent, gradient avatar fallback
+- Metric cards: conic gradient border glow on hover, enhanced dark mode glass
+- Service badge: conic gradient glow ring on hover with borderRotate animation
+- Tag pills: gradient background with glow shadow on hover
+- Link chips: holographic shimmer sweep on hover
+- Detail panels: animated top accent line reveal on hover
+- Card spotlight JS: tracks cursor position for interactive radial gradient on all `[data-card-spotlight]` elements
+- Typography: stronger display scale (hero 2rem→4rem), `text-wrap: balance` on headings, tighter leading (1.05)
+- Spacing: generous section rhythm (`--space-section-gap`), wider container padding, larger card inner spacing
+- Hero section: larger viewport height (88vh), cinematic gradient orbs with 32rem glow, slower pulse animation
+- Cards: rounded-xl→rounded-1.25rem, layered dark mode gradients with glass blur, premium hover lift (translateY -4px)
+- Testimonials: oversized decorative quote mark (5rem), deeper glass blur, refined opacity transitions
+- Link chips: glass morphism backdrop-blur(10px→12px), refined hover glow shadows
+- Service badges: subtler gradient, refined hover shadow spread
+- Listing cards: premium hover scale (1.015), gradient top-line reveal, stronger dark mode glass effect
+- Buttons: bolder font-semibold, slower 300ms transitions, tighter active scale
+- Block sections: expanded padding (14→28 units), larger gaps between content blocks
+- Hero entrance animations: slower stagger (1.2s), deeper blur (10px), more cinematic easing
+- Footer: refined border opacity, generous padding, subtle gradient overlay
+- Dark mode: richer body background, stronger inset card highlights, refined border opacities
+- Motion: unified 300-400ms transitions, `--motion-ease-out` token for future use
+
+## [2026-06-21-initialize-ai-agent-operating-system-claude-curs] — 2026-06-21
+
+> **Checkpoint:** `checkpoint/2026-06-21-initialize-ai-agent-operating-system-claude-curs` · **Commit:** `b4dd7e0` · **Restore:** `git checkout checkpoint/2026-06-21-initialize-ai-agent-operating-system-claude-curs`
+
+### Added
+
+- Initialize AI agent operating system (Claude + Cursor rules + skills)
+  - 88 files, 731 lines changed
 
 ## [2026-06-20-feat-unified-cms-sections-studio-ux-and-frontend] — 2026-06-20
 

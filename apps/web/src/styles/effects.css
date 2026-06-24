@@ -1,0 +1,199 @@
+/* ===========================================
+   EFFECTS — Ambient canvas, spotlight, motion
+   =========================================== */
+
+/* --- Site ambient (fixed, non-interactive) --- */
+.site-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background-color: var(--color-bg);
+}
+
+.site-ambient__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.35;
+  transform: translate3d(0, 0, 0);
+  animation: ambientDrift 28s ease-in-out infinite alternate;
+}
+
+.site-ambient__orb--1 {
+  width: min(55vw, 36rem);
+  height: min(55vw, 36rem);
+  top: -12%;
+  left: -8%;
+  background: var(--ambient-primary);
+}
+
+.site-ambient__orb--2 {
+  width: min(45vw, 28rem);
+  height: min(45vw, 28rem);
+  top: 35%;
+  right: -10%;
+  background: var(--ambient-purple);
+  animation-delay: -8s;
+}
+
+.site-ambient__orb--3 {
+  width: min(40vw, 22rem);
+  height: min(40vw, 22rem);
+  bottom: -5%;
+  left: 25%;
+  background: var(--ambient-accent);
+  animation-delay: -14s;
+}
+
+[data-theme='dark'] .site-ambient__orb {
+  opacity: 0.55;
+}
+
+[data-theme='dark'] .site-ambient {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -30%, rgb(99 102 241 / 0.12), transparent 55%),
+    var(--color-bg);
+}
+
+@keyframes ambientDrift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 3%, 0) scale(1.06);
+  }
+}
+
+/* --- Card cursor spotlight --- */
+[data-card-spotlight] {
+  --card-spotlight-x: 50%;
+  --card-spotlight-y: 50%;
+  position: relative;
+  isolation: isolate;
+}
+
+[data-card-spotlight]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out);
+  background: radial-gradient(
+    520px circle at var(--card-spotlight-x) var(--card-spotlight-y),
+    color-mix(in srgb, var(--color-primary) 22%, transparent),
+    transparent 42%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (hover: hover) {
+  [data-card-spotlight]:hover::after {
+    opacity: 1;
+  }
+}
+
+[data-card-spotlight] > * {
+  position: relative;
+  z-index: 1;
+}
+
+.detail-hero[data-card-spotlight]::after {
+  display: none;
+}
+
+/* --- Scroll motion --- */
+[data-motion='rise'],
+[data-motion='fade'],
+[data-motion='scale'] {
+  opacity: 0;
+}
+
+[data-motion='rise'].motion-in {
+  animation: motionRise var(--duration-slow) var(--ease-out) forwards;
+  animation-delay: var(--motion-delay, 0ms);
+}
+
+[data-motion='fade'].motion-in {
+  animation: motionFade var(--duration-slow) var(--ease-out) forwards;
+  animation-delay: var(--motion-delay, 0ms);
+}
+
+[data-motion='scale'].motion-in {
+  animation: motionScale var(--duration-slow) var(--ease-out) forwards;
+  animation-delay: var(--motion-delay, 0ms);
+}
+
+[data-motion-stagger] > * {
+  opacity: 0;
+}
+
+[data-motion-stagger].motion-in > * {
+  animation: motionRise var(--duration-slow) var(--ease-out) forwards;
+}
+
+[data-motion-stagger].motion-in > *:nth-child(1) { animation-delay: 0ms; }
+[data-motion-stagger].motion-in > *:nth-child(2) { animation-delay: 70ms; }
+[data-motion-stagger].motion-in > *:nth-child(3) { animation-delay: 140ms; }
+[data-motion-stagger].motion-in > *:nth-child(4) { animation-delay: 210ms; }
+[data-motion-stagger].motion-in > *:nth-child(5) { animation-delay: 280ms; }
+[data-motion-stagger].motion-in > *:nth-child(6) { animation-delay: 350ms; }
+[data-motion-stagger].motion-in > *:nth-child(7) { animation-delay: 420ms; }
+[data-motion-stagger].motion-in > *:nth-child(8) { animation-delay: 490ms; }
+[data-motion-stagger].motion-in > *:nth-child(9) { animation-delay: 560ms; }
+[data-motion-stagger].motion-in > *:nth-child(10) { animation-delay: 630ms; }
+[data-motion-stagger].motion-in > *:nth-child(11) { animation-delay: 700ms; }
+[data-motion-stagger].motion-in > *:nth-child(12) { animation-delay: 770ms; }
+
+@keyframes motionRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes motionFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes motionScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-ambient__orb {
+    animation: none;
+  }
+
+  [data-motion='rise'],
+  [data-motion='fade'],
+  [data-motion='scale'],
+  [data-motion-stagger] > * {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  [data-card-spotlight]::after {
+    display: none;
+  }
+}

@@ -32,7 +32,7 @@ function sliceItems<T>(items: T[]) {
 {type === 'service' && (
   <div data-motion-stagger class="listing-grid">
     {sliceItems(services).map((service: any) => (
-      <div class="listing-card">
+      <div class="listing-card" data-card-spotlight>
         <ServiceBadge icon={service.icon} />
         <h3 class="font-display text-xl font-semibold text-heading">{service.title}</h3>
         {service.shortDescription && (
@@ -65,10 +65,10 @@ function sliceItems<T>(items: T[]) {
       const thumbnailUrl = item.thumbnail?.asset?.url
       const [from, to] = portfolioAccent(item.title, index)
       return (
-        <article class="group card-surface overflow-hidden p-0">
+        <article class="master-card group" data-card-spotlight>
           <a
             href={href}
-            class="relative block aspect-[5/3] sm:aspect-video overflow-hidden portfolio-img-link"
+            class="master-card-image-link relative block aspect-[5/3] sm:aspect-video overflow-hidden portfolio-img-link"
             aria-label={`View project: ${item.title}`}
           >
             {thumbnailUrl ? (
@@ -95,16 +95,20 @@ function sliceItems<T>(items: T[]) {
                 View Project
               </div>
             </div>
+            {item.category && (
+              <div class="absolute top-3 left-3 z-10">
+                <span class="tag-pill">{item.category}</span>
+              </div>
+            )}
           </a>
-          <div class="portfolio-card-body flex flex-col gap-3">
-            {item.category && <span class="tag-pill">{item.category}</span>}
-            <h3 class="font-display text-lg sm:text-xl font-semibold text-heading">
-              <a href={href} class="hover:text-primary transition-colors">{item.title}</a>
+          <div class="master-card-body flex flex-col gap-3 flex-1">
+            <h3 class="master-card-title">
+              <a href={href}>{item.title}</a>
             </h3>
             {item.shortResult && (
-              <p class="text-sm text-muted leading-relaxed">{item.shortResult}</p>
+              <p class="master-card-description">{item.shortResult}</p>
             )}
-            <a href={href} class="link-chip">
+            <a href={href} class="link-chip mt-auto self-start">
               View Project
               <span aria-hidden="true">→</span>
             </a>
@@ -124,15 +128,22 @@ function sliceItems<T>(items: T[]) {
     ]}
   >
     {sliceItems(testimonials).map((item: any) => (
-      <div class="card-surface testimonial-card flex flex-col gap-4 p-5 sm:p-6 md:p-7">
+      <div class="card-surface testimonial-card flex flex-col gap-4 p-5 sm:p-6 md:p-7" data-card-spotlight>
         {item.quote && <p class="text-muted leading-relaxed">&ldquo;{item.quote}&rdquo;</p>}
-        <div class="flex items-center gap-3">
-          {item.authorAvatar?.asset?.url && (
-            <img
-              src={item.authorAvatar.asset.url}
-              alt={item.authorName}
-              class="w-11 h-11 rounded-full object-cover ring-2 ring-border shrink-0"
-            />
+        <div class="flex items-center gap-3 mt-auto">
+          {item.authorAvatar?.asset?.url ? (
+            <div class="relative">
+              <img
+                src={item.authorAvatar.asset.url}
+                alt={item.authorName}
+                class="w-11 h-11 rounded-full object-cover ring-2 ring-primary/20 shrink-0"
+              />
+              <div class="absolute inset-0 rounded-full ring-2 ring-primary/10 scale-110 opacity-0 transition-opacity duration-300"></div>
+            </div>
+          ) : (
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center ring-2 ring-primary/20 shrink-0">
+              <span class="text-primary font-bold text-sm">{item.authorName?.charAt(0)}</span>
+            </div>
           )}
           <div class="min-w-0">
             <p class="font-display font-semibold text-heading truncate">{item.authorName}</p>
@@ -156,9 +167,12 @@ function sliceItems<T>(items: T[]) {
     {sliceItems(caseStudies).map((item: any) => {
       const href = `/case-studies/${item.slug?.current}`
       return (
-        <article class="listing-card">
+        <article class="listing-card" data-card-spotlight>
           {item.heroImage?.asset?.url && (
-            <img src={item.heroImage.asset.url} alt={item.title} class="media-frame aspect-video mb-4" loading="lazy" />
+            <div class="relative overflow-hidden rounded-xl -mx-[var(--space-card-inner)] -mt-[var(--space-card-inner)] mb-0">
+              <img src={item.heroImage.asset.url} alt={item.title} class="w-full aspect-video object-cover transition-transform duration-600" loading="lazy" />
+              <div class="absolute inset-0 bg-gradient-to-t from-card/60 to-transparent"></div>
+            </div>
           )}
           <h3 class="font-display text-xl font-semibold text-heading">{item.title}</h3>
           {(item.summary || item.client) && (
@@ -174,13 +188,23 @@ function sliceItems<T>(items: T[]) {
 {type === 'blogPost' && (
   <div data-motion-stagger class="listing-grid md:grid-cols-2">
     {sliceItems(blogPosts).map((item: any) => (
-      <article class="listing-card">
+      <article class="listing-card" data-card-spotlight>
+        <div class="flex items-center gap-2 mb-1">
+          <div class="h-1.5 w-1.5 rounded-full bg-primary"></div>
+          {item.publishedAt && (
+            <p class="text-xs text-muted uppercase tracking-wider">
+              {new Date(item.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </p>
+          )}
+        </div>
         <h3 class="font-display text-xl font-semibold text-heading">{item.title}</h3>
-        {item.excerpt && <p class="text-muted flex-1">{item.excerpt}</p>}
-        {item.publishedAt && (
-          <p class="text-xs text-muted uppercase tracking-wider">
-            {new Date(item.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-          </p>
+        {item.excerpt && <p class="text-muted flex-1 leading-relaxed">{item.excerpt}</p>}
+        {item.tags && item.tags.length > 0 && (
+          <div class="flex flex-wrap gap-1.5 mt-auto">
+            {item.tags.slice(0, 3).map((tag: string) => (
+              <span class="tag-pill">{tag}</span>
+            ))}
+          </div>
         )}
       </article>
     ))}

@@ -25,7 +25,7 @@ const href = calLink || (import.meta.env.PUBLIC_CALCOM_USERNAME
     {headline && <h2 class="section-heading mb-4">{headline}</h2>}
     {supportingText && <p class="section-tagline mb-8">{supportingText}</p>}
     {href && (
-      <a href={href} target="_blank" rel="noopener noreferrer" class="btn btn-contrast">
+      <a href={href} target="_blank" rel="noopener noreferrer" class="btn btn--primary">
         {buttonLabel}
       </a>
     )}
@@ -37,7 +37,7 @@ const href = calLink || (import.meta.env.PUBLIC_CALCOM_USERNAME
       {supportingText && <p class="section-tagline">{supportingText}</p>}
     </div>
     {href && (
-      <a href={href} target="_blank" rel="noopener noreferrer" class="btn btn-contrast shrink-0">
+      <a href={href} target="_blank" rel="noopener noreferrer" class="btn btn--primary shrink-0">
         {buttonLabel}
       </a>
     )}

@@ -1,0 +1,40 @@
+---
+interface Props {
+  type?: 'text' | 'email' | 'tel' | 'url' | 'password'
+  name?: string
+  placeholder?: string
+  required?: boolean
+  value?: string
+  class?: string
+  error?: string
+  id?: string
+}
+
+const {
+  type = 'text',
+  name,
+  placeholder,
+  required = false,
+  value,
+  class: className = '',
+  error,
+  id,
+  ...rest
+} = Astro.props
+
+const inputId = id || name
+---
+
+<div class:list={['form-field', error && 'form-field--error', className].filter(Boolean)}>
+  <input
+    type={type}
+    name={name}
+    id={inputId}
+    placeholder={placeholder}
+    required={required}
+    value={value}
+    class="input"
+    {...rest}
+  />
+  {error && <p class="form-error">{error}</p>}
+</div>

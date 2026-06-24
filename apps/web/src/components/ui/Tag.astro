@@ -1,0 +1,33 @@
+---
+interface Props {
+  variant?: 'default' | 'category'
+  size?: 'sm' | 'md'
+  href?: string
+  class?: string
+}
+
+const {
+  variant = 'default',
+  size = 'md',
+  href,
+  class: className = '',
+  ...rest
+} = Astro.props
+
+const classes = [
+  'tag',
+  variant !== 'default' && `tag--${variant}`,
+  size !== 'md' && `tag--${size}`,
+  className,
+].filter(Boolean).join(' ')
+---
+
+{href ? (
+  <a href={href} class={classes} {...rest}>
+    <slot />
+  </a>
+) : (
+  <span class={classes} {...rest}>
+    <slot />
+  </span>
+)}

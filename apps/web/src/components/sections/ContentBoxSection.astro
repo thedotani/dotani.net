@@ -5,7 +5,7 @@ import DynamicContent from '../DynamicContent.astro'
 import ContactForm from '../ContactForm.astro'
 import BookingBlock from '../BookingBlock.astro'
 import ServiceBadge from '../ServiceBadge.astro'
-import { sectionContainerClass } from '../../lib/sections'
+import { sectionContainerClass, sectionPaddingClasses } from '../../lib/sections'
 import { blockSurfaceClass, blockInlineStyle } from '../../lib/blockStyle'
 import { resolveSectionMeta, sectionShellClasses } from '../../lib/sectionStyle'
 
@@ -48,6 +48,7 @@ const meta = resolveSectionMeta(section)
 const surfaceClass = blockSurfaceClass(section)
 const inlineStyle = blockInlineStyle(section)
 const shellClasses = sectionShellClasses(section, surfaceClass)
+const paddingClasses = sectionPaddingClasses(section.paddingTop, section.paddingBottom)
 const imageUrl = image?.asset?.url
 
 function resolveDynamicLimit(type?: string) {
@@ -59,7 +60,7 @@ function resolveDynamicLimit(type?: string) {
 ---
 
 <section
-  class:list={shellClasses}
+  class:list={[shellClasses, paddingClasses]}
   style={inlineStyle}
   data-block-gap={section.spacingMode === 'custom' ? 'custom' : undefined}
 >
@@ -134,7 +135,7 @@ function resolveDynamicLimit(type?: string) {
                 value={customContent}
                 class:list={[
                   'text-muted text-base sm:text-lg leading-relaxed',
-                  meta.isCentered ? 'mx-auto max-w-2xl' : 'max-w-2xl',
+                  meta.isCentered && 'mx-auto',
                 ]}
               />
             </div>
@@ -168,8 +169,8 @@ function resolveDynamicLimit(type?: string) {
                   href={button.url}
                   class:list={[
                     'btn',
-                    `btn-${button.style || 'primary'}`,
-                    meta.useCtaGradient && (button.style === 'primary' || !button.style) && 'btn-contrast',
+                    `btn btn--${button.style || 'primary'}`,
+                    meta.useCtaGradient && (button.style === 'primary' || !button.style) && 'btn--primary',
                   ]}
                   target={button.openInNewTab ? '_blank' : undefined}
                   rel={button.openInNewTab ? 'noopener noreferrer' : undefined}
@@ -190,7 +191,7 @@ function resolveDynamicLimit(type?: string) {
               <img
                 src={imageUrl}
                 alt={title || 'Section image'}
-                class="media-frame aspect-[4/3]"
+                class:list={['media-frame aspect-[4/3]', imageUrl && 'section-image-mobile']}
                 loading={meta.isHomeHero ? 'eager' : 'lazy'}
               />
             </div>
@@ -205,22 +206,22 @@ function resolveDynamicLimit(type?: string) {
   <style>
     .hero-anim {
       opacity: 0;
-      animation: heroFadeUp 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    .hero-anim-1 { animation-delay: 80ms; }
-    .hero-anim-2 { animation-delay: 200ms; }
-    .hero-anim-4 { animation-delay: 420ms; }
-    .hero-anim-5 { animation-delay: 520ms; }
+    .hero-anim-1 { animation-delay: 100ms; }
+    .hero-anim-2 { animation-delay: 250ms; }
+    .hero-anim-4 { animation-delay: 480ms; }
+    .hero-anim-5 { animation-delay: 580ms; }
     .hero-anim-img {
       opacity: 0;
-      animation: heroScaleIn 1.3s cubic-bezier(0.22, 1, 0.36, 1) 300ms forwards;
+      animation: heroScaleIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) 350ms forwards;
     }
     @keyframes heroFadeUp {
-      from { opacity: 0; transform: translate3d(0, 45px, 0); filter: blur(8px); }
+      from { opacity: 0; transform: translate3d(0, 50px, 0); filter: blur(10px); }
       to { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
     }
     @keyframes heroScaleIn {
-      from { opacity: 0; transform: scale(0.9) translate3d(0, 30px, 0); filter: blur(10px); }
+      from { opacity: 0; transform: scale(0.88) translate3d(0, 35px, 0); filter: blur(12px); }
       to { opacity: 1; transform: scale(1) translate3d(0, 0, 0); filter: blur(0); }
     }
     @media (prefers-reduced-motion: reduce) {

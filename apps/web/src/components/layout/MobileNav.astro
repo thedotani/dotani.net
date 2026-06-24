@@ -1,0 +1,70 @@
+---
+import SocialLinks from './SocialLinks.astro'
+import { isNavActive } from '../../lib/navigation'
+
+interface Props {
+  menuItems: Array<{ label: string; url: string }>
+  pathname: string
+  socialLinks?: Array<{ platform: string; url: string }>
+  menuFooterItems?: Array<{ label: string; url: string }>
+  menuFooterText?: string
+  variant?: 'toggle' | 'overlay'
+}
+
+const {
+  menuItems,
+  pathname,
+  socialLinks = [],
+  menuFooterItems = [],
+  menuFooterText,
+  variant = 'toggle',
+} = Astro.props
+---
+
+{variant === 'overlay' && (
+  <div
+    id="mobile-menu-overlay"
+    class="mobile-menu-overlay"
+    data-mobile-menu-overlay
+    aria-hidden="true"
+  >
+    <button type="button" class="mobile-menu-backdrop" data-mobile-menu-backdrop aria-label="Close menu"></button>
+    <div class="mobile-menu-drawer" role="dialog" aria-modal="true" aria-label="Site navigation">
+      <nav class="mobile-menu-grid">
+        {menuItems.map((item) => (
+          <a
+            href={item.url}
+            class:list={[
+              'mobile-menu-item',
+              { 'mobile-menu-item--active': isNavActive(pathname, item.url) },
+            ]}
+            data-mobile-nav-link
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      {socialLinks.length > 0 && (
+        <>
+          <div class="mobile-menu-separator" role="presentation"></div>
+          <SocialLinks links={socialLinks} variant="menu" />
+        </>
+      )}
+
+      {menuFooterItems.length > 0 && (
+        <nav class="mobile-menu-footer" aria-label="Mobile menu footer">
+          {menuFooterItems.map((item) => (
+            <a href={item.url} class="mobile-menu-footer-link" data-mobile-nav-link>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      )}
+
+      {menuFooterText && (
+        <p class="mobile-menu-footer">{menuFooterText}</p>
+      )}
+    </div>
+  </div>
+)}

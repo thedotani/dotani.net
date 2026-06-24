@@ -62,12 +62,12 @@ export function sectionShellClasses(
 }
 
 const PORTFOLIO_ACCENTS = [
-  ['#be185d', '#831843'],
+  ['#e11d48', '#881337'],
   ['#7c3aed', '#4c1d95'],
-  ['#db2777', '#9d174d'],
-  ['#059669', '#065f46'],
-  ['#0284c7', '#075985'],
-  ['#d97706', '#92400e'],
+  ['#db2777', '#831843'],
+  ['#0891b2', '#164e63'],
+  ['#ea580c', '#7c2d12'],
+  ['#059669', '#064e3b'],
 ]
 
 export function portfolioAccent(title = '', index = 0) {
