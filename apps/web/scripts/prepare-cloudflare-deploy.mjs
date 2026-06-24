@@ -10,7 +10,7 @@ writeFileSync(
   JSON.stringify({
     version: 1,
     include: ['/*'],
-    exclude: ['/_astro/*', '/favicon.ico', '/favicon.svg'],
+    exclude: ['/favicon.ico', '/favicon.svg'],
   }),
 );
 
