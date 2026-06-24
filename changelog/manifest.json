@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastProcessedCommit": "b4dd7e0910747689e02c3544124e18fc298f9fd1",
+  "lastProcessedCommit": "86ace21bc8e524587f401d1c5b8e96f82eeb43a5",
   "entries": [
     {
       "id": "2026-06-15-initial-commit-from-astro",
@@ -195,6 +195,19 @@
       "summary": "Initialize AI agent operating system (Claude + Cursor rules + skills)",
       "filesChanged": 88,
       "linesChanged": 731,
+      "reason": "large diff"
+    },
+    {
+      "id": "2026-06-24-website-v1-is-ready",
+      "date": "2026-06-24",
+      "commit": "86ace21bc8e524587f401d1c5b8e96f82eeb43a5",
+      "shortCommit": "86ace21",
+      "tag": "checkpoint/2026-06-24-website-v1-is-ready",
+      "title": "Website v1 is ready",
+      "category": "Added",
+      "summary": "Website v1 is ready",
+      "filesChanged": 48,
+      "linesChanged": 7210,
       "reason": "large diff"
     }
   ]

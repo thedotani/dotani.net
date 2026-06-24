@@ -780,8 +780,13 @@ body.menu-open {
     min-width: 0;
   }
 
+  /* Default: 33% image width, or use CSS variable if set */
   .block-layout--split > .block-layout__image {
     flex: 0 0 33%;
+  }
+
+  .block-layout--split[style*="--image-width"] > .block-layout__image {
+    flex: 0 0 calc(var(--image-width, 33) * 1%);
   }
 
   /* Image on left side via order */
