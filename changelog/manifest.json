@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastProcessedCommit": "dda2b58ab930c1ae2ec7a2879afc51a4a37cd680",
+  "lastProcessedCommit": "4863688128580e3c12039a1f53ce1304ca64576a",
   "entries": [
     {
       "id": "2026-06-15-initial-commit-from-astro",
@@ -222,6 +222,19 @@
       "filesChanged": 7,
       "linesChanged": 76,
       "reason": "large diff"
+    },
+    {
+      "id": "2026-07-01-feat-add-floating-share-button-with-web-share-ap",
+      "date": "2026-07-01",
+      "commit": "4863688128580e3c12039a1f53ce1304ca64576a",
+      "shortCommit": "4863688",
+      "tag": "checkpoint/2026-07-01-feat-add-floating-share-button-with-web-share-ap",
+      "title": "add floating share button with Web Share API + clipboard fallback",
+      "category": "Added",
+      "summary": "feat: add floating share button with Web Share API + clipboard fallback",
+      "filesChanged": 127,
+      "linesChanged": 25639,
+      "reason": "feat"
     }
   ]
 }

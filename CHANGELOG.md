@@ -16,6 +16,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 _Work in progress since the last checkpoint._
 
+## [2026-07-01-feat-add-floating-share-button-with-web-share-ap] — 2026-07-01
+
+> **Checkpoint:** `checkpoint/2026-07-01-feat-add-floating-share-button-with-web-share-ap` · **Commit:** `4863688` · **Restore:** `git checkout checkpoint/2026-07-01-feat-add-floating-share-button-with-web-share-ap`
+
+### Added
+
+- add floating share button with Web Share API + clipboard fallback
+  - _feat: add floating share button with Web Share API + clipboard fallback_
+  - 127 files, 25639 lines changed
+
 ## [2026-06-24-fix-imagewidth-default-to-33-css-variable-handli] — 2026-06-24
 
 > **Checkpoint:** `checkpoint/2026-06-24-fix-imagewidth-default-to-33-css-variable-handli` · **Commit:** `dda2b58` · **Restore:** `git checkout checkpoint/2026-06-24-fix-imagewidth-default-to-33-css-variable-handli`
