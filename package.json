@@ -24,6 +24,7 @@
     "changelog:push-tags": "node ./scripts/changelog.mjs push-tags"
   },
   "devDependencies": {
+    "playwright": "^1.61.1",
     "wrangler": "^4.101.0"
   }
 }

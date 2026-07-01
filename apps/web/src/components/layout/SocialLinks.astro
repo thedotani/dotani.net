@@ -1,4 +1,6 @@
 ---
+import styles from './SocialLinks.module.css'
+
 interface SocialLink {
   platform: string
   url: string
@@ -13,9 +15,9 @@ const { links, variant = 'footer' } = Astro.props
 const validLinks = links.filter((link) => link?.url && link?.platform)
 
 const variantClass = {
-  footer: 'social-links social-links-footer',
-  menu: 'social-links social-links-menu',
-  header: 'social-links social-links-header',
+  footer: `${styles['social-links']}`,
+  menu: `${styles['social-links']} ${styles['social-links-menu']}`,
+  header: `${styles['social-links']} ${styles['social-links-header']}`,
 }[variant]
 ---
 
@@ -24,7 +26,7 @@ const variantClass = {
     {validLinks.map((social) => (
       <a
         href={social.url}
-        class="social-link"
+        class={styles['social-link']}
         aria-label={social.platform}
         target="_blank"
         rel="noopener noreferrer"

@@ -1,0 +1,1 @@
+(function(){var e=document.getElementById("back-to-top");if(!e)return;function t(){var n=window.scrollY>300;n?e.setAttribute("data-visible",""):e.removeAttribute("data-visible")}t(),window.addEventListener("scroll",t,{passive:!0}),e.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})})()

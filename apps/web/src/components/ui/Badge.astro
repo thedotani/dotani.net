@@ -1,4 +1,6 @@
 ---
+import styles from './Badge.module.css'
+
 interface Props {
   variant?: 'accent' | 'success' | 'primary'
   size?: 'sm' | 'md'
@@ -13,9 +15,9 @@ const {
 } = Astro.props
 
 const classes = [
-  'badge',
-  `badge--${variant}`,
-  size !== 'md' && `badge--${size}`,
+  styles.badge,
+  styles[`badge--${variant}`],
+  size !== 'md' && styles[`badge--${size}`],
   className,
 ].filter(Boolean).join(' ')
 ---

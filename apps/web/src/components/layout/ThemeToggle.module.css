@@ -1,0 +1,23 @@
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-bg-elevated);
+}
+
+[data-theme='dark'] .theme-toggle:hover {
+  background-color: var(--color-bg-elevated-dark);
+}
+
+.theme-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}

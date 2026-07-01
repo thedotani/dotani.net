@@ -1,4 +1,6 @@
 ---
+import styles from './Input.module.css'
+
 interface Props {
   type?: 'text' | 'email' | 'tel' | 'url' | 'password'
   name?: string
@@ -25,7 +27,7 @@ const {
 const inputId = id || name
 ---
 
-<div class:list={['form-field', error && 'form-field--error', className].filter(Boolean)}>
+<div class:list={[className].filter(Boolean)}>
   <input
     type={type}
     name={name}
@@ -33,8 +35,8 @@ const inputId = id || name
     placeholder={placeholder}
     required={required}
     value={value}
-    class="input"
+    class={styles['input']}
     {...rest}
   />
-  {error && <p class="form-error">{error}</p>}
+  {error && <p class={styles['form-error']}>{error}</p>}
 </div>

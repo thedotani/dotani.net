@@ -1,5 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import chipStyles from '../../components/ui/LinkChip.module.css'
+import tagStyles from '../../components/ui/Tag.module.css'
 import PortableText from '../../components/PortableText.astro'
 import { getPortfolioItemBySlug, getAllPortfolioItems } from '../../lib/sanity'
 
@@ -24,11 +26,9 @@ if (!item) {
   description={item.shortResult}
 >
   <main class="detail-page">
-    <section class="detail-hero detail-hero--compact">
-      <div class="detail-orb detail-orb--primary" style="width:20rem;height:20rem;top:-2rem;right:-2rem;"></div>
-      <div class="detail-orb detail-orb--accent" style="width:16rem;height:16rem;bottom:-1rem;left:5%;"></div>
+    <section class="detail detail--compact">
       <div class="section-container">
-        <nav class="detail-breadcrumb" data-motion="fade">
+        <nav class="detail-breadcrumb">
           <a href="/portfolio">Portfolio</a>
           <span class="breadcrumb-sep" aria-hidden="true">/</span>
           <span class="breadcrumb-current">{item.title}</span>
@@ -37,52 +37,49 @@ if (!item) {
     </section>
 
     <div class="section-container detail-layout detail-layout--meta-end">
-      <aside class="detail-aside" data-motion="scale">
+      <aside class="detail-aside">
         <div class="detail-post-header">
-          {item.category && <span class="tag-pill mb-3">{item.category}</span>}
-          {item.year && <span class="text-sm text-muted font-medium">{item.year}</span>}
-          <h1 class="section-heading-hero mt-2 mb-4">{item.title}</h1>
+          {item.category && <span class={tagStyles['tag-pill']}>{item.category}</span>}
+          {item.year && <span>{item.year}</span>}
+          <h1 class="section-heading">{item.title}</h1>
           {item.shortResult && (
-            <p class="section-tagline text-lg">{item.shortResult}</p>
+            <p class="section-tagline">{item.shortResult}</p>
           )}
         </div>
         {item.client && (
-          <div class="detail-meta-strip" data-card-spotlight>
+          <div class="detail-meta-strip">
             <p class="detail-meta-label">Client</p>
             <p class="detail-meta-value">{item.client}</p>
           </div>
         )}
         {item.role && (
-          <div class="detail-meta-strip" data-card-spotlight>
+          <div class="detail-meta-strip">
             <p class="detail-meta-label">Role</p>
             <p class="detail-meta-value">{item.role}</p>
           </div>
         )}
         {item.caseStudy?.slug?.current && (
-          <a href={`/case-studies/${item.caseStudy.slug.current}`} class="link-chip w-full justify-center mt-auto">
+          <a href={`/case-studies/${item.caseStudy.slug.current}`} class={chipStyles['link-chip']}>
             Read Case Study
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </a>
         )}
       </aside>
 
-      <div class="detail-main detail-stack" data-motion-stagger>
+      <div class="detail-main detail-stack">
         {item.description && (
           <section class="detail-block">
-            <PortableText
-              value={item.description}
-              class="text-muted text-base sm:text-lg leading-relaxed"
-            />
+            <PortableText value={item.description} />
           </section>
         )}
 
         {item.metrics && item.metrics.length > 0 && (
-          <section class="detail-block" data-motion="rise" style="--motion-delay: 120ms">
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <section class="detail-block">
+            <div>
               {item.metrics.map((metric: any) => (
-                <div class="detail-metric" data-card-spotlight>
+                <div class="detail-metric">
                   <div class="detail-metric-value">{metric.value}</div>
                   <div class="detail-metric-label">{metric.label}</div>
                 </div>
@@ -92,20 +89,20 @@ if (!item) {
         )}
 
         {item.projectSummary && (
-          <section class="detail-block" data-motion="rise" style="--motion-delay: 200ms">
-            <PortableText value={item.projectSummary} class="text-muted leading-relaxed space-y-5" />
+          <section class="detail-block">
+            <PortableText value={item.projectSummary} />
           </section>
         )}
 
         {item.keyPoints && item.keyPoints.length > 0 && (
-          <section class="detail-block" data-motion="rise" style="--motion-delay: 280ms">
-            <div class="space-y-1">
+          <section class="detail-block">
+            <div>
               {item.keyPoints.map((point: string) => (
                 <div class="detail-check-item">
                   <div class="detail-check-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                   </div>
-                  <span class="text-muted leading-relaxed">{point}</span>
+                  <span>{point}</span>
                 </div>
               ))}
             </div>
@@ -113,7 +110,7 @@ if (!item) {
         )}
 
         {item.gallery && item.gallery.length > 0 && (
-          <section class="detail-block" data-motion="rise" style="--motion-delay: 320ms">
+          <section class="detail-block">
             <div class="detail-gallery">
               {item.gallery.map((image: any) => (
                 <div class="detail-gallery-item">
@@ -129,7 +126,7 @@ if (!item) {
         )}
 
         {item.tags && item.tags.length > 0 && (
-          <section class="detail-block" data-motion="rise" style="--motion-delay: 400ms">
+          <section class="detail-block">
             <div class="detail-tags">
               {item.tags.map((tag: string) => (
                 <span class="detail-tag">{tag}</span>

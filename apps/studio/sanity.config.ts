@@ -22,7 +22,7 @@ export default defineConfig({
     studioUxPlugin(),
     colorInput(),
     structureTool({structure}),
-    visionTool({defaultApiVersion: '2024-01-01'}),
+    ...(process.env.NODE_ENV === 'production' ? [] : [visionTool({defaultApiVersion: '2024-01-01'})]),
   ],
 
   schema: {

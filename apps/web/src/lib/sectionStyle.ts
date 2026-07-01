@@ -1,6 +1,7 @@
 import type { BlockStyleSection } from './blockStyle'
 import { resolveColor } from './color'
 import { isDarkBackground } from './surface'
+import { sectionWidthClass } from './sections'
 
 export function resolveSectionMeta(section: BlockStyleSection & { sectionId?: string }) {
   const sectionId = section.sectionId || ''
@@ -50,13 +51,13 @@ export function sectionShellClasses(
   const meta = resolveSectionMeta(section)
 
   return [
-    'w-full',
-    meta.isHomeHero ? 'hero-section' : 'block-section',
+    'block-section',
     meta.isStats && 'block-section--stats',
     meta.isPortfolio && 'portfolio-section-bg',
     meta.useCtaGradient && 'cta-gradient-bg',
     (meta.isBooking || (meta.isDark && meta.isBooking)) && 'booking-section-bg',
     meta.isDark && 'section-surface-dark',
+    sectionWidthClass(section.sectionWidth) || null,
     surfaceClass,
   ].filter(Boolean)
 }

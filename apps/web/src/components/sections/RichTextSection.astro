@@ -1,6 +1,6 @@
 ---
 import PortableText from '../PortableText.astro'
-import { sectionContainerClass, sectionPaddingClasses } from '../../lib/sections'
+import { sectionPaddingClasses } from '../../lib/sections'
 import { blockSurfaceClass, blockInlineStyle } from '../../lib/blockStyle'
 
 interface Props {
@@ -8,22 +8,21 @@ interface Props {
 }
 
 const { section } = Astro.props
-const { body, sectionWidth } = section
+const { body } = section
 const surfaceClass = blockSurfaceClass(section)
 const inlineStyle = blockInlineStyle(section)
 const paddingClasses = sectionPaddingClasses(section.paddingTop, section.paddingBottom)
 ---
 
 <section
-  class:list={['w-full block-section', surfaceClass, paddingClasses]}
+  class:list={['block-section', surfaceClass, paddingClasses]}
   style={inlineStyle}
-  data-block-gap={section.spacingMode === 'custom' ? 'custom' : undefined}
 >
-  <div class={sectionContainerClass(sectionWidth)}>
-    {body?.length > 0 && (
-      <div class="rich-text-section max-w-3xl mx-auto" data-motion="rise">
-        <PortableText value={body} class="rich-text-prose" />
+  {body?.length > 0 && (
+    <div class="block-layout rich-text-section">
+      <div class="rich-text-prose">
+        <PortableText value={body} />
       </div>
-    )}
-  </div>
+    </div>
+  )}
 </section>

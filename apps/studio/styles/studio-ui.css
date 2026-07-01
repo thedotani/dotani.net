@@ -12,7 +12,7 @@
   --dotani-surface-raised: color-mix(in srgb, var(--card-fg-color) 7%, var(--card-bg-color));
   --dotani-input-bg: color-mix(in srgb, var(--card-fg-color) 6%, var(--card-bg-color));
   --dotani-border: color-mix(in srgb, var(--card-border-color) 88%, transparent);
-  --dotani-group-width: 9.5rem;
+  --dotani-group-width: 6.5rem;
   --dotani-form-content-max: 800px;
   /* Universal field column widths — used by fieldset grid templates below */
   --dotani-width-compact: 5.5rem;
@@ -114,11 +114,12 @@
 
 [data-testid='document-panel-scroller'] > [data-ui='Stack'] > [data-testid='field-groups'] [data-ui='Tab'] {
   justify-content: flex-start;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding-block: 0.42rem;
+  padding-block: 0.35rem;
+  padding-inline: 0.35rem;
   border-radius: var(--dotani-radius-sm);
 }
 
@@ -173,11 +174,12 @@
   display: none !important;
 }
 
-/* Hide empty fieldset legends */
+/* Hide all fieldset legends */
 [data-testid='document-panel-scroller'] fieldset > legend {
   display: none;
 }
 
+/* Remove inner fieldset Stack borders (content area) */
 [data-testid='document-panel-scroller'] fieldset[data-ui='Stack'] {
   border: none;
   background: transparent;
@@ -185,20 +187,36 @@
   padding: 0;
 }
 
-/* Issue 25: remove Sanity nested fieldset left indent borders */
+/* Remove ALL fieldset wrapper borders — flattens nested visual boxes */
+[data-testid='document-panel-scroller'] fieldset[data-testid^='fieldset-'] {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+/* Remove left-border indent from fieldset content wrappers */
 [data-testid='document-panel-scroller'] fieldset[data-testid^='fieldset-'] > *:nth-child(2) {
   border-left: none !important;
   padding-left: 0 !important;
   box-shadow: none !important;
 }
 
+/* Flatten object field wrappers that contain nested fieldsets */
+[data-testid='document-panel-scroller'] [data-testid^='field-']:has(> [data-testid^='fieldset-']) {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
 /* Tighter vertical rhythm between fields and subsections */
 [data-testid='document-panel-scroller'] [data-ui='FormField'] {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
 }
 
 [data-testid='document-panel-scroller'] [data-ui='Stack'][data-space] > * + * {
-  margin-top: 0.35rem !important;
+  margin-top: 0.3rem !important;
 }
 
 /* Radio / boolean groups: no boxed left border */
@@ -253,9 +271,7 @@
 }
 
 /* Compact number inputs — input only, never the field wrapper */
-[data-testid='field-year'] input[type='number'],
-[data-testid='field-order'] input[type='number'],
-[data-testid='field-rating'] input[type='number'] {
+[data-testid='document-panel-scroller'] [data-testid^='field-'] input[type='number'] {
   width: 100%;
   max-width: var(--dotani-width-compact);
 }
@@ -382,17 +398,18 @@
 }
 
 [data-testid='field-headerCta'] {
-  margin-top: 0.25rem;
+  margin: 0;
   width: 100%;
 }
 
 [data-testid='fieldset-ctaRow'] [data-ui='Grid'] {
   grid-template-columns: 1fr 2fr !important;
+  align-items: end;
 }
 
 [data-testid='fieldset-ctaOptions'] [data-ui='Grid'] {
   grid-template-columns: 1fr auto !important;
-  align-items: center;
+  align-items: end;
 }
 
 [data-testid='field-headerCta'] [data-testid='field-style'] [data-ui='Radio'] {
@@ -409,15 +426,7 @@
 
 /* Dimension value + unit inline */
 [data-dotani-dimension-input] {
-  display: grid !important;
-  grid-template-columns: minmax(3.5rem, 1fr) 4.25rem;
-  gap: 0.35rem;
-  align-items: center;
-  width: 100%;
-}
-
-[data-dotani-dimension-input] > * {
-  min-width: 0;
+  max-width: 14rem;
 }
 
 [data-testid='field-containerMaxWidth'] input,
@@ -543,4 +552,27 @@
 /* Site settings footer: col 2–4 headings in one row */
 [data-testid='fieldset-footerColHeadings'] [data-ui='Grid'] {
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: end;
+}
+
+/* Subtle focus ring — visible but not jarring */
+[data-testid='document-panel-scroller'] input:focus-visible,
+[data-testid='document-panel-scroller'] textarea:focus-visible,
+[data-testid='document-panel-scroller'] select:focus-visible {
+  outline: 2px solid var(--dotani-accent);
+  outline-offset: -2px;
+  border-color: transparent;
+}
+
+[data-testid='document-panel-scroller'] [data-ui='TextInput']:focus-within [data-ui='Card'],
+[data-testid='document-panel-scroller'] [data-ui='TextArea']:focus-within [data-ui='Card'],
+[data-testid='document-panel-scroller'] [data-ui='Select']:focus-within [data-ui='Card'] {
+  outline: 2px solid var(--dotani-accent);
+  outline-offset: -2px;
+  border-color: transparent;
+}
+
+/* Sidebar tab gap reduction */
+[data-testid='document-panel-scroller'] > [data-ui='Stack'] > [data-testid='field-groups'] [data-testid='field-group-tabs'] {
+  gap: 0.1rem;
 }

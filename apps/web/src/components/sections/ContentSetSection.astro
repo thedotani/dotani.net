@@ -1,25 +1,23 @@
 ---
-import { sectionContainerClass, sectionPaddingClasses } from '../../lib/sections'
+import { sectionPaddingClasses } from '../../lib/sections'
 import { blockSurfaceClass, blockInlineStyle } from '../../lib/blockStyle'
-import { resolveSectionMeta, sectionShellClasses } from '../../lib/sectionStyle'
+import { sectionShellClasses } from '../../lib/sectionStyle'
 
 interface Props {
   section: any
 }
 
 const { section } = Astro.props
-const {
-  displayType,
-  statsSet,
-  marqueeSet,
-  speed = 30,
-  skewY = 0,
-  skewX = 0,
-  height,
-  sectionWidth,
-} = section
+  const {
+    displayType,
+    statsSet,
+    marqueeSet,
+    speed = 30,
+    skewY = 0,
+    skewX = 0,
+    height,
+  } = section
 
-const meta = resolveSectionMeta(section)
 const surfaceClass = blockSurfaceClass(section)
 const inlineStyle = blockInlineStyle(section)
 const shellClasses = sectionShellClasses(section, surfaceClass)
@@ -27,45 +25,45 @@ const paddingClasses = sectionPaddingClasses(section.paddingTop, section.padding
 const metrics = statsSet?.metrics ?? []
 const marqueeItems = marqueeSet?.marqueeItems ?? []
 const marqueeHeight = height?.value != null ? `${height.value}${height.unit || 'rem'}` : '4rem'
-const marqueeDuration = `${Math.max(8, 120 - speed)}s`
 ---
 
 <section
   class:list={[shellClasses, paddingClasses]}
   style={inlineStyle}
-  data-block-gap={section.spacingMode === 'custom' ? 'custom' : undefined}
 >
-  <div class={sectionContainerClass(sectionWidth)}>
-    {displayType === 'stats' && metrics.length > 0 && (
-      <div data-motion-stagger class="stats-row">
+  {displayType === 'stats' && metrics.length > 0 && (
+    <div class="block-layout">
+      <div class="stats-row">
         {metrics.map((item: any) => (
-          <div class="text-center min-w-0">
+          <div class="stat-box">
             <div
-              class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1.5 sm:mb-2 countup-number"
-              data-target={item.value}
+              class="stat-value"
             >
               {item.value}
             </div>
-            <div class="text-xs sm:text-sm font-medium text-muted uppercase tracking-wider leading-snug">
+<div class="stat-text">
               {item.description || item.name}
             </div>
-            {item.note && <div class="text-xs text-muted mt-1">{item.note}</div>}
+            {item.note && <div>{item.note}</div>}
           </div>
         ))}
       </div>
-    )}
+    </div>
+  )}
 
-    {displayType === 'marquee' && marqueeItems.length > 0 && (
+  {displayType === 'marquee' && marqueeItems.length > 0 && (
+    <div class="block-layout">
       <div
-        class="marquee-track overflow-hidden"
-        style={`--marquee-duration: ${marqueeDuration}; --marquee-height: ${marqueeHeight}; --marquee-skew-y: ${skewY}deg; --marquee-skew-x: ${skewX}deg;`}
-        data-motion="fade"
+        class="marquee-track"
+        style={`--marquee-height: ${marqueeHeight}; --marquee-skew-y: ${skewY}deg; --marquee-skew-x: ${skewX}deg; --speed: ${speed}s;`}
       >
         <div class="marquee-track__inner">
           {[...marqueeItems, ...marqueeItems].map((item: any, index: number) => (
             <span class="marquee-track__item">
-              {item.name}
-              {item.note && <small class="marquee-track__note">{item.note}</small>}
+              <span class="marquee-track__content">
+                {item.name}
+                {item.note && <small class="marquee-track__note">{item.note}</small>}
+              </span>
               {index < marqueeItems.length * 2 - 1 && (
                 <span class="marquee-track__sep" aria-hidden="true">·</span>
               )}
@@ -73,106 +71,55 @@ const marqueeDuration = `${Math.max(8, 120 - speed)}s`
           ))}
         </div>
       </div>
-    )}
-  </div>
+    </div>
+  )}
 </section>
-
-{displayType === 'stats' && (
-  <script>
-    const numberEls = document.querySelectorAll<HTMLElement>('.countup-number')
-    if (numberEls.length) {
-      const parseValue = (raw: string) => {
-        const match = raw.match(/^([^\d]*)(\d+(?:\.\d+)?)(.*)$/)
-        if (!match) return { num: 0, prefix: '', suffix: raw }
-        return { prefix: match[1], num: parseFloat(match[2]), suffix: match[3] }
-      }
-
-      const animateCount = (el: HTMLElement) => {
-        const raw = el.dataset.target || el.textContent || '0'
-        const { prefix, num, suffix } = parseValue(raw.trim())
-        const duration = 1400
-        const start = performance.now()
-        const isFloat = num % 1 !== 0
-
-        const step = (now: number) => {
-          const progress = Math.min((now - start) / duration, 1)
-          const eased = 1 - Math.pow(1 - progress, 3)
-          const current = isFloat ? (eased * num).toFixed(1) : Math.round(eased * num).toString()
-          el.textContent = `${prefix}${current}${suffix}`
-          if (progress < 1) requestAnimationFrame(step)
-          else el.textContent = `${prefix}${isFloat ? num.toFixed(1) : num}${suffix}`
-        }
-
-        requestAnimationFrame(step)
-      }
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              animateCount(entry.target as HTMLElement)
-              observer.unobserve(entry.target)
-            }
-          })
-        },
-        { threshold: 0.3 },
-      )
-
-      numberEls.forEach((el) => observer.observe(el))
-    }
-  </script>
-)}
 
 <style>
   .marquee-track {
     height: var(--marquee-height);
     transform: skewY(var(--marquee-skew-y)) skewX(var(--marquee-skew-x));
+    transform-origin: left center;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
   }
 
   .marquee-track__inner {
     display: flex;
     align-items: center;
-    gap: 2rem;
     width: max-content;
     height: 100%;
-    animation: marqueeScroll var(--marquee-duration) linear infinite;
+    will-change: transform;
   }
 
   .marquee-track__item {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: clamp(1rem, 2vw, 1.35rem);
-    font-weight: 600;
+    margin-right: 3rem;
+    font-size: clamp(2rem, 3vw, 2.35rem);
+    font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--color-heading);
     white-space: nowrap;
+  }
+
+  .marquee-track__content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .marquee-track__note {
     font-size: 0.75rem;
     font-weight: 500;
     text-transform: none;
-    color: var(--color-muted);
   }
 
   .marquee-track__sep {
     opacity: 0.35;
     margin-left: 1rem;
   }
-
-  @keyframes marqueeScroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .marquee-track__inner {
-      animation: none;
-      flex-wrap: wrap;
-      width: 100%;
-      justify-content: center;
-    }
-  }
 </style>
+
+<script defer src="/scripts/marquee.js"></script>

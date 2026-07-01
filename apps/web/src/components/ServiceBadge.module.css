@@ -1,0 +1,30 @@
+.service-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-xl);
+  color: var(--gc);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--gc) 16%, transparent),
+    color-mix(in srgb, var(--gc) 6%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--gc) 22%, transparent);
+}
+
+.service-badge-md {
+  width: var(--badge-s, 3.25rem);
+  height: var(--badge-s, 3.25rem);
+}
+
+.service-badge-lg {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radius-2xl);
+}
+
+.service-badge svg {
+  width: 58%;
+  height: 58%;
+}

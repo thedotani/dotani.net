@@ -1,4 +1,8 @@
 ---
+import styles from './SectionHeader.module.css'
+import Button from './Button.astro'
+import buttonStyles from './Button.module.css'
+
 interface Props {
   eyebrow?: string
   title?: string
@@ -6,7 +10,6 @@ interface Props {
   action?: { label: string; href: string }
   class?: string
   centered?: boolean
-  size?: 'sm' | 'md' | 'lg'
   divider?: boolean
 }
 
@@ -17,28 +20,26 @@ const {
   action,
   class: className = '',
   centered = false,
-  size = 'md',
   divider = false,
   ...rest
 } = Astro.props
 
 const classes = [
-  'section-header',
-  centered && 'section-header--centered',
-  size !== 'md' && `section-header--${size}`,
+  styles['section-header'],
+  centered && styles['section-header--center'],
   className,
 ].filter(Boolean).join(' ')
 ---
 
 <div class={classes} {...rest}>
   {eyebrow && <span class="section-eyebrow">{eyebrow}</span>}
-  {title && <h2 class="section-title">{title}</h2>}
+  {title && <h2>{title}</h2>}
   {tagline && <p class="section-tagline">{tagline}</p>}
   {action && (
-    <a href={action.href} class="btn btn--primary btn--sm">
+    <Button variant="primary" size="sm" href={action.href}>
       {action.label}
-      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M12 5l7 7l-7 7" /></svg>
-    </a>
+      <svg class={buttonStyles['btn-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M12 5l7 7l-7 7" /></svg>
+    </Button>
   )}
   <slot />
   {divider && <div class="section-divider"></div>}

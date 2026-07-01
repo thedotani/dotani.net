@@ -1,4 +1,5 @@
 ---
+import styles from './Footer.module.css'
 import SocialLinks from './SocialLinks.astro'
 import { resolveMenuItems, type MenuPlacement } from '../../lib/menus'
 
@@ -64,46 +65,46 @@ const menuColumns = FOOTER_COLUMN_PLACEMENTS.map((column, index) => {
 }).filter((column) => column.linkItems.length > 0)
 ---
 
-<footer class="site-footer">
-  <div class="section-container footer-inner">
-    <div class="footer-main">
-      <div class="footer-brand-section">
-        <a href="/" class="footer-brand-mark">
+<footer class={styles['site-footer']}>
+  <div class={`section-container ${styles['footer-inner']}`}>
+    <div class={styles['footer-main']}>
+      <div class={styles['footer-brand-section']}>
+        <a href="/" class={styles['footer-brand-mark']}>
           {hasLogo ? (
             <img
               src={footerLogo!.asset!.url}
               alt={logoAlt}
-              class="footer-brand-logo-image"
+              class={styles['footer-brand-logo-image']}
             />
           ) : (
-            <span class="footer-brand-title">{siteTitle}</span>
+            <span class="logo-text">{siteTitle}</span>
           )}
         </a>
         {footer?.description && (
-          <p class="footer-brand-description">{footer.description}</p>
+          <p class={styles['footer-brand-description']}>{footer.description}</p>
         )}
         {socialLinks.length > 0 && (
-          <div class="footer-social-inline">
+          <div class={styles['footer-social-inline']}>
             <SocialLinks links={socialLinks} variant="footer" />
           </div>
         )}
       </div>
 
       {menuColumns.length > 0 && (
-        <div class="footer-columns">
+        <div class={styles['footer-columns']}>
           {menuColumns.map((column) => (
-            <div class={`footer-column footer-column--${column.colNumber}`}>
+            <div class={`${styles['footer-column']} ${styles[`footer-column--${column.colNumber}`]}`}>
               {column.heading && (
-                <h3 class="footer-heading">
-                  <span class="footer-heading-mark" aria-hidden="true" />
+                <h3 class={styles['footer-heading']}>
+                  <span class={styles['footer-heading-mark']} aria-hidden="true" />
                   {column.heading}
                 </h3>
               )}
-              <ul class="footer-links">
+              <ul class={styles['footer-links']}>
                 {column.linkItems.map((link) => (
                   <li>
-                    <a href={link.url} class="footer-link">
-                      <span class="footer-link-arrow" aria-hidden="true">→</span>
+                    <a href={link.url} class={styles['footer-link']}>
+                      <span class={styles['footer-link-arrow']} aria-hidden="true">→</span>
                       {link.label}
                     </a>
                   </li>
@@ -115,14 +116,14 @@ const menuColumns = FOOTER_COLUMN_PLACEMENTS.map((column, index) => {
       )}
     </div>
 
-    <div class="footer-copyright-row">
-      <p class="footer-copyright">
+    <div class={styles['footer-copyright-row']}>
+      <p class={styles['footer-copyright']}>
         {footer?.copyrightText || `© ${new Date().getFullYear()} dotani.net`}
       </p>
       {copyrightMenuItems.length > 0 && (
-        <nav class="footer-copyright-nav" aria-label="Footer links">
+        <nav class={styles['footer-copyright-nav']} aria-label="Footer links">
           {copyrightMenuItems.map((item) => (
-            <a href={item.url} class="footer-copyright-link">{item.label}</a>
+            <a href={item.url} class={styles['footer-copyright-link']}>{item.label}</a>
           ))}
         </nav>
       )}

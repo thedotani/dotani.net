@@ -3,9 +3,18 @@ import ContentBoxSection from './sections/ContentBoxSection.astro'
 import ContentSetSection from './sections/ContentSetSection.astro'
 import RichTextSection from './sections/RichTextSection.astro'
 
+interface Section {
+  _type: string
+  visible?: boolean
+  sectionWidth?: string
+  paddingTop?: string
+  paddingBottom?: string
+  [key: string]: unknown
+}
+
 interface Props {
   page?: any
-  sections?: any[]
+  sections?: Section[]
   services?: any[]
   portfolioItems?: any[]
   testimonials?: any[]
@@ -16,7 +25,7 @@ interface Props {
 
 const {
   page,
-  sections = page?.sections ?? [],
+  sections = (page?.sections ?? []) as Section[],
   services = [],
   portfolioItems = [],
   testimonials = [],
@@ -64,21 +73,21 @@ function effectiveSectionWidth(section: any, prev: any, next: any): string | und
 }
 ---
 
-<main class="overflow-x-hidden block-sections-stack">
+<main class="block-sections-stack">
   {shouldShowFallback && (
-    <section class="section-container py-24 text-center">
-      <p class="text-sm font-medium text-primary uppercase tracking-wider mb-4">dotani.net</p>
-      <h1 class="text-4xl md:text-5xl font-bold text-heading mb-6">
+    <section class="section-container">
+      <p>dotani.net</p>
+      <h1>
         {page?.title || 'Welcome'}
       </h1>
-      <p class="text-xl text-muted max-w-2xl mx-auto mb-8">
+      <p>
         {page?.excerpt ||
           'Content is being prepared. Add a page and site settings in Sanity Studio to populate this site.'}
       </p>
       {import.meta.env.DEV && (
         <a
           href="http://localhost:3333"
-          class="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          class=""
         >
           Open Sanity Studio
         </a>
@@ -99,11 +108,11 @@ function effectiveSectionWidth(section: any, prev: any, next: any): string | und
       if (!Component || !NextComponent) return null
 
       return (
-        <div class="flex flex-col md:flex-row gap-[var(--space-card-gap)]" id={section.sectionId || undefined}>
-          <div class="flex-1 min-w-0 md:w-1/2">
+        <div>
+          <div>
             <Component {...sectionProps({ ...section, sectionWidth: undefined })} />
           </div>
-          <div class="flex-1 min-w-0 md:w-1/2" id={nextSection.sectionId || undefined}>
+          <div>
             <NextComponent {...sectionProps({ ...nextSection, sectionWidth: undefined })} />
           </div>
         </div>
@@ -118,12 +127,7 @@ function effectiveSectionWidth(section: any, prev: any, next: any): string | und
     const overrideWidth = effectiveSectionWidth(section, prev, next)
 
     return (
-      <div
-        id={section.sectionId || undefined}
-        class={section.sectionWidth === 'full' ? 'w-screen relative left-1/2 -translate-x-1/2' : ''}
-      >
-        <Component {...sectionProps(overrideWidth !== section.sectionWidth ? { ...section, sectionWidth: overrideWidth } : section)} />
-      </div>
+      <Component {...sectionProps(overrideWidth !== section.sectionWidth ? { ...section, sectionWidth: overrideWidth } : section)} />
     )
   })}
 </main>

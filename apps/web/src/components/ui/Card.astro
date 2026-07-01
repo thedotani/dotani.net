@@ -1,4 +1,6 @@
 ---
+import styles from './Card.module.css'
+
 interface Props {
   variant?: 'elevated' | 'interactive' | 'flat'
   class?: string
@@ -13,9 +15,9 @@ const {
 } = Astro.props
 
 const classes = [
-  'card',
-  variant !== 'elevated' && `card--${variant}`,
-  padding !== 'md' && `card--pad-${padding}`,
+  styles['card'],
+  variant !== 'elevated' && styles[`card--${variant}`],
+  padding !== 'md' && styles[`card--pad-${padding}`],
   className,
 ].filter(Boolean).join(' ')
 ---

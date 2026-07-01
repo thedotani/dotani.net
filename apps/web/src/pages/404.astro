@@ -1,14 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import Button from '../components/ui/Button.astro'
 ---
 
 <Layout title="Page not found" description="The page you requested could not be found.">
-  <main class="page-shell text-center py-24">
-    <p class="section-eyebrow mb-4">404</p>
-    <h1 class="section-heading mb-4">Page not found</h1>
-    <p class="section-tagline max-w-md mx-auto mb-8">
+  <main class="page-shell">
+    <p class="section-eyebrow">404</p>
+    <h1 class="section-heading">Page not found</h1>
+    <p class="section-tagline">
       The link may be broken or the page may have moved.
     </p>
-    <a href="/" class="btn btn--primary">Back to Home</a>
+    <Button variant="primary" href="/">Back to Home</Button>
   </main>
 </Layout>

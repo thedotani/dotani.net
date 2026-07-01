@@ -12,13 +12,6 @@ export interface LayoutSettings {
 
 const DEFAULT_MAX_WIDTH: DimensionValue = { value: 72, unit: 'rem' }
 
-const LEGACY_CONTAINER_WIDTH: Record<string, DimensionValue> = {
-  'max-w-4xl': { value: 56, unit: 'rem' },
-  'max-w-6xl': { value: 72, unit: 'rem' },
-  'max-w-7xl': { value: 80, unit: 'rem' },
-  'max-w-full': { value: 100, unit: '%' },
-}
-
 export function formatDimension(
   dimension?: DimensionValue,
   fallback: DimensionValue = DEFAULT_MAX_WIDTH,
@@ -33,12 +26,11 @@ export function formatDimension(
 
 export function layoutVars(
   layout?: LayoutSettings,
-  legacyContainerWidth?: string,
+  _legacyContainerWidth?: string,
 ): Record<string, string> {
   const vars: Record<string, string> = {}
 
   const maxWidth = layout?.containerMaxWidth
-    ?? (legacyContainerWidth ? LEGACY_CONTAINER_WIDTH[legacyContainerWidth] : undefined)
 
   if (maxWidth) {
     vars['--container-max-width'] = formatDimension(maxWidth, DEFAULT_MAX_WIDTH)

@@ -1,11 +1,11 @@
 ---
-import SectionHeader from '../SectionHeader.astro'
 import PortableText from '../PortableText.astro'
 import DynamicContent from '../DynamicContent.astro'
 import ContactForm from '../ContactForm.astro'
 import BookingBlock from '../BookingBlock.astro'
 import ServiceBadge from '../ServiceBadge.astro'
-import { sectionContainerClass, sectionPaddingClasses } from '../../lib/sections'
+import Button from '../ui/Button.astro'
+import { sectionPaddingClasses } from '../../lib/sections'
 import { blockSurfaceClass, blockInlineStyle } from '../../lib/blockStyle'
 import { resolveSectionMeta, sectionShellClasses } from '../../lib/sectionStyle'
 
@@ -41,7 +41,6 @@ const {
   image,
   imageSide = 'right',
   imageWidth = 33,
-  sectionWidth,
 } = section
 
 const meta = resolveSectionMeta(section)
@@ -50,6 +49,8 @@ const inlineStyle = blockInlineStyle(section)
 const shellClasses = sectionShellClasses(section, surfaceClass)
 const paddingClasses = sectionPaddingClasses(section.paddingTop, section.paddingBottom)
 const imageUrl = image?.asset?.url
+const showImage = contentMode === 'custom' && Boolean(imageUrl)
+const HeadingTag = meta.isHomeHero ? 'h1' : 'h2'
 
 function resolveDynamicLimit(type?: string) {
   if (type === 'service') return 0
@@ -60,172 +61,120 @@ function resolveDynamicLimit(type?: string) {
 ---
 
 <section
+  id={sectionId || undefined}
   class:list={[shellClasses, paddingClasses]}
   style={inlineStyle}
-  data-block-gap={section.spacingMode === 'custom' ? 'custom' : undefined}
 >
-  <div class={sectionContainerClass(sectionWidth)}>
-    {meta.isContact ? (
+  {meta.isContact ? (
+    <div class="block-layout">
       <ContactForm headline={title || 'Send a message'} supportingText={tagline} />
-    ) : meta.isBooking ? (
+    </div>
+  ) : meta.isBooking ? (
+    <div class="block-layout">
       <BookingBlock headline={title || 'Prefer a call?'} supportingText={tagline} centered />
-    ) : (
-      <div
-        class:list={[
-          'block-layout',
-          imageUrl ? 'block-layout--split' : 'block-layout--stack',
-          imageUrl && imageSide === 'left' ? 'block-layout--image-left' : 'block-layout--image-right',
-          meta.isHomeHero && 'block-layout--hero',
-        ]}
-        style={imageUrl ? `--image-width: ${imageWidth}%` : undefined}
-      >
+    </div>
+  ) : (
+    <div
+      class:list={[
+        'block-layout',
+        showImage ? 'block-layout--split' : 'block-layout--stack',
+        contentMode === 'dynamic' && 'block-layout--content-only',
+        showImage && (imageSide === 'left' ? 'block-layout--image-left' : 'block-layout--image-right'),
+        meta.isHomeHero && 'block-layout--hero',
+        meta.isCenteredHeader && 'block-layout--centered-header',
+        meta.isCentered && !showImage && 'block-layout--centered',
+      ]}
+      style={showImage ? `--image-width: ${imageWidth}%` : undefined}
+    >
+      {(badge || eyebrow || title || tagline) && (
         <div
           class:list={[
-            'block-layout__content',
-            meta.isCentered && !imageUrl && 'block-layout__content--centered',
+            'sec-header',
+            meta.isHomeHero && 'copy',
           ]}
         >
-          {(badge || eyebrow || title || tagline || headerLink?.label) && (
-            <div
-              data-motion="rise"
-              class:list={[
-                meta.isHomeHero && 'hero-copy',
-                meta.isCentered && 'w-full',
-              ]}
-            >
-              {badge && (
-                <div class:list={['mb-4', { 'flex justify-center': meta.isCentered }]}>
-                  <ServiceBadge icon={badge} />
-                </div>
-              )}
-              {eyebrow && (
-                <p
-                  class:list={[
-                    'section-eyebrow mb-3',
-                    meta.isHomeHero && 'hero-anim hero-anim-1',
-                  ]}
-                >
-                  {eyebrow}
-                </p>
-              )}
-              <div class:list={[meta.isHomeHero && 'hero-anim hero-anim-2']}>
-                <SectionHeader
-                  title={title}
-                  tagline={tagline}
-                  action={
-                    headerLink?.label
-                      ? { label: headerLink.label, url: headerLink.url }
-                      : undefined
-                  }
-                  centered={meta.isCenteredHeader && !headerLink?.label}
-                  headingTag={meta.isHomeHero ? 'h1' : 'h2'}
-                  headingClass={meta.isHomeHero ? 'section-heading-hero' : 'section-heading'}
-                />
-              </div>
+          {badge && (
+            <div>
+              <ServiceBadge icon={badge} />
             </div>
           )}
-
-          {contentMode === 'custom' && customContent?.length > 0 && (
-            <div
-              class:list={[meta.isHomeHero && 'hero-anim hero-anim-4']}
-              data-motion={meta.isHomeHero ? undefined : 'fade'}
-              style={meta.isHomeHero ? undefined : '--motion-delay: 120ms'}
-            >
-              <PortableText
-                value={customContent}
-                class:list={[
-                  'text-muted text-base sm:text-lg leading-relaxed',
-                  meta.isCentered && 'mx-auto',
-                ]}
-              />
-            </div>
+          {eyebrow && (
+            <p class:list={['section-eyebrow']}>
+              {eyebrow}
+            </p>
           )}
-
-          {contentMode === 'dynamic' && dynamicContentType && (
-            <DynamicContent
-              type={dynamicContentType}
-              services={services}
-              portfolioItems={portfolioItems}
-              testimonials={testimonials}
-              caseStudies={caseStudies}
-              blogPosts={blogPosts}
-              limit={resolveDynamicLimit(dynamicContentType)}
-              centered={meta.isCenteredHeader}
-            />
-          )}
-
-          {contentMode === 'custom' && buttons?.length > 0 && (
-            <div
-              class:list={[
-                'hero-actions mt-8',
-                meta.isCentered && 'justify-center',
-                meta.isHomeHero && 'hero-anim hero-anim-5',
-              ]}
-              data-motion={meta.isHomeHero ? undefined : 'fade'}
-              style={meta.isHomeHero ? undefined : '--motion-delay: 200ms'}
-            >
-              {buttons.map((button: any) => (
-                <a
-                  href={button.url}
-                  class:list={[
-                    'btn',
-                    `btn btn--${button.style || 'primary'}`,
-                    meta.useCtaGradient && (button.style === 'primary' || !button.style) && 'btn--primary',
-                  ]}
-                  target={button.openInNewTab ? '_blank' : undefined}
-                  rel={button.openInNewTab ? 'noopener noreferrer' : undefined}
-                >
-                  {button.label}
-                </a>
-              ))}
+          {(title || tagline) && (
+            <div class:list={['sec-title']}>
+              {title && (
+                <HeadingTag class:list={['section-heading']}>
+                  {title}
+                </HeadingTag>
+              )}
+              {tagline && <p class="section-tagline">{tagline}</p>}
             </div>
           )}
         </div>
+      )}
 
-        {imageUrl && (
-          <div
-            class:list={['block-layout__image', meta.isHomeHero && 'hero-anim hero-anim-img']}
-            data-motion={meta.isHomeHero ? undefined : 'scale'}
-          >
-            <div data-parallax={meta.isHomeHero ? '0.08' : undefined}>
-              <img
-                src={imageUrl}
-                alt={title || 'Section image'}
-                class:list={['media-frame aspect-[4/3]', imageUrl && 'section-image-mobile']}
-                loading={meta.isHomeHero ? 'eager' : 'lazy'}
-              />
-            </div>
+      {showImage && (
+        <div class="sec-image">
+          <div>
+            <img
+              src={imageUrl}
+              alt={title || 'Section image'}
+              class="media-frame section-image-mobile"
+              loading={meta.isHomeHero ? 'eager' : 'lazy'}
+            />
+          </div>
+        </div>
+      )}
+
+      <div
+        class:list={[
+          'sec-content',
+        ]}
+      >
+        {contentMode === 'custom' && customContent?.length > 0 && (
+          <div>
+            <PortableText value={customContent} />
+          </div>
+        )}
+
+        {contentMode === 'dynamic' && dynamicContentType && (
+          <DynamicContent
+            type={dynamicContentType}
+            services={services}
+            portfolioItems={portfolioItems}
+            testimonials={testimonials}
+            caseStudies={caseStudies}
+            blogPosts={blogPosts}
+            limit={resolveDynamicLimit(dynamicContentType)}
+            centered={meta.isCenteredHeader}
+          />
+        )}
+
+        {contentMode === 'custom' && buttons?.length > 0 && (
+          <div class="actions">
+            {buttons.map((button: any) => (
+              <Button
+                href={button.url}
+                variant={button.style || 'primary'}
+                target={button.openInNewTab ? '_blank' : undefined}
+                rel={button.openInNewTab ? 'noopener noreferrer' : undefined}
+              >
+                {button.label}
+              </Button>
+            ))}
           </div>
         )}
       </div>
-    )}
-  </div>
-</section>
 
-{meta.isHomeHero && (
-  <style>
-    .hero-anim {
-      opacity: 0;
-      animation: heroFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .hero-anim-1 { animation-delay: 100ms; }
-    .hero-anim-2 { animation-delay: 250ms; }
-    .hero-anim-4 { animation-delay: 480ms; }
-    .hero-anim-5 { animation-delay: 580ms; }
-    .hero-anim-img {
-      opacity: 0;
-      animation: heroScaleIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) 350ms forwards;
-    }
-    @keyframes heroFadeUp {
-      from { opacity: 0; transform: translate3d(0, 50px, 0); filter: blur(10px); }
-      to { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
-    }
-    @keyframes heroScaleIn {
-      from { opacity: 0; transform: scale(0.88) translate3d(0, 35px, 0); filter: blur(12px); }
-      to { opacity: 1; transform: scale(1) translate3d(0, 0, 0); filter: blur(0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .hero-anim, .hero-anim-img { opacity: 1; animation: none; transform: none; filter: none; }
-    }
-  </style>
-)}
+      {contentMode === 'dynamic' && dynamicContentType && headerLink?.label && (
+        <a href={headerLink.url} class="sec-link">
+          {headerLink.label}
+          <span aria-hidden="true">→</span>
+        </a>
+      )}
+    </div>
+  )}
+</section>

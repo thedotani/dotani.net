@@ -1,8 +1,8 @@
 import {createClient} from '@sanity/client'
 import type {SanityDocument} from '@sanity/client'
 
-const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'tmw5kvr6'
-const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'staging'
+const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID
+const dataset = import.meta.env.PUBLIC_SANITY_DATASET
 const SITE_SETTINGS_DOCUMENT_ID = 'site-settings-main'
 
 export const client = createClient({

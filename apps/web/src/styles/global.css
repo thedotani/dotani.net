@@ -2,10 +2,8 @@
    GLOBAL — Import chain (replaces 2,719-line monolith)
    =========================================== */
 
-@import 'tailwindcss';
 @import './tokens.css';
 @import './base.css';
 @import './layout.css';
-@import './components.css';
 @import './pages.css';
-@import './effects.css';
+

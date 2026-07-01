@@ -1,40 +1,26 @@
-/** Maps Sanity section padding values to independent top/bottom Tailwind classes. */
-const PADDING_MAP: Record<string, { pt: string; pb: string }> = {
-  'section-pad': {
-    pt: 'pt-10 sm:pt-12 md:pt-16',
-    pb: 'pb-10 sm:pb-12 md:pb-16',
-  },
-  'section-pad-sm': {
-    pt: 'pt-8 sm:pt-10 md:pt-12',
-    pb: 'pb-8 sm:pb-10 md:pb-12',
-  },
-  'py-8': { pt: 'pt-8', pb: 'pb-8' },
-  'py-12': { pt: 'pt-12', pb: 'pb-12' },
-  'py-16': { pt: 'pt-16', pb: 'pb-16' },
-  'py-24': { pt: 'pt-24', pb: 'pb-24' },
-}
-
-/** Section width options: full, half, or container (default) */
-const SECTION_WIDTH_MAP: Record<string, string> = {
-  container: '',
-  full: 'section-container--full',
-  half: 'section-container--half',
-  '': '', // legacy default
-}
-
-const DEFAULT_PADDING = PADDING_MAP['section-pad']
-
 export function sectionPaddingClasses(
-  paddingTop = 'section-pad',
-  paddingBottom = 'section-pad',
+  _paddingTop?: string,
+  _paddingBottom?: string,
 ): string {
-  const top = PADDING_MAP[paddingTop] ?? DEFAULT_PADDING
-  const bottom = PADDING_MAP[paddingBottom] ?? DEFAULT_PADDING
-  return `${top.pt} ${bottom.pb}`
+  return 'section'
+}
+
+export function sectionWidthClass(sectionWidth?: string): string {
+  if (!sectionWidth || sectionWidth === 'container') return ''
+  if (sectionWidth === 'full' || sectionWidth === 'wfull') return 'wfull'
+  if (sectionWidth === 'half') return 'whalf'
+  if (/^w\d+$/.test(sectionWidth)) return sectionWidth
+  return ''
 }
 
 export function sectionContainerClass(sectionWidth?: string): string {
   const key = sectionWidth || 'container'
-  const modifier = SECTION_WIDTH_MAP[key]
+  const map: Record<string, string> = {
+    container: '',
+    full: 'section-container--full',
+    half: 'section-container--half',
+    '': '',
+  }
+  const modifier = map[key]
   return modifier ? `section-container ${modifier}` : 'section-container'
 }

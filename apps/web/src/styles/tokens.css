@@ -2,22 +2,11 @@
    TOKENS — Design tokens (CSS custom properties)
    =========================================== */
 
-@theme {
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-primary-soft: #eef2ff;
-  --color-accent: #f59e0b;
-  --color-accent-soft: #fef3c7;
-  --color-heading: #0f172a;
-  --color-muted: #64748b;
-  --color-card: #ffffff;
-  --color-surface: #f8fafc;
-  --color-success: #10b981;
-  --color-error: #ef4444;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
-  --duration-600: 600ms;
-}
+  /* --gc = global color
+     --do* = brand 'dotani'
+     --dograd = dotani gradient, means global or official gradient
+     --do-font = dotani font means official brand font, used for body text and paragraphs
+     --do-alt = dotani alternate font used for headings, titles and other prominent elements */
 
 :root {
   /* --- Color: Light (default) --- */
@@ -28,11 +17,13 @@
   --color-border-strong: #cbd5e1;
   --color-text: #0f172a;
   --color-heading: #0f172a;
-  --color-text-muted: #64748b;
+  --color-text-muted: #273445;
+  --body-fc: #253445;
   --color-muted: #64748b;
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-primary-soft: #eef2ff;
+  --gc: #4f46e5;
+  --gc-alt: #0cef98;
+  --gc-hover: #4338ca;
+  --gc-soft: #eef2ff;
   --color-accent: #f59e0b;
   --color-accent-soft: #fef3c7;
   --color-success: #10b981;
@@ -40,6 +31,7 @@
   --color-error: #ef4444;
   --color-error-soft: #fee2e2;
   --color-warning: #f59e0b;
+  --dograd: linear-gradient(var(--dodir, 155deg), var(--gc) 31%, var(--gc-alt));
 
   /* --- Color: Dark --- */
   --color-bg-dark: #060912;
@@ -48,10 +40,11 @@
   --color-border-dark: #1f2937;
   --color-border-strong-dark: #374151;
   --color-text-dark: #f8fafc;
-  --color-text-muted-dark: #94a3b8;
-  --color-primary-dark: #6366f1;
-  --color-primary-hover-dark: #818cf8;
-  --color-primary-soft-dark: #1e1b4b;
+  --color-text-muted-dark: #cad4e2;
+  --body-fc: #cad4e2;
+  --gc-dark: #6366f1;
+  --gc-hover-dark: #818cf8;
+  --gc-soft-dark: #1e1b4b;
   --color-accent-dark: #fbbf24;
   --color-accent-soft-dark: #451a03;
   --color-success-dark: #34d399;
@@ -76,17 +69,21 @@
   --color-lessons: #a855f7;
   --color-lessons-soft: #f3e8ff;
 
-  [data-theme='dark'] {
-    --color-challenge-soft: #450a0a;
-    --color-approach-soft: #1e1b4b;
-    --color-results-soft: #064e3b;
-    --color-impact-soft: #451a03;
-    --color-lessons-soft: #3b0764;
-  }
 
   /* --- Typography --- */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --do-font: 'Ancizar Sans', system-ui, -apple-system, sans-serif;
+  --alt-font: 'Merriweather', ui-serif, Georgia, serif;
+  --bfs: 3rem;
+  --mfs: 2.5rem;
+  --fs: 1.5rem;
+  --sfs: .9rem;
+  --minfs: .75rem;
+
+  --sectitle-f: var(--alt-font);
+  --tagline-fs: 1.35rem;
+  --stat-fs: 2rem;
+
+  --icon-h: 1.5rem;
 
   /* --- Spacing (4px grid) --- */
   --space-0: 0;
@@ -104,9 +101,23 @@
   --space-24: 6rem;
   --space-32: 8rem;
 
+  --hsp: 3rem;
+  --bsp: 2rem;
+  --msp: 1.3rem;
+  --sp: 1rem;
+  --ssp: .5rem;
+  --minsp: .25rem;
+
   /* --- Container --- */
-  --container-max: 72rem;
-  --container-padding: clamp(1.25rem, 5vw, 3rem);
+  --site-w: 72rem;
+  --edge: clamp(1.5rem, 5vw, 3rem);
+  --egap: clamp(1.5rem, 4vw, 2.5rem);
+  --bgap: clamp(2rem, 5vw, 4rem);
+  --msp: clamp(1.2rem, 3vw, 2rem);
+  --crd-gap: 1.25rem;
+  --li-sp: .5em;
+
+  --badge-s: 3.25rem;
 
   /* --- Radius --- */
   --radius-sm: 0.375rem;
@@ -117,10 +128,8 @@
   --radius-3xl: 1.5rem;
   --radius-full: 9999px;
 
-  /* --- Ambient / mesh --- */
-  --ambient-primary: rgb(99 102 241 / 0.22);
-  --ambient-purple: rgb(168 85 247 / 0.18);
-  --ambient-accent: rgb(251 191 36 / 0.1);
+  --bdr: 1px solid var(--color-border);
+
   --surface-glass: rgb(255 255 255 / 0.04);
   --surface-glass-border: rgb(255 255 255 / 0.08);
 
@@ -130,15 +139,10 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 20px rgb(99 102 241 / 0.15);
-  --shadow-glow-lg: 0 0 40px rgb(99 102 241 / 0.2);
 
-  /* --- Motion --- */
+  /* --- Transition tokens --- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --duration-fast: 150ms;
   --duration-base: 250ms;
-  --duration-slow: 400ms;
 
   /* --- Header --- */
   --header-height: 4rem;
@@ -153,8 +157,16 @@
   --detail-sticky-top: calc(var(--header-height) + var(--space-6));
 }
 
+:root[data-theme='dark'] {
+  --color-challenge-soft: #450a0a;
+  --color-approach-soft: #1e1b4b;
+  --color-results-soft: #064e3b;
+  --color-impact-soft: #451a03;
+  --color-lessons-soft: #3b0764;
+}
+
 @media (min-width: 768px) {
   :root {
-    --header-height: 5rem;
+    --header-height: 3.5rem;
   }
 }

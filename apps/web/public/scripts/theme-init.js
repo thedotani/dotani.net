@@ -1,0 +1,1 @@
+(function(){try{var e=localStorage.getItem("dotani-theme"),t=e==="dark"||e==="light"?e:document.documentElement.getAttribute("data-theme")||"light";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","light")}})()

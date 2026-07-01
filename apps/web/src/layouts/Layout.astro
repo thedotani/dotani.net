@@ -1,13 +1,14 @@
 ---
 import '../styles/global.css'
+import ancizarWoff2 from '../assets/fonts/ancizar-sans-latin.woff2'
 import { getSiteSettings } from '../lib/sanity'
-import { themeStyle, THEME_STORAGE_KEY, resolveInitialScheme, mergeInlineStyles } from '../lib/theme'
+import { themeStyle, resolveInitialScheme, mergeInlineStyles } from '../lib/theme'
 import { layoutStyle } from '../lib/layout'
 import Header from '../components/layout/Header.astro'
 import MobileNav from '../components/layout/MobileNav.astro'
+import BackToTop from '../components/layout/BackToTop.astro'
+import ShareButton from '../components/ui/ShareButton.astro'
 import Footer from '../components/layout/Footer.astro'
-import BackToTop from '../components/BackToTop.astro'
-import SiteMotion from '../components/SiteMotion.astro'
 import { resolveMenuItems } from '../lib/menus'
 import { resolveSocialLinks } from '../lib/socials'
 
@@ -62,19 +63,10 @@ const mobileSocialLinks = resolveSocialLinks(
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="preload" href={ancizarWoff2} as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <script is:inline define:vars={{ THEME_STORAGE_KEY, initialScheme }}>
-      (function () {
-        try {
-          const stored = localStorage.getItem(THEME_STORAGE_KEY)
-          const scheme = stored === 'dark' || stored === 'light' ? stored : initialScheme
-          document.documentElement.setAttribute('data-theme', scheme)
-        } catch (_) {
-          document.documentElement.setAttribute('data-theme', initialScheme)
-        }
-      })()
-    </script>
+    <script is:inline src="/scripts/theme-init.js"></script>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
 
@@ -82,29 +74,20 @@ const mobileSocialLinks = resolveSocialLinks(
     <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
-    <meta property="og:image" content={`${Astro.url.origin}/og-image.jpg`} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content={siteTitle} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     {description && <meta name="twitter:description" content={description} />}
-    <meta name="twitter:image" content={`${Astro.url.origin}/og-image.jpg`} />
 
     <link rel="canonical" href={Astro.url.href} />
 
     {includeTurnstile && (
-      <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+      <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
     )}
   </head>
 
   <body>
-    <div class="site-ambient" aria-hidden="true">
-      <span class="site-ambient__orb site-ambient__orb--1"></span>
-      <span class="site-ambient__orb site-ambient__orb--2"></span>
-      <span class="site-ambient__orb site-ambient__orb--3"></span>
-    </div>
     <Header
       menuItems={menuItems}
       pathname={pathname}
@@ -130,6 +113,7 @@ const mobileSocialLinks = resolveSocialLinks(
       />
     )}
 
+
     <slot />
 
     <Footer
@@ -139,7 +123,10 @@ const mobileSocialLinks = resolveSocialLinks(
       menus={siteSettings?.menus}
       socialLinks={resolveSocialLinks(allSocialLinks, 'footer', true)}
     />
+
     <BackToTop />
-    <SiteMotion />
+    <div style="position:fixed;bottom:5rem;right:clamp(0.75rem,3vw,1.5rem);z-index:999">
+      <ShareButton />
+    </div>
   </body>
 </html>

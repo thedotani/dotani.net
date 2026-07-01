@@ -1,4 +1,6 @@
 ---
+import styles from './LinkChip.module.css'
+
 interface Props {
   href: string
   label?: string
@@ -14,7 +16,7 @@ const {
   ...rest
 } = Astro.props
 
-const classes = ['link-chip', className].filter(Boolean).join(' ')
+const classes = [styles['link-chip'], className].filter(Boolean).join(' ')
 
 const icons = {
   'arrow-up-right': '<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 7l-10 10" /><path d="M17 7v10h-10" />',

@@ -8,14 +8,12 @@ interface Props {
 const { title, description, eyebrow } = Astro.props
 ---
 
-<section class="page-hero">
-  <div class="detail-orb detail-orb--primary page-hero-orb page-hero-orb--1" aria-hidden="true"></div>
-  <div class="detail-orb detail-orb--purple page-hero-orb page-hero-orb--2" aria-hidden="true"></div>
+<section class="page-banner">
   <div class="section-container">
-    <div class="max-w-3xl mb-5" data-motion="rise">
-      {eyebrow && <p class="section-eyebrow mb-3">{eyebrow}</p>}
-      <h1 class="section-heading mb-3">{title}</h1>
-      {description && <p class="section-tagline max-w-3xl">{description}</p>}
+    <div>
+      {eyebrow && <p class="section-eyebrow">{eyebrow}</p>}
+      <h1 class="section-heading">{title}</h1>
+      {description && <p class="section-tagline">{description}</p>}
     </div>
   </div>
 </section>

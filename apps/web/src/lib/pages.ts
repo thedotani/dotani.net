@@ -1,6 +1,7 @@
-export function pageIncludesContactSection(page: { sections?: any[] } | null | undefined) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function pageIncludesContactSection(page: any) {
   return (
-    page?.sections?.some((section) => {
+    page?.sections?.some((section: any) => {
       if (section?.visible === false) return false
       if (section?._type === 'contentBoxSection') {
         return section.sectionId === 'contact' || section.sectionId === 'contact-form'

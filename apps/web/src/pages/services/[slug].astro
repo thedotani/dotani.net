@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import ServiceBadge from '../../components/ServiceBadge.astro'
+import Button from '../../components/ui/Button.astro'
 import PortableText from '../../components/PortableText.astro'
 import { getServiceBySlug, getAllServices } from '../../lib/sanity'
 
@@ -25,11 +26,9 @@ if (!service) {
   description={service.shortDescription}
 >
   <main class="detail-page">
-    <section class="detail-hero detail-hero--compact">
-      <div class="detail-orb detail-orb--primary" style="width:16rem;height:16rem;top:-2rem;right:10%;"></div>
-      <div class="detail-orb detail-orb--purple" style="width:12rem;height:12rem;bottom:-1rem;left:5%;"></div>
+    <section class="detail detail--compact">
       <div class="section-container">
-        <nav class="detail-breadcrumb" data-motion="fade">
+        <nav class="detail-breadcrumb">
           <a href="/services">Services</a>
           <span class="breadcrumb-sep" aria-hidden="true">/</span>
           <span class="breadcrumb-current">{service.title}</span>
@@ -38,18 +37,18 @@ if (!service) {
     </section>
 
     <div class="section-container detail-layout">
-      <aside class="detail-aside" data-motion="rise">
+      <aside class="detail-aside">
         <div class="detail-aside-header">
           <ServiceBadge icon={service.icon} size="lg" />
           <p class="section-eyebrow">Service</p>
         </div>
-        <h1 class="section-heading-hero mb-4">{service.title}</h1>
+        <h1 class="section-heading">{service.title}</h1>
         {service.shortDescription && (
           <p class="section-tagline">{service.shortDescription}</p>
         )}
       </aside>
 
-      <div class="detail-main detail-stack" data-motion-stagger>
+      <div class="detail-main detail-stack">
         {service.description && (
           <section class="detail-block">
             <div class="detail-block__head">
@@ -58,10 +57,7 @@ if (!service) {
               </div>
               <h2 class="detail-block__title">Overview</h2>
             </div>
-            <PortableText
-              value={service.description}
-              class="text-muted leading-relaxed text-base sm:text-lg"
-            />
+            <PortableText value={service.description} />
           </section>
         )}
 
@@ -77,7 +73,7 @@ if (!service) {
               {service.features.map((feature: any, i: number) => (
                 <div class="detail-feature-item">
                   <div class="detail-feature-bullet">{String(i + 1).padStart(2, '0')}</div>
-                  <span class="text-muted leading-relaxed">{feature.text || feature}</span>
+                  <span>{feature.text || feature}</span>
                 </div>
               ))}
             </div>
@@ -92,13 +88,13 @@ if (!service) {
               </div>
               <h2 class="detail-block__title">What You Get</h2>
             </div>
-            <div class="space-y-1">
+            <div>
               {service.deliverables.map((deliverable: string) => (
                 <div class="detail-check-item">
                   <div class="detail-check-icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                   </div>
-                  <span class="text-muted leading-relaxed">{deliverable}</span>
+                  <span>{deliverable}</span>
                 </div>
               ))}
             </div>
@@ -106,15 +102,15 @@ if (!service) {
         )}
 
         {(service.bestFor || service.timeframe) && (
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
             {service.bestFor && (
-              <div class="detail-info-strip" data-card-spotlight>
+              <div class="detail-info-strip">
                 <p class="detail-info-label">Best For</p>
                 <p class="detail-info-value">{service.bestFor}</p>
               </div>
             )}
             {service.timeframe && (
-              <div class="detail-info-strip" data-card-spotlight>
+              <div class="detail-info-strip">
                 <p class="detail-info-label">Timeframe</p>
                 <p class="detail-info-value">{service.timeframe}</p>
               </div>
@@ -122,16 +118,12 @@ if (!service) {
           </div>
         )}
 
-        <div class="detail-cta" data-card-spotlight>
-          <h2 class="font-display text-xl sm:text-2xl font-bold mb-3">Ready to get started?</h2>
-          <p class="text-white/80 mb-6 max-w-lg mx-auto">Let's discuss how {service.title.toLowerCase()} can transform your business.</p>
-          <div class="flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <a href="/booking" class="btn btn--white">
-              Book a Call
-            </a>
-            <a href="/contact" class="btn btn--outline" style="border-color: rgba(255,255,255,0.3); color: #fff;">
-              Get in Touch
-            </a>
+        <div class="detail-cta">
+          <h2>Ready to get started?</h2>
+          <p>Let's discuss how {service.title.toLowerCase()} can transform your business.</p>
+          <div>
+            <Button variant="white" href="/booking">Book a Call</Button>
+            <Button variant="outline" href="/contact" style="border-color: rgba(255,255,255,0.3); color: #fff;">Get in Touch</Button>
           </div>
         </div>
       </div>

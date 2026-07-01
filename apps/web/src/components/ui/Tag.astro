@@ -1,4 +1,6 @@
 ---
+import styles from './Tag.module.css'
+
 interface Props {
   variant?: 'default' | 'category'
   size?: 'sm' | 'md'
@@ -15,9 +17,9 @@ const {
 } = Astro.props
 
 const classes = [
-  'tag',
-  variant !== 'default' && `tag--${variant}`,
-  size !== 'md' && `tag--${size}`,
+  styles.tag,
+  variant !== 'default' && styles[`tag--${variant}`],
+  size !== 'md' && styles[`tag--${size}`],
   className,
 ].filter(Boolean).join(' ')
 ---

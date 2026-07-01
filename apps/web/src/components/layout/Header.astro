@@ -1,8 +1,9 @@
 ---
+import styles from './Header.module.css'
 import SocialLinks from './SocialLinks.astro'
 import ThemeToggle from './ThemeToggle.astro'
+import Button from '../../components/ui/Button.astro'
 import { isNavActive } from '../../lib/navigation'
-import type { MenuPlacement } from '../../lib/menus'
 
 interface Props {
   menuItems: Array<{ label: string; url: string }>
@@ -29,49 +30,49 @@ const {
 const hasLogo = Boolean(logo?.asset?.url)
 ---
 
-<header class="site-header" data-site-header>
-  <div class="site-header-bar">
-    <div class="site-header-brand">
+<header class={styles['site-header']} data-site-header>
+  <div class={styles['site-header-bar']}>
+    <div class={styles['site-header-brand']}>
       {showMobileToggle && (
         <button
           type="button"
-          class="header-icon-btn md:hidden"
+          class={styles['header-icon-btn']}
           aria-expanded="false"
           aria-controls="mobile-menu-overlay"
           data-mobile-menu-toggle
           aria-label="Open menu"
         >
-          <svg class="header-menu-icon" data-menu-icon="open" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <svg class={styles['header-menu-icon']} data-menu-icon="open" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 7h16M4 12h16M4 17h16" />
           </svg>
-          <svg class="header-menu-icon" data-menu-icon="close" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" style="display:none">
+          <svg class={styles['header-menu-icon']} data-menu-icon="close" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" style="display:none">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M6 6l12 12M18 6L6 18" />
           </svg>
         </button>
       )}
 
-      <a href="/" class="site-logo">
+      <a href="/" class={styles['site-logo']}>
         {hasLogo && (
           <img
             src={logo!.asset!.url}
             alt={logoAlt || siteTitle}
-            class="site-logo-image"
+            class={styles['site-logo-image']}
           />
         )}
         {!hasLogo && (
-          <span class="site-logo-text">{siteTitle}</span>
+          <span class="logo-text">{siteTitle}</span>
         )}
       </a>
     </div>
 
     {menuItems.length > 0 && (
-      <nav class="site-nav-desktop" aria-label="Main navigation">
+      <nav class={styles['site-nav-desktop']} aria-label="Main navigation">
         {menuItems.map((item: any) => (
           <a
             href={item.url}
             class:list={[
-              'nav-link',
-              { 'nav-link--active': isNavActive(pathname, item.url) },
+              styles['nav-link'],
+              { [styles['nav-link--active']]: isNavActive(pathname, item.url) },
             ]}
           >
             {item.label}
@@ -80,51 +81,16 @@ const hasLogo = Boolean(logo?.asset?.url)
       </nav>
     )}
 
-    <div class="site-header-utilities">
+    <div class={styles['site-header-utilities']}>
       {socialLinks.length > 0 && (
         <SocialLinks links={socialLinks} variant="header" />
       )}
       {cta?.label && (
-        <a href={cta.url} class="btn-header-cta btn-header-cta--mobile">
-          {cta.label}
-        </a>
+        <Button href={cta.url}>{cta.label}</Button>
       )}
       <ThemeToggle />
     </div>
   </div>
 </header>
 
-<script>
-  const toggle = document.querySelector('[data-mobile-menu-toggle]')
-  const overlay = document.querySelector('[data-mobile-menu-overlay]')
-  const backdrop = document.querySelector('[data-mobile-menu-backdrop]')
-  const openIcon = toggle?.querySelector('[data-menu-icon="open"]')
-  const closeIcon = toggle?.querySelector('[data-menu-icon="close"]')
-
-  const setMenuOpen = (open: boolean) => {
-    overlay?.classList.toggle('mobile-menu-overlay--open', open)
-    overlay?.setAttribute('aria-hidden', String(!open))
-    toggle?.setAttribute('aria-expanded', String(open))
-    toggle?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu')
-    if (openIcon) openIcon.style.display = open ? 'none' : ''
-    if (closeIcon) closeIcon.style.display = open ? '' : 'none'
-    document.body.classList.toggle('menu-open', open)
-  }
-
-  toggle?.addEventListener('click', () => {
-    const isOpen = overlay?.classList.contains('mobile-menu-overlay--open')
-    setMenuOpen(!isOpen)
-  })
-
-  backdrop?.addEventListener('click', () => setMenuOpen(false))
-
-  overlay?.querySelectorAll('[data-mobile-nav-link]').forEach((link) => {
-    link.addEventListener('click', () => setMenuOpen(false))
-  })
-
-  window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && overlay?.classList.contains('mobile-menu-overlay--open')) {
-      setMenuOpen(false)
-    }
-  })
-</script>
+<script defer src="/scripts/mobile-menu.js"></script>

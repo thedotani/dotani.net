@@ -98,18 +98,7 @@ export function blockInlineStyle(section: BlockStyleSection): Record<string, str
   return Object.keys(style).length ? style : undefined
 }
 
-function gradientDirection(tailwindClass?: string): string {
-  switch (tailwindClass) {
-    case 'bg-gradient-to-t':
-      return 'to top'
-    case 'bg-gradient-to-r':
-      return 'to right'
-    case 'bg-gradient-to-l':
-      return 'to left'
-    case 'bg-gradient-to-br':
-      return 'to bottom right'
-    case 'bg-gradient-to-b':
-    default:
-      return 'to bottom'
-  }
+function gradientDirection(direction?: string): string {
+  if (direction === 'to right' || direction === 'to left') return direction
+  return 'to bottom'
 }

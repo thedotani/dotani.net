@@ -1,11 +1,17 @@
 ---
+import styles from './Button.module.css'
+
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'outline'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'white'
   size?: 'sm' | 'md' | 'lg'
   href?: string
   class?: string
   type?: 'button' | 'submit'
   disabled?: boolean
+  id?: string
+  target?: string
+  rel?: string
+  style?: string
 }
 
 const {
@@ -19,9 +25,9 @@ const {
 } = Astro.props
 
 const classes = [
-  'btn',
-  `btn--${variant}`,
-  size !== 'md' && `btn--${size}`,
+  styles['btn'],
+  styles[`btn--${variant}`],
+  size !== 'md' && styles[`btn--${size}`],
   className,
 ].filter(Boolean).join(' ')
 ---

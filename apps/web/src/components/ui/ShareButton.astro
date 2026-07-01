@@ -1,0 +1,94 @@
+---
+import styles from './ShareButton.module.css'
+---
+
+<button class={styles['share-btn']} type="button" data-share aria-label="Share this page">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+    <polyline points="16 6 12 2 8 6" />
+    <line x1="12" y1="2" x2="12" y2="15" />
+  </svg>
+  <span>Share</span>
+</button>
+
+<script>
+  document.querySelectorAll('[data-share]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const title = document.title
+      const url = location.href
+      const desc =
+        document.querySelector('meta[name="description"]')?.getAttribute('content') || ''
+
+      btn.setAttribute('data-sharing', '')
+
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, url, text: desc })
+        } else {
+          await copyUrl(url)
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') {
+          await copyUrl(url)
+        }
+      } finally {
+        btn.removeAttribute('data-sharing')
+      }
+    })
+  })
+
+  async function copyUrl(url) {
+    try {
+      await navigator.clipboard.writeText(url)
+      showToast('Link copied to clipboard', false, url)
+    } catch {
+      showToast("Couldn't copy automatically. Tap to copy:", true, url)
+    }
+  }
+
+  function showToast(msg, showUrl, url) {
+    const existing = document.querySelector('[data-toast]')
+    if (existing) existing.remove()
+
+    const toast = document.createElement('div')
+    toast.setAttribute('data-toast', '')
+    if (showUrl) toast.setAttribute('data-toast-url', '')
+
+    const text = document.createElement('span')
+    text.textContent = msg
+    toast.appendChild(text)
+
+    if (showUrl && url) {
+      const urlEl = document.createElement('span')
+      urlEl.textContent = url
+      urlEl.setAttribute('data-toast-url-text', '')
+      toast.appendChild(urlEl)
+
+      toast.style.cursor = 'pointer'
+      toast.addEventListener('click', () => {
+        try {
+          const ta = document.createElement('textarea')
+          ta.value = url
+          ta.style.position = 'fixed'
+          ta.style.opacity = '0'
+          document.body.appendChild(ta)
+          ta.select()
+          document.execCommand('copy')
+          ta.remove()
+          text.textContent = 'Link copied to clipboard'
+          urlEl.remove()
+          toast.style.cursor = ''
+          toast.removeAttribute('data-toast-url')
+        } catch {}
+      })
+    }
+
+    document.body.appendChild(toast)
+    requestAnimationFrame(() => toast.setAttribute('data-visible', ''))
+
+    setTimeout(() => {
+      toast.removeAttribute('data-visible')
+      setTimeout(() => toast.remove(), 300)
+    }, 4000)
+  }
+</script>

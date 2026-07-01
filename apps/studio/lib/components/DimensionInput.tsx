@@ -1,6 +1,6 @@
 import {useCallback} from 'react'
 import {set, unset, type ObjectInputProps} from 'sanity'
-import {Box, Select, TextInput} from '@sanity/ui'
+import {Box, Flex, Select, TextInput} from '@sanity/ui'
 
 const UNITS = [
   {value: 'px', title: 'px'},
@@ -32,8 +32,8 @@ export function DimensionInput(props: ObjectInputProps<DimensionValue>) {
   )
 
   return (
-    <Box data-dotani-dimension-input>
-      <Box>
+    <Flex data-dotani-dimension-input align="center" gap={1}>
+      <Box flex={1}>
         <TextInput
           type="number"
           value={currentValue ?? ''}
@@ -47,7 +47,7 @@ export function DimensionInput(props: ObjectInputProps<DimensionValue>) {
           }}
         />
       </Box>
-      <Box>
+      <Box flex="none" style={{width: '4.5rem'}}>
         <Select
           fontSize={1}
           value={currentUnit}
@@ -66,6 +66,6 @@ export function DimensionInput(props: ObjectInputProps<DimensionValue>) {
           ))}
         </Select>
       </Box>
-    </Box>
+    </Flex>
   )
 }
